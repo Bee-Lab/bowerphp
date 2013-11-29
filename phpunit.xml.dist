@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit colors="true" bootstrap="tests/bootstrap.php">
+
+    <testsuites>
+        <testsuite name="Bowerphp Test Suite">
+            <directory>./tests/Bowerphp/</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory>./src/Bowerphp/</directory>
+        </whitelist>
+    </filter>
+</phpunit>
