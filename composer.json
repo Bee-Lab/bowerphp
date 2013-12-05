@@ -15,7 +15,8 @@
     },
     "require": {
         "php": ">=5.3.2",
-        "symfony/console": "~2.3"
+        "symfony/console": "~2.3",
+        "knplabs/gaufrette": "0.1.*"
     },
     "autoload": {
         "psr-0": { "Bowerphp": "src/" }
