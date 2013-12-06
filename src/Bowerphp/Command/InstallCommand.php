@@ -14,6 +14,9 @@ namespace Bowerphp\Command;
 use Bowerphp\Bowerphp;
 use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\Filesystem;
+use Github\Client as GithubClient;
+use Github\HttpClient\Cache\GaufretteCache;
+use Github\HttpClient\CachedHttpClient;
 use Guzzle\Http\Client;
 use Guzzle\Log\MessageFormatter;
 use Guzzle\Log\ClosureLogAdapter;
@@ -65,6 +68,9 @@ EOT
         $adapter = new LocalAdapter(getcwd());
         $filesystem = new Filesystem($adapter);
         $httpClient = new Client();
+        $cached = new CachedHttpClient();
+        $cached->setCache(new GaufretteCache($filesystem));
+        $githubClient = new GithubClient($cached);
 
         // debug http interactions
         if (OutputInterface::VERBOSITY_DEBUG <= $output->getVerbosity()) {
@@ -79,6 +85,7 @@ EOT
         $package = $input->getArgument('package');
 
         $bowerphp = new Bowerphp($filesystem, $httpClient);
+        $bowerphp->setGithubClient($githubClient);
 
         try {
             if (is_null($package)) {
@@ -89,7 +96,7 @@ EOT
                 $installed = $bowerphp->installPackage($package);
             }
         } catch (\RuntimeException $e) {
-            $output->writeln($e->getMessage());
+            $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
 
             return $e->getCode();
         }

@@ -12,6 +12,7 @@
 namespace Bowerphp;
 
 use Gaufrette\Filesystem;
+use Github\Client as GithubClient;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Exception\RequestException;
 
@@ -23,7 +24,8 @@ class Bowerphp
     protected
         $installed = array(),
         $filesystem,
-        $httpClient
+        $httpClient,
+        $githubClient
     ;
 
     /**
@@ -33,6 +35,22 @@ class Bowerphp
     public function __construct(Filesystem $filesystem, ClientInterface $httpClient)
     {
         $this->filesystem = $filesystem;
+        $this->httpClient = $httpClient;
+    }
+
+    /**
+     * @param GithubClient $githubClient
+     */
+    public function setGithubClient(GithubClient $githubClient)
+    {
+        $this->githubClient = $githubClient;
+    }
+
+    /**
+     * @param ClientInterface $httpClient
+     */
+    public function setHttpClient(ClientInterface $httpClient)
+    {
         $this->httpClient = $httpClient;
     }
 
@@ -80,7 +98,11 @@ class Bowerphp
         return $this->installed;
     }
 
-    protected function createAClearBowerFile($params)
+    /**
+     * @param  array $params
+     * @return array
+     */
+    protected function createAClearBowerFile(array $params)
     {
         $structure =  array(
             'name' => $params['name'],
@@ -122,12 +144,12 @@ class Bowerphp
             $request = $this->httpClient->get($url);
             $response = $request->send();
         } catch (RequestException $e) {
-            throw new \RuntimeException(sprintf('Cannot download package <error>%s</error> (%s).', $package, $e->getMessage()), 3);
+            throw new \RuntimeException(sprintf('Cannot download package %s (%s).', $package, $e->getMessage()), 3);
         }
 
         $decode = json_decode($response->getBody(true), true);
         if (!is_array($decode) || empty($decode['url'])) {
-            throw new \RuntimeException(sprintf('Package <error>%s</error> has malformed json or is missing "url".', $package), 4);
+            throw new \RuntimeException(sprintf('Package %s has malformed json or is missing "url".', $package), 4);
         }
 
         // TODO ...
@@ -140,14 +162,76 @@ class Bowerphp
             $request = $this->httpClient->get($depBowerJsonURL);
             $response = $request->send();
         } catch (RequestException $e) {
-            throw new \RuntimeException(sprintf('Cannot open package git URL <error>%s</error> (%s).', $depBowerJsonURL, $e->getMessage()), 5);
+            throw new \RuntimeException(sprintf('Cannot open package git URL %s (%s).', $depBowerJsonURL, $e->getMessage()), 5);
         }
 
         $depBowerJson = $response->getBody(true);
 
-        $this->installed[$package] = $version;
+        // e.g. "git://github.com/components/jquery.git" -> "components", "jquery"
+        list($repoUser, $repoName) = explode('/', $this->clearGitURL($decode['url']));
+        try {
+            $tags = $this->githubClient->api('repo')->tags($repoUser, $repoName);
+        } catch (\Exception $e) {
+            throw new \RuntimeException(sprintf('Cannot open repo <error>%s/%s</error> (%s).', $repoUser, $repoName, $e->getMessage()), 7);
+        }
 
-        $this->install($depBowerJson);
+        // fix version
+        if (substr($version, 0, 2) == '>=') {
+            $version = substr($version, 2) . '.*';
+        }
+
+        foreach ($tags as $tag) {
+            if (fnmatch($version, $tag['name'])) {
+                if ($this->getReleaseFromGit($tag['tarball_url'])) {
+                    $this->installed[$package] = $version;
+                }
+                $this->install($depBowerJson);
+
+                return;
+            }
+        }
+
+        throw new \RuntimeException(sprintf('Cannot find package %s version %s.', $package, $version), 6);
+    }
+
+    /**
+     * @param  string  $tarballUrl
+     * @return boolean
+     */
+    protected function getReleaseFromGit($tarballUrl)
+    {
+        /*
+        $request = $this->httpClient->get($tarballUrl);
+        $response = $request->send();
+        $file = $response->getBody();
+
+        $tmpFileName = './tmp/' . basename($tarballUrl) . '.tgz';
+        $this->filesystem->write($tmpFileName, $file);
+        $archive = new \PharData($tmpFileName);
+        // TODO checksum mismatch error
+        $archive->extractTo('./tmp/');
+        */
+
+        return true;
+    }
+
+    /**
+     * @param  string
+     * @return string
+     */
+    private function clearGitURL($url)
+    {
+        if (substr($url, 0, 6) == 'git://') {
+            $url = substr($url, 6);
+        }
+        if (substr($url, 0, 11) == 'github.com/') {
+            $url = substr($url, 11);
+        }
+        if (substr($url, -4) == '.git') {
+            $url = substr($url, 0, -4);
+        }
+
+        return $url;
     }
 
     /**

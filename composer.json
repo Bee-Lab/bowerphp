@@ -17,8 +17,15 @@
         "php": ">=5.3.2",
         "symfony/console": "~2.3",
         "knplabs/gaufrette": "0.1.*",
-        "guzzle/guzzle": "3.8.*"
+        "guzzle/guzzle": "3.8.*",
+        "knplabs/github-api": "dev-master"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/Bee-Lab/php-github-api"
+        }
+    ],
     "autoload": {
         "psr-0": { "Bowerphp": "src/" }
     },
