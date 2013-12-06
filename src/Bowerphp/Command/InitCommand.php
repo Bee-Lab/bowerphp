@@ -14,6 +14,7 @@ namespace Bowerphp\Command;
 use Bowerphp\Bowerphp;
 use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\Filesystem;
+use Guzzle\Http\Client;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -30,13 +31,17 @@ class InitCommand extends Command
     {
         $this
             ->setName('init')
-            ->setDescription('Init a bower.json file.')
+            ->setDescription('Initializes a bower.json file.')
             ->setDefinition(array(
                 // TODO add all options...
                 new InputOption('verbose', 'v|vv|vvv', InputOption::VALUE_NONE, 'Shows more details including new commits pulled in when updating packages.'),
             ))
             ->setHelp(<<<EOT
-TODO...
+The <info>init</info> command initializes a bower.json file in
+the current directory.
+
+<info>php bowerphp.phar init</info>
+
 EOT
             )
         ;
@@ -49,6 +54,7 @@ EOT
     {
         $adapter = new LocalAdapter(getcwd());
         $filesystem = new Filesystem($adapter);
+        $httpClient = new Client();
 
         $dialog = $this->getHelperSet()->get('dialog');
 
@@ -65,7 +71,7 @@ EOT
             'An author'
         );
 
-        $bowerphp = new Bowerphp($filesystem);
+        $bowerphp = new Bowerphp($filesystem, $httpClient);
         $bowerphp->init($params);
 
         $output->writeln('Done.');

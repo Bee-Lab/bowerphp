@@ -12,6 +12,8 @@
 namespace Bowerphp;
 
 use Gaufrette\Filesystem;
+use Guzzle\Http\ClientInterface;
+use Guzzle\Http\Exception\RequestException;
 
 /**
  * Main class
@@ -20,16 +22,18 @@ class Bowerphp
 {
     protected
         $installed = array(),
-        $filesystem
+        $filesystem,
+        $httpClient
     ;
 
     /**
-     * TODO add dependencies...
-     *
+     * @param Filesystem      $filesystem
+     * @param ClientInterface $httpClient
      */
-    public function __construct(Filesystem $filesystem)
+    public function __construct(Filesystem $filesystem, ClientInterface $httpClient)
     {
         $this->filesystem = $filesystem;
+        $this->httpClient = $httpClient;
     }
 
     /**
@@ -96,41 +100,52 @@ class Bowerphp
      */
     protected function install($bowerJson)
     {
-        $json = json_decode($bowerJson, true);
-
-        if (!isset($json['dependencies'])) {
-            return $this->installed;
+        if (empty($bowerJson) || !is_array($decode = json_decode($bowerJson, true))) {
+            throw new \RuntimeException(sprintf('Malformed JSON %s.', $bowerJson), 5);
         }
 
-        foreach ($json['dependencies'] as $lib => $version) {
-            $this->executeInstallFromBower($lib, $version);
+        if (!empty($decode['dependencies'])) {
+            foreach ($decode['dependencies'] as $package => $version) {
+                $this->executeInstallFromBower($package, $version);
+            }
         }
     }
 
     /**
-     * @param string $lib
+     * @param string $package
      * @param string $version
      */
-    protected function executeInstallFromBower($lib, $version)
+    protected function executeInstallFromBower($package, $version)
     {
-        $url = 'http://bower.herokuapp.com/packages/' . $lib;
+        $url = 'http://bower.herokuapp.com/packages/' . $package;
         try {
-            $response = $this->filesystem->readfile_get_contents($url);
-        } catch (\RuntimeException $e) {
-            throw new \RuntimeException(sprintf('Cannot download package <error>%s</error>.', $lib), 3);
+            $request = $this->httpClient->get($url);
+            $response = $request->send();
+        } catch (RequestException $e) {
+            throw new \RuntimeException(sprintf('Cannot download package <error>%s</error> (%s).', $package, $e->getMessage()), 3);
         }
 
-        $decode = json_decode($response, true);
+        $decode = json_decode($response->getBody(true), true);
+        if (!is_array($decode) || empty($decode['url'])) {
+            throw new \RuntimeException(sprintf('Package <error>%s</error> has malformed json or is missing "url".', $package), 4);
+        }
 
-        $git = str_replace('git://', 'http://raw.', $decode['url']);
+        // TODO ...
+        $git = str_replace('git://', 'https://raw.', $decode['url']);
         $git = preg_replace('/\.git$/', '', $git);
 
-        // TODO use guzzle here!!!
-        if (false === $depBowerJson = @file_get_contents($git . '/master/bower.json')) {
-            throw new \RuntimeException(sprintf('Cannot open package git URL <error>%s/master/bower.json</error>.', $git), 4);
+        $depBowerJsonURL = $git . '/master/bower.json';
+
+        try {
+            $request = $this->httpClient->get($depBowerJsonURL);
+            $response = $request->send();
+        } catch (RequestException $e) {
+            throw new \RuntimeException(sprintf('Cannot open package git URL <error>%s</error> (%s).', $depBowerJsonURL, $e->getMessage()), 5);
         }
 
-        $this->installed[$lib] = $version;
+        $depBowerJson = $response->getBody(true);
+
+        $this->installed[$package] = $version;
 
         $this->install($depBowerJson);
     }

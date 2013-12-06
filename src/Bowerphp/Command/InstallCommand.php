@@ -12,6 +12,12 @@
 namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
+use Gaufrette\Adapter\Local as LocalAdapter;
+use Gaufrette\Filesystem;
+use Guzzle\Http\Client;
+use Guzzle\Log\MessageFormatter;
+use Guzzle\Log\ClosureLogAdapter;
+use Guzzle\Plugin\Log\LogPlugin;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -56,9 +62,23 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $adapter = new LocalAdapter(getcwd());
+        $filesystem = new Filesystem($adapter);
+        $httpClient = new Client();
+
+        // debug http interactions
+        if (OutputInterface::VERBOSITY_DEBUG <= $output->getVerbosity()) {
+            $logger = function ($message, $priority, $extras) use ($output) {
+                $output->writeln('<info>Guzzle</info> ' . $message);
+            };
+            $logAdapter = new ClosureLogAdapter($logger);
+            $logPlugin = new LogPlugin($logAdapter, MessageFormatter::DEBUG_FORMAT);
+            $httpClient->addSubscriber($logPlugin);
+        }
+
         $package = $input->getArgument('package');
 
-        $bowerphp = new Bowerphp();
+        $bowerphp = new Bowerphp($filesystem, $httpClient);
 
         try {
             if (is_null($package)) {
