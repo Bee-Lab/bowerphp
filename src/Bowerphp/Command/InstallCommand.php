@@ -14,9 +14,6 @@ namespace Bowerphp\Command;
 use Bowerphp\Bowerphp;
 use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\Filesystem;
-use Github\Client as GithubClient;
-use Github\HttpClient\Cache\GaufretteCache;
-use Github\HttpClient\CachedHttpClient;
 use Guzzle\Http\Client;
 use Guzzle\Log\MessageFormatter;
 use Guzzle\Log\ClosureLogAdapter;
@@ -68,9 +65,6 @@ EOT
         $adapter = new LocalAdapter(getcwd());
         $filesystem = new Filesystem($adapter);
         $httpClient = new Client();
-        $cached = new CachedHttpClient();
-        $cached->setCache(new GaufretteCache($filesystem));
-        $githubClient = new GithubClient($cached);
 
         // debug http interactions
         if (OutputInterface::VERBOSITY_DEBUG <= $output->getVerbosity()) {
@@ -82,18 +76,26 @@ EOT
             $httpClient->addSubscriber($logPlugin);
         }
 
-        $package = $input->getArgument('package');
+        $packageName = $input->getArgument('package');
 
         $bowerphp = new Bowerphp($filesystem, $httpClient);
-        $bowerphp->setGithubClient($githubClient);
 
         try {
-            if (is_null($package)) {
+            $installer = new Installer($filesystem, $httpClient);
+
+            if (is_null($packageName)) {
                 $output->writeln('Installing dependencies:');
-                $installed = $bowerphp->installDependencies();
+                $installed = $bowerphp->installDependencies($installer);
             } else {
+                $v = explode("#", $packageName);
+                $packageName = isset($v[0]) ? $v[0] : $packageName;
+                $version = isset($v[1]) ? $v[1] : "*";
+
                 $output->writeln('Installing:');
-                $installed = $bowerphp->installPackage($package);
+
+                $package = new Package($packageName, $version);
+
+                $bowerphp->installPackage($package, $installer);
             }
         } catch (\RuntimeException $e) {
             $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
@@ -102,9 +104,9 @@ EOT
         }
 
         // TODO this is ugly, since all output is in the end
-        foreach ($installed as $lib => $version) {
-            $output->writeln(sprintf('<info>%s</info>: %s', $lib, $version));
-        }
+        #foreach ($installed as $lib => $version) {
+        #    $output->writeln(sprintf('<info>%s</info>: %s', $lib, $version));
+        #}
 
         $output->writeln('Done.');
     }
