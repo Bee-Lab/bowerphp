@@ -16,7 +16,7 @@ use Github\Client as GithubClient;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Exception\RequestException;
 use Camspiers\JsonPretty\JsonPretty;
- 
+
 /**
  * Main class
  */
@@ -26,7 +26,8 @@ class Bowerphp
         $installed = array(),
         $filesystem,
         $httpClient,
-        $githubClient
+        $githubClient,
+        $installDir = 'bower_components'
     ;
 
     /**
@@ -183,7 +184,7 @@ class Bowerphp
 
         foreach ($tags as $tag) {
             if (fnmatch($version, $tag['name'])) {
-                if ($this->getReleaseFromGit($tag['tarball_url'])) {
+                if ($this->getReleaseFromGit($package, $tag['zipball_url'])) {
                     $this->installed[$package] = $version;
                 }
                 $this->install($depBowerJson);
@@ -196,22 +197,51 @@ class Bowerphp
     }
 
     /**
-     * @param  string  $tarballUrl
+     * @param  string  $packageName
+     * @param  string  $archiveUrl
      * @return boolean
      */
-    protected function getReleaseFromGit($tarballUrl)
+    protected function getReleaseFromGit($packageName, $archiveUrl)
     {
-        /*
-        $request = $this->httpClient->get($tarballUrl);
+        $request = $this->httpClient->get($archiveUrl);
         $response = $request->send();
         $file = $response->getBody();
 
-        $tmpFileName = './tmp/' . basename($tarballUrl) . '.tgz';
-        $this->filesystem->write($tmpFileName, $file);
-        $archive = new \PharData($tmpFileName);
-        // TODO checksum mismatch error
-        $archive->extractTo('./tmp/');
-        */
+        $type = $response->getContentType();
+
+        // TODO implement a factory
+        if ($type == 'application/zip') {
+            $tmpFileName = './tmp/' . basename($archiveUrl) . '.zip';
+            if (!is_readable($tmpFileName)) {
+                $this->filesystem->write($tmpFileName, $file);
+            }
+            $archive = new \ZipArchive();
+            if ($archive->open($tmpFileName) !== true) {
+                throw new \RuntimeException(sprintf('Unable to open zip file %s.', $tmpFileName));
+            }
+            $dirName = trim($archive->getNameIndex(0), '/');
+            for ($i = 1; $i < $archive->numFiles; $i++ ) {
+                $stat = $archive->statIndex($i);
+                $fileName = $this->installDir . '/' . str_replace($dirName, $packageName, $stat['name']);
+                $fileContent = $archive->getStream($stat['name']);
+                $this->filesystem->write($fileName, $fileContent, true);
+            }
+            $archive->close();
+            #$archive->extractTo('./tmp/');
+        } elseif ($type == 'TODO targz type') {
+            $tmpFileName = './tmp/' . basename($archiveUrl) . '.tgz';
+            if (!is_readable($tmpFileName)) {
+                $this->filesystem->write($tmpFileName, $file);
+            }
+            $archive = new \PharData($tmpFileName);
+            // TODO checksum mismatch error
+            $archive->extractTo('./tmp/', null, true);
+
+        }
+
+        // move extracted files to appropriate location
+
+
 
         return true;
     }
