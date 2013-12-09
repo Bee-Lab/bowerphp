@@ -21,7 +21,7 @@ class GithubRepository implements RepositoryInterface
         $this->httpClient = $httpClient;
     }
 
-    public function hasBower()
+    public function getBower()
     {
         $depBowerJsonURL = $this->url . '/master/bower.json';
         try {
@@ -31,7 +31,7 @@ class GithubRepository implements RepositoryInterface
             throw new \RuntimeException(sprintf('Cannot open package git URL %s (%s).', $depBowerJsonURL, $e->getMessage()), 5);
         }
 
-        return true;
+        return $response->getBody(true);
     }
 
     public function findPackage($version = '*')
@@ -53,7 +53,7 @@ class GithubRepository implements RepositoryInterface
 
         foreach ($tags as $tag) {
             if (fnmatch($version, $tag['name'])) {
-                $this->tag = $tag;
+                $this->setTag($tag);
 
                 return $tag['name'];
             }
@@ -61,11 +61,13 @@ class GithubRepository implements RepositoryInterface
     }
 
     /**
-     *
+     * @param  string $type
+     * @return string
      */
     public function getRelease($type = 'zip')
     {
-        $file = $this->tag[$type . 'ball_url'];
+        $tag = $this->getTag();
+        $file = $tag[$type . 'ball_url'];
         try {
             $request = $this->httpClient->get($file);
             $response = $request->send();
@@ -76,7 +78,17 @@ class GithubRepository implements RepositoryInterface
         }
     }
 
-        /**
+    public function getTag()
+    {
+        return $this->tag;
+    }
+
+    public function setTag(array $tag)
+    {
+        $this->tag = $tag;
+    }
+
+    /**
      * @param  string
      * @return string
      */

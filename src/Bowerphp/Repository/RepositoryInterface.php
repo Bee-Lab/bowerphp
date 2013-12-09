@@ -14,11 +14,11 @@ interface RepositoryInterface
     const SEARCH_NAME = 1;
 
     /**
-     * Checks if repo has bower
+     * Get repo bower.json
      *
-     * @return bool
+     * @return string
      */
-    public function hasBower();
+    public function getBower();
 
     /**
      * Searches for the first match of a package version.
@@ -36,4 +36,14 @@ interface RepositoryInterface
      * @return string       file content
      */
     public function getRelease($type = 'zip');
+
+    /**
+     * @param array $tag
+     */
+    public function setTag(array $tag);
+
+    /**
+     * @return array
+     */
+    public function getTag();
 }

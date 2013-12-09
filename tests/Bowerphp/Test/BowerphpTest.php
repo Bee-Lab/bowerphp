@@ -3,15 +3,15 @@
 namespace Bowerphp\Test;
 
 use Bowerphp\Bowerphp;
+use Bowerphp\Test\TestCase;
 
-class BowerphpTest extends \PHPUnit_Framework_TestCase
+class BowerphpTest extends TestCase
 {
-    protected $filesystem, $httpClient, $bowerphp;
+    protected $bowerphp;
 
     public function setUp()
     {
-        $this->filesystem = $this->getMockBuilder('Gaufrette\Filesystem')->disableOriginalConstructor()->getMock();
-        $this->httpClient = $this->getMock('Guzzle\Http\ClientInterface');
+        parent::setUp();
         $this->bowerphp = new Bowerphp($this->filesystem, $this->httpClient);
     }
 

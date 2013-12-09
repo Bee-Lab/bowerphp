@@ -62,8 +62,9 @@ class Installer implements InstallerInterface
         // open package repository
         $repoUrl = $decode['url'];
         $repo = new GithubRepository($repoUrl, $this->httpClient);
-        if (!$repo->hasBower()) {
-            throw new \RuntimeException(sprintf('No bower.json found in package %s.', $package->getName()));
+        $bower = json_decode($repo->getBower(), true);
+        if (!is_array($bower)) {
+            throw new \RuntimeException(sprintf('Invalid bower.json found in package %s: %s.', $package->getName(), $bower));
         }
         $packageVersion = $repo->findPackage($package->getVersion());
         if (is_null($packageVersion)) {
@@ -95,8 +96,8 @@ class Installer implements InstallerInterface
         $archive->close();
 
         // check for dependencies
-        if (!empty($decode['dependencies'])) {
-            foreach ($decode['dependencies'] as $name => $version) {
+        if (!empty($bower['dependencies'])) {
+            foreach ($bower['dependencies'] as $name => $version) {
                 $depPackage = new Package($name, $version);
                 $this->install($depPackage);
             }

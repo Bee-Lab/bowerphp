@@ -12,6 +12,8 @@
 namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
+use Bowerphp\Installer\Installer;
+use Bowerphp\Package\Package;
 use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\Filesystem;
 use Guzzle\Http\Client;
