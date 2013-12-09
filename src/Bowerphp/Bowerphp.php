@@ -222,9 +222,11 @@ class Bowerphp
             $dirName = trim($archive->getNameIndex(0), '/');
             for ($i = 1; $i < $archive->numFiles; $i++ ) {
                 $stat = $archive->statIndex($i);
-                $fileName = $this->installDir . '/' . str_replace($dirName, $packageName, $stat['name']);
-                $fileContent = $archive->getStream($stat['name']);
-                $this->filesystem->write($fileName, $fileContent, true);
+                if ($stat['size'] > 0) {    // directories have sizes 0
+                    $fileName = $this->installDir . '/' . str_replace($dirName, $packageName, $stat['name']);
+                    $fileContent = $archive->getStream($stat['name']);
+                    $this->filesystem->write($fileName, $fileContent, true);
+                }
             }
             $archive->close();
             #$archive->extractTo('./tmp/');
