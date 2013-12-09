@@ -18,7 +18,8 @@
         "symfony/console": "~2.3",
         "knplabs/gaufrette": "0.1.*",
         "guzzle/guzzle": "3.8.*",
-        "knplabs/github-api": "dev-master"
+        "knplabs/github-api": "dev-master",
+        "camspiers/json-pretty": "dev-master"
     },
     "repositories": [
         {

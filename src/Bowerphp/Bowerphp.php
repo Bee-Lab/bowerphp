@@ -15,7 +15,8 @@ use Gaufrette\Filesystem;
 use Github\Client as GithubClient;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Exception\RequestException;
-
+use Camspiers\JsonPretty\JsonPretty;
+ 
 /**
  * Main class
  */
@@ -243,58 +244,17 @@ class Bowerphp
      * @param  string  $_escape
      * @return string
      */
+
     private function json_readable_encode(array $in, $indent = 0, $_escape = null)
     {
         if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
             return json_encode($in, JSON_PRETTY_PRINT);
         }
 
-        if (__CLASS__ && isset($this)) {
-            $_myself = array($this, __FUNCTION__);
-        } elseif (__CLASS__) {
-            $_myself = array('self', __FUNCTION__);
-        } else {
-            $_myself = __FUNCTION__;
-        }
+        $jsonPretty = new JsonPretty();
 
-        if (is_null($_escape)) {
-            $_escape = function ($str) {
-                return str_replace(
-                        array('\\', '"', "\n", "\r", "\b", "\f", "\t", '/', '\\\\u'),
-                        array('\\\\', '\\"', "\\n", "\\r", "\\b", "\\f", "\\t", '\\/', '\\u'),
-                        $str);
-            };
-        }
-
-        $out = '';
-
-        foreach ($in as $key=>$value) {
-            $out .= str_repeat("\t", $indent + 1);
-            $out .= "\"".$_escape((string) $key)."\": ";
-
-            if (is_object($value) || is_array($value)) {
-                $out .= "\n";
-                $out .= call_user_func($_myself, $value, $indent + 1, $_escape);
-            } elseif (is_bool($value)) {
-                $out .= $value ? 'true' : 'false';
-            } elseif (is_null($value)) {
-                $out .= 'null';
-            } elseif (is_string($value)) {
-                $out .= "\"" . $_escape($value) ."\"";
-            } else {
-                $out .= $value;
-            }
-
-            $out .= ",\n";
-        }
-
-        if (!empty($out)) {
-            $out = substr($out, 0, -2);
-        }
-
-        $out = str_repeat("\t", $indent) . "{\n" . $out;
-        $out .= "\n" . str_repeat("\t", $indent) . "}";
-
-        return $out;
+        return $jsonPretty->prettify($in,null, '    ');
     }
+
+
 }
