@@ -8,6 +8,10 @@
         {
             "name": "Massimiliano Arione",
             "email": "massimiliano.arione@bee-lab.net"
+        },
+        {
+            "name": "Mauro D'Alatri",
+            "email": "mauro.dalatri@bee-lab.net"
         }
     ],
     "support": {
@@ -19,12 +23,16 @@
         "knplabs/gaufrette": "0.1.*",
         "guzzle/guzzle": "3.8.*",
         "knplabs/github-api": "dev-master",
-        "Bee-Lab/json-pretty": "dev-master"
+        "camspiers/json-pretty": "dev-master"
     },
     "repositories": [
         {
             "type": "vcs",
             "url": "https://github.com/Bee-Lab/php-github-api"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/Bee-Lab/json-pretty"
         }
     ],
     "autoload": {

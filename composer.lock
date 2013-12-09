@@ -3,19 +3,19 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "d5d7c0bf1e12fbb46693d278f9ad706b",
+    "hash": "84fab6526a65e4f84d56aecbb42a892a",
     "packages": [
         {
             "name": "camspiers/json-pretty",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/camspiers/json-pretty.git",
+                "url": "https://github.com/Bee-Lab/json-pretty.git",
                 "reference": "7ea1c767e653a487559403af82dc11c12b2bd108"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/camspiers/json-pretty/zipball/7ea1c767e653a487559403af82dc11c12b2bd108",
+                "url": "https://api.github.com/repos/Bee-Lab/json-pretty/zipball/7ea1c767e653a487559403af82dc11c12b2bd108",
                 "reference": "7ea1c767e653a487559403af82dc11c12b2bd108",
                 "shasum": ""
             },
@@ -31,18 +31,19 @@
                     "Camspiers": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "authors": [
                 {
                     "name": "Cam Spiers",
-                    "email": "cameron@heyday.co.nz",
-                    "role": "Developer"
+                    "email": "cameron@heyday.co.nz"
                 }
             ],
             "description": "Provides support for json pretty printing in php 5.3",
+            "support": {
+                "source": "https://github.com/Bee-Lab/json-pretty/tree/master"
+            },
             "time": "2013-08-27 14:22:46"
         },
         {
