@@ -28,7 +28,7 @@ class BowerphpTest extends \PHPUnit_Framework_TestCase
     ],
     "private": true,
     "dependencies": [
-        
+
     ]
 }
 EOT;
