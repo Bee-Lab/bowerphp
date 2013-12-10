@@ -44,6 +44,8 @@ class GithubRepository implements RepositoryInterface
         try {
             $request = $this->httpClient->get($depBowerJsonURL);
             $response = $request->send();
+            // we need this in case of redirect (e.g. 'less/less' becomes 'less/less.js')
+            $this->setUrl($response->getEffectiveUrl());
         } catch (RequestException $e) {
             throw new \RuntimeException(sprintf('Cannot open package git URL %s (%s).', $depBowerJsonURL, $e->getMessage()), 5);
         }

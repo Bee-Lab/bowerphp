@@ -21,19 +21,26 @@ class Installer implements InstallerInterface
         $repository,
         $zipArchive,
         $baseUrl = 'http://bower.herokuapp.com/packages/',
-        $installDir = 'bower_components'
+        $installDir = 'bower_components',
+        $cacheDir
     ;
 
     /**
      * Initializes library installer.
      *
+     * @param Filesystem          $filesystem
+     * @param ClientInterface     $httpClient
+     * @param RepositoryInterface $repository
+     * @param ZipArchive          $zipArchive
+     * @param string              $cacheDir
      */
-    public function __construct(Filesystem $filesystem, ClientInterface $httpClient, RepositoryInterface $repository, \ZipArchive $zipArchive)
+    public function __construct(Filesystem $filesystem, ClientInterface $httpClient, RepositoryInterface $repository, \ZipArchive $zipArchive, $cacheDir = '.')
     {
         $this->filesystem = $filesystem;
         $this->httpClient = $httpClient;
         $this->repository = $repository;
         $this->zipArchive = $zipArchive;
+        $this->cacheDir = $cacheDir;
     }
 
     /**
@@ -48,7 +55,7 @@ class Installer implements InstallerInterface
      */
     public function install(PackageInterface $package)
     {
-        $package->setTargetDir($this->installDir);
+        $package->setTargetDir(getcwd() . '/' . $this->installDir);
         // look for package in bower
         try {
             $request = $this->httpClient->get($this->baseUrl . $package->getName());
@@ -79,8 +86,8 @@ class Installer implements InstallerInterface
         $file = $this->repository->getRelease();
 
         // install files
-        $tmpFileName = './tmp/' . $package->getName();
-        $this->filesystem->write($tmpFileName, $file, true);
+        $tmpFileName =  $this->cacheDir . '/tmp/' . $package->getName();
+        $b = $this->filesystem->write($tmpFileName, $file, true);
         if ($this->zipArchive->open($tmpFileName) !== true) {
             throw new \RuntimeException(sprintf('Unable to open zip file %s.', $tmpFileName));
         }

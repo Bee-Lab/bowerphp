@@ -23,7 +23,33 @@ class GithubRepositoryTest extends TestCase
         $request = $this->getMock('Guzzle\Http\Message\RequestInterface');
         $response = $this->getMockBuilder('Guzzle\Http\Message\Response')->disableOriginalConstructor()->getMock();
 
-        $this->mockRequest(0, 'https://raw.github.com/components/jquery/master/bower.json', $bowerJson, $request, $response);
+        $url = 'https://raw.github.com/components/jquery/master/bower.json';
+
+        $this->httpClient
+            ->expects($this->once())
+            ->method('get')
+            ->with($url)
+            ->will($this->returnValue($request))
+        ;
+        $request
+            ->expects($this->once())
+            ->method('send')
+            ->will($this->returnValue($response))
+        ;
+
+        $response
+            ->expects($this->once())
+            ->method('getEffectiveUrl')
+            ->will($this->returnValue($url))
+        ;
+        $response
+            ->expects($this->once())
+            ->method('getBody')
+            ->with(true)
+            ->will($this->returnValue($bowerJson))
+        ;
+
+
 
         $bower = $this->repository->getBower();
 

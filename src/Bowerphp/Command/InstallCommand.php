@@ -15,11 +15,15 @@ use Bowerphp\Bowerphp;
 use Bowerphp\Installer\Installer;
 use Bowerphp\Package\Package;
 use Bowerphp\Repository\GithubRepository;
+use Doctrine\Common\Cache\FilesystemCache;
 use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\Filesystem;
+use Guzzle\Cache\DoctrineCacheAdapter;
 use Guzzle\Http\Client;
 use Guzzle\Log\MessageFormatter;
 use Guzzle\Log\ClosureLogAdapter;
+use Guzzle\Plugin\Cache\CachePlugin;
+use Guzzle\Plugin\Cache\DefaultCacheStorage;
 use Guzzle\Plugin\Log\LogPlugin;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -65,7 +69,7 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $adapter = new LocalAdapter(getcwd());
+        $adapter = new LocalAdapter('/');
         $filesystem = new Filesystem($adapter);
         $httpClient = new Client();
 
@@ -79,12 +83,23 @@ EOT
             $httpClient->addSubscriber($logPlugin);
         }
 
+        // http cache
+        $cacheDir = getenv('HOME') . '/.cache/bowerphp';    // TODO read from .bowerrc
+        $cachePlugin = new CachePlugin(array(
+            'storage' => new DefaultCacheStorage(
+                new DoctrineCacheAdapter(
+                    new FilesystemCache($cacheDir)
+                )
+            )
+        ));
+        $httpClient->addSubscriber($cachePlugin);
+
         $packageName = $input->getArgument('package');
 
         $bowerphp = new Bowerphp($filesystem, $httpClient);
 
         try {
-            $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new \ZipArchive());
+            $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new \ZipArchive(), $cacheDir);
 
             if (is_null($packageName)) {
                 $output->writeln('Installing dependencies:');

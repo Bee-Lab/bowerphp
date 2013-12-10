@@ -24,7 +24,7 @@ class InstallerTest extends TestCase
         $package
             ->expects($this->once())
             ->method('setTargetDir')
-            ->with('bower_components')
+            ->with(getcwd() . '/bower_components')
         ;
         $package
             ->expects($this->any())
@@ -48,13 +48,13 @@ class InstallerTest extends TestCase
         $this->repository
             ->expects($this->once())
             ->method('setUrl')
-            ->will($this->returnValue($this->repository))
+            ->will($this->returnSelf())
         ;
         $this->repository
             ->expects($this->once())
             ->method('setHttpClient')
             ->with($this->httpClient)
-            ->will($this->returnValue($this->repository))
+            ->will($this->returnSelf())
         ;
         $this->repository
             ->expects($this->once())
@@ -100,7 +100,7 @@ class InstallerTest extends TestCase
         $package
             ->expects($this->once())
             ->method('setTargetDir')
-            ->with('bower_components')
+            ->with(getcwd() . '/bower_components')
         ;
         $package
             ->expects($this->any())
