@@ -67,10 +67,7 @@ class GithubRepository implements RepositoryInterface
             throw new \RuntimeException(sprintf('Cannot open repo %s/%s (%s).', $repoUser, $repoName, $e->getMessage()));
         }
 
-        // fix version
-        if (substr($version, 0, 2) == '>=') {
-            $version = substr($version, 2) . '.*';
-        }
+        $version = $this->fixVersion($version);
 
         foreach ($tags as $tag) {
             if (fnmatch($version, $tag['name'])) {
@@ -113,6 +110,26 @@ class GithubRepository implements RepositoryInterface
     public function setTag(array $tag)
     {
         $this->tag = $tag;
+    }
+
+    /**
+     * @param  string $version
+     * @return string
+     */
+    private function fixVersion($version)
+    {
+        if (substr($version, 0, 2) == '>=') {
+            $bits = explode('.', $version);
+            if (count($bits) == 3) {
+                array_pop($bits);
+                $version = implode('.', $bits);
+                $version = substr($version, 2) . '.*';
+            } else {
+                $version = substr($version, 2) . '.*';
+            }
+        }
+
+        return trim($version);
     }
 
     /**

@@ -61,4 +61,12 @@ class GithubRepositoryTest extends TestCase
         $this->assertEquals('components/jquery', $clearGitURL->invokeArgs($this->repository, array('git://github.com/components/jquery.git')));
         $this->assertEquals('components/jqueryui', $clearGitURL->invokeArgs($this->repository, array('git://github.com/components/jqueryui')));
     }
+
+    public function testFixVersion()
+    {
+        $fixVersion = $this->getMethod('Bowerphp\Repository\GithubRepository', 'fixVersion');
+        $this->assertEquals('1.9.*', $fixVersion->invokeArgs($this->repository, array('>=1.9')));
+        $this->assertEquals('1.9.*', $fixVersion->invokeArgs($this->repository, array('>=1.9.0')));
+        $this->assertEquals('1.9.*', $fixVersion->invokeArgs($this->repository, array('>= 1.9.0')));
+    }
 }

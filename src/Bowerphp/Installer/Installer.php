@@ -71,7 +71,7 @@ class Installer implements InstallerInterface
         }
         $packageVersion = $this->repository->findPackage($package->getVersion());
         if (is_null($packageVersion)) {
-            throw new \RuntimeException(sprintf('Cannot find package %s version %s.', $package->getName(), $package->getVersion()), 6);
+            throw new \RuntimeException(sprintf('Cannot find package %s version %s.', $package->getName(), $package->getVersion()));
         }
         $package->setRepository($this->repository);
 
@@ -80,9 +80,7 @@ class Installer implements InstallerInterface
 
         // install files
         $tmpFileName = './tmp/' . $package->getName();
-        if (!is_readable($tmpFileName)) {
-            $this->filesystem->write($tmpFileName, $file);
-        }
+        $this->filesystem->write($tmpFileName, $file, true);
         if ($this->zipArchive->open($tmpFileName) !== true) {
             throw new \RuntimeException(sprintf('Unable to open zip file %s.', $tmpFileName));
         }
