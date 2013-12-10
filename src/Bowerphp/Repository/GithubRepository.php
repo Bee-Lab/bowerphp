@@ -2,8 +2,6 @@
 
 namespace Bowerphp\Repository;
 
-use Bowerphp\Package\PackageInterface;
-
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Exception\RequestException;
 
@@ -13,14 +11,33 @@ use Guzzle\Http\Exception\RequestException;
  */
 class GithubRepository implements RepositoryInterface
 {
-    protected $url, $tag, $httpClient;
+    protected $url, $tag = array(), $httpClient;
 
-    public function __construct($url, ClientInterface $httpClient)
+    /**
+     * @param  string           $url
+     * @return GithubRepository
+     */
+    public function setUrl($url)
     {
         $this->url = preg_replace('/\.git$/', '', str_replace('git://', 'https://raw.', $url));
-        $this->httpClient = $httpClient;
+
+        return $this;
     }
 
+    /**
+     * @param  ClientInterface  $httpClient
+     * @return GithubRepository
+     */
+    public function setHttpClient(ClientInterface $httpClient)
+    {
+        $this->httpClient = $httpClient;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
     public function getBower()
     {
         $depBowerJsonURL = $this->url . '/master/bower.json';
@@ -34,6 +51,10 @@ class GithubRepository implements RepositoryInterface
         return $response->getBody(true);
     }
 
+    /**
+     * @param  string $version
+     * @return string
+     */
     public function findPackage($version = '*')
     {
         list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
@@ -78,11 +99,17 @@ class GithubRepository implements RepositoryInterface
         }
     }
 
+    /**
+     * @return array
+     */
     public function getTag()
     {
         return $this->tag;
     }
 
+    /**
+     * @param array $tag
+     */
     public function setTag(array $tag)
     {
         $this->tag = $tag;

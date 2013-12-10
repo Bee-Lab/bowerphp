@@ -2,12 +2,12 @@
 
 namespace Bowerphp\Installer;
 
+use Bowerphp\Package\Package;
 use Bowerphp\Package\PackageInterface;
-use Bowerphp\Repository\GithubRepository;
+use Bowerphp\Repository\RepositoryInterface;
 use Gaufrette\Filesystem;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Exception\RequestException;
-
 
 /**
  * Package installation manager.
@@ -18,6 +18,8 @@ class Installer implements InstallerInterface
     protected
         $filesystem,
         $httpClient,
+        $repository,
+        $zipArchive,
         $baseUrl = 'http://bower.herokuapp.com/packages/',
         $installDir = 'bower_components'
     ;
@@ -26,12 +28,12 @@ class Installer implements InstallerInterface
      * Initializes library installer.
      *
      */
-    public function __construct(Filesystem $filesystem, ClientInterface $httpClient)
+    public function __construct(Filesystem $filesystem, ClientInterface $httpClient, RepositoryInterface $repository, \ZipArchive $zipArchive)
     {
         $this->filesystem = $filesystem;
         $this->httpClient = $httpClient;
-
-
+        $this->repository = $repository;
+        $this->zipArchive = $zipArchive;
     }
 
     /**
@@ -61,39 +63,39 @@ class Installer implements InstallerInterface
 
         // open package repository
         $repoUrl = $decode['url'];
-        $repo = new GithubRepository($repoUrl, $this->httpClient);
-        $bower = json_decode($repo->getBower(), true);
+        $this->repository->setUrl($repoUrl)->setHttpClient($this->httpClient);
+        $bowerJson = $this->repository->getBower();
+        $bower = json_decode($bowerJson, true);
         if (!is_array($bower)) {
-            throw new \RuntimeException(sprintf('Invalid bower.json found in package %s: %s.', $package->getName(), $bower));
+            throw new \RuntimeException(sprintf('Invalid bower.json found in package %s: %s.', $package->getName(), $bowerJson));
         }
-        $packageVersion = $repo->findPackage($package->getVersion());
+        $packageVersion = $this->repository->findPackage($package->getVersion());
         if (is_null($packageVersion)) {
             throw new \RuntimeException(sprintf('Cannot find package %s version %s.', $package->getName(), $package->getVersion()), 6);
         }
-        $package->setRepository($repo);
+        $package->setRepository($this->repository);
 
         // get release archive from repository
-        $file = $repo->getRelease();
+        $file = $this->repository->getRelease();
 
         // install files
         $tmpFileName = './tmp/' . $package->getName();
         if (!is_readable($tmpFileName)) {
             $this->filesystem->write($tmpFileName, $file);
         }
-        $archive = new \ZipArchive();
-        if ($archive->open($tmpFileName) !== true) {
+        if ($this->zipArchive->open($tmpFileName) !== true) {
             throw new \RuntimeException(sprintf('Unable to open zip file %s.', $tmpFileName));
         }
-        $dirName = trim($archive->getNameIndex(0), '/');
-        for ($i = 1; $i < $archive->numFiles; $i++ ) {
-            $stat = $archive->statIndex($i);
+        $dirName = trim($this->zipArchive->getNameIndex(0), '/');
+        for ($i = 1; $i < $this->zipArchive->numFiles; $i++) {
+            $stat = $this->zipArchive->statIndex($i);
             if ($stat['size'] > 0) {    // directories have sizes 0
                 $fileName = $package->getTargetDir() . '/' . str_replace($dirName, $package->getName(), $stat['name']);
-                $fileContent = $archive->getStream($stat['name']);
+                $fileContent = $this->zipArchive->getStream($stat['name']);
                 $this->filesystem->write($fileName, $fileContent, true);
             }
         }
-        $archive->close();
+        $this->zipArchive->close();
 
         // check for dependencies
         if (!empty($bower['dependencies'])) {

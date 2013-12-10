@@ -28,7 +28,7 @@ class Bowerphp
     ;
 
     /**
-     * @param Filesystem      $filesystem
+     * @param Filesystem $filesystem
      */
     public function __construct(Filesystem $filesystem)
     {
@@ -100,7 +100,7 @@ class Bowerphp
      * FOR php 5.3 from php >= 5.4* use parameter JSON_PRETTY_PRINT
      * See http://www.php.net/manual/en/function.json-encode.php
      *
-     * @param  array   $array
+     * @param  array  $array
      * @return string
      */
     private function json_readable_encode(array $array)
@@ -113,6 +113,5 @@ class Bowerphp
 
         return $jsonPretty->prettify($array, null, '    ');
     }
-
 
 }

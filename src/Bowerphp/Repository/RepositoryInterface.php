@@ -2,7 +2,7 @@
 
 namespace Bowerphp\Repository;
 
-use Bowerphp\Package\PackageInterface;
+use Guzzle\Http\ClientInterface;
 
 /**
  * Repository interface.
@@ -12,6 +12,16 @@ interface RepositoryInterface
 {
     const SEARCH_FULLTEXT = 0;
     const SEARCH_NAME = 1;
+
+    /**
+     * @param string $url
+     */
+    public function setUrl($url);
+
+    /**
+     * @param ClientInterface $httpClient
+     */
+    public function setHttpClient(ClientInterface $httpClient);
 
     /**
      * Get repo bower.json
@@ -33,7 +43,7 @@ interface RepositoryInterface
      * Get a release
      *
      * @param  string $type "zip" or "tar"
-     * @return string       file content
+     * @return string file content
      */
     public function getRelease($type = 'zip');
 

@@ -12,7 +12,8 @@ class GithubRepositoryTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->repository = new GithubRepository('https://raw.github.com/components/jquery', $this->httpClient);
+        $this->repository = new GithubRepository();
+        $this->repository->setUrl('https://raw.github.com/components/jquery')->setHttpClient($this->httpClient);
     }
 
     public function testGetBower()
@@ -23,7 +24,6 @@ class GithubRepositoryTest extends TestCase
         $response = $this->getMockBuilder('Guzzle\Http\Message\Response')->disableOriginalConstructor()->getMock();
 
         $this->mockRequest(0, 'https://raw.github.com/components/jquery/master/bower.json', $bowerJson, $request, $response);
-
 
         $bower = $this->repository->getBower();
 
@@ -53,5 +53,12 @@ class GithubRepositoryTest extends TestCase
         $this->mockRequest(0, 'foo', '...', $request, $response, false);
 
         $this->repository->getRelease();
+    }
+
+    public function testClearUrl()
+    {
+        $clearGitURL = $this->getMethod('Bowerphp\Repository\GithubRepository', 'clearGitURL');
+        $this->assertEquals('components/jquery', $clearGitURL->invokeArgs($this->repository, array('git://github.com/components/jquery.git')));
+        $this->assertEquals('components/jqueryui', $clearGitURL->invokeArgs($this->repository, array('git://github.com/components/jqueryui')));
     }
 }

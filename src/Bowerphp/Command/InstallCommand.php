@@ -14,6 +14,7 @@ namespace Bowerphp\Command;
 use Bowerphp\Bowerphp;
 use Bowerphp\Installer\Installer;
 use Bowerphp\Package\Package;
+use Bowerphp\Repository\GithubRepository;
 use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\Filesystem;
 use Guzzle\Http\Client;
@@ -83,7 +84,7 @@ EOT
         $bowerphp = new Bowerphp($filesystem, $httpClient);
 
         try {
-            $installer = new Installer($filesystem, $httpClient);
+            $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new \ZipArchive());
 
             if (is_null($packageName)) {
                 $output->writeln('Installing dependencies:');

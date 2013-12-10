@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Bowerphp\Package;
 
 use Bowerphp\Repository\RepositoryInterface;
@@ -41,7 +40,6 @@ class Package implements PackageInterface
     {
         return $this->version;
     }
-
 
     /**
      * {@inheritDoc}

@@ -43,12 +43,13 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     *@param  string            $class
      * @param  string           $name
      * @return ReflectionMethod
      */
-    protected static function getMethod($name)
+    protected function getMethod($class, $name)
     {
-        $class = new \ReflectionClass('\Bowerphp\Bowerphp');
+        $class = new \ReflectionClass($class);
         $method = $class->getMethod($name);
         $method->setAccessible(true);
 

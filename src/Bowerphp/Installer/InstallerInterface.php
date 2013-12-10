@@ -1,10 +1,8 @@
 <?php
 
-
 namespace Bowerphp\Installer;
 
 use Bowerphp\Package\PackageInterface;
-use Bowerphp\Repository\RepositoryInterface;
 
 /**
  * Interface for the package installation manager.
@@ -15,7 +13,7 @@ interface InstallerInterface
     /**
      * Checks that provided package is installed.
      *
-     * @param PackageInterface             $package package instance
+     * @param PackageInterface $package package instance
      *
      * @return bool
      */
@@ -24,15 +22,15 @@ interface InstallerInterface
     /**
      * Installs specific package.
      *
-     * @param PackageInterface             $package package instance
+     * @param PackageInterface $package package instance
      */
     public function install(PackageInterface $package);
 
     /**
      * Updates specific package.
      *
-     * @param PackageInterface             $initial already installed package version
-     * @param PackageInterface             $target  updated version
+     * @param PackageInterface $initial already installed package version
+     * @param PackageInterface $target  updated version
      *
      * @throws InvalidArgumentException if $initial package is not installed
      */
@@ -41,7 +39,7 @@ interface InstallerInterface
     /**
      * Uninstalls specific package.
      *
-     * @param PackageInterface             $package package instance
+     * @param PackageInterface $package package instance
      */
     public function uninstall(PackageInterface $package);
 
