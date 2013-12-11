@@ -7,18 +7,21 @@ use Bowerphp\Test\TestCase;
 
 class InstallerTest extends TestCase
 {
-    protected $installer, $repository, $zipArchive;
+    protected $installer, $repository, $zipArchive, $config;
 
     public function setUp()
     {
         parent::setUp();
         $this->repository = $this->getMock('Bowerphp\Repository\RepositoryInterface');
         $this->zipArchive = $this->getMock('ZipArchive');
-        $this->installer = new Installer($this->filesystem, $this->httpClient, $this->repository, $this->zipArchive);
+        $this->config = $this->getMock('Bowerphp\Config\ConfigInterface');
+        $this->installer = new Installer($this->filesystem, $this->httpClient, $this->repository, $this->zipArchive, $this->config);
     }
 
     public function testInstall()
     {
+        $this->mockConfig();
+
         $package = $this->getMock('Bowerphp\Package\PackageInterface');
 
         $package
@@ -95,6 +98,8 @@ class InstallerTest extends TestCase
 
     public function testInstallPackageWithDependencies()
     {
+        $this->mockConfig();
+
         $package = $this->getMock('Bowerphp\Package\PackageInterface');
 
         $package

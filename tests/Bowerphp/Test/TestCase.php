@@ -43,6 +43,28 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Mock Config
+     */
+    protected function mockConfig()
+    {
+        $this->config
+            ->expects($this->any())
+            ->method('getBasePackagesUrl')
+            ->will($this->returnValue('http://bower.herokuapp.com/packages/'))
+        ;
+        $this->config
+            ->expects($this->any())
+            ->method('getInstallDir')
+            ->will($this->returnValue(getcwd() . '/bower_components'))
+        ;
+        $this->config
+            ->expects($this->any())
+            ->method('getCacheDir')
+            ->will($this->returnValue('.'))
+        ;
+    }
+
+    /**
      *@param  string            $class
      * @param  string           $name
      * @return ReflectionMethod

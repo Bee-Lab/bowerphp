@@ -2,6 +2,7 @@
 
 namespace Bowerphp\Installer;
 
+use Bowerphp\Config\ConfigInterface;
 use Bowerphp\Package\Package;
 use Bowerphp\Package\PackageInterface;
 use Bowerphp\Repository\RepositoryInterface;
@@ -20,9 +21,7 @@ class Installer implements InstallerInterface
         $httpClient,
         $repository,
         $zipArchive,
-        $baseUrl = 'http://bower.herokuapp.com/packages/',
-        $installDir = 'bower_components',
-        $cacheDir
+        $config
     ;
 
     /**
@@ -32,15 +31,15 @@ class Installer implements InstallerInterface
      * @param ClientInterface     $httpClient
      * @param RepositoryInterface $repository
      * @param ZipArchive          $zipArchive
-     * @param string              $cacheDir
+     * @param ConfigInterface     $config
      */
-    public function __construct(Filesystem $filesystem, ClientInterface $httpClient, RepositoryInterface $repository, \ZipArchive $zipArchive, $cacheDir = '.')
+    public function __construct(Filesystem $filesystem, ClientInterface $httpClient, RepositoryInterface $repository, \ZipArchive $zipArchive, ConfigInterface $config)
     {
         $this->filesystem = $filesystem;
         $this->httpClient = $httpClient;
         $this->repository = $repository;
         $this->zipArchive = $zipArchive;
-        $this->cacheDir = $cacheDir;
+        $this->config     = $config;
     }
 
     /**
@@ -55,10 +54,10 @@ class Installer implements InstallerInterface
      */
     public function install(PackageInterface $package)
     {
-        $package->setTargetDir(getcwd() . '/' . $this->installDir);
+        $package->setTargetDir($this->config->getInstallDir());
         // look for package in bower
         try {
-            $request = $this->httpClient->get($this->baseUrl . $package->getName());
+            $request = $this->httpClient->get($this->config->getBasePackagesUrl() . $package->getName());
             $response = $request->send();
         } catch (RequestException $e) {
             throw new \RuntimeException(sprintf('Cannot download package %s (%s).', $package->getName(), $e->getMessage()));
@@ -86,7 +85,7 @@ class Installer implements InstallerInterface
         $file = $this->repository->getRelease();
 
         // install files
-        $tmpFileName =  $this->cacheDir . '/tmp/' . $package->getName();
+        $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();
         $b = $this->filesystem->write($tmpFileName, $file, true);
         if ($this->zipArchive->open($tmpFileName) !== true) {
             throw new \RuntimeException(sprintf('Unable to open zip file %s.', $tmpFileName));
@@ -100,6 +99,14 @@ class Installer implements InstallerInterface
                 $this->filesystem->write($fileName, $fileContent, true);
             }
         }
+        // TODO attempt to use directly ZipArchive, but it doesn't keep dates anyway :-|
+        /*
+        $this->zipArchive->extractTo($package->getTargetDir());
+        if ($this->filesystem->has($package->getTargetDir() . '/' . $package->getName())) {
+            $this->filesystem->delete($package->getTargetDir() . '/' . $package->getName());    // not working if dir is not empty!
+        }
+        $this->filesystem->rename($package->getTargetDir() . '/' . $dirName, $package->getTargetDir() . '/' . $package->getName());
+        */
         $this->zipArchive->close();
 
         // check for dependencies

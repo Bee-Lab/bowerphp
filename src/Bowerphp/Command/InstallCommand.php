@@ -12,6 +12,7 @@
 namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
+use Bowerphp\Config\Config;
 use Bowerphp\Installer\Installer;
 use Bowerphp\Package\Package;
 use Bowerphp\Repository\GithubRepository;
@@ -99,7 +100,7 @@ EOT
         $bowerphp = new Bowerphp($filesystem, $httpClient);
 
         try {
-            $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new \ZipArchive(), $cacheDir);
+            $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new \ZipArchive(), new Config($filesystem));
 
             if (is_null($packageName)) {
                 $output->writeln('Installing dependencies:');
