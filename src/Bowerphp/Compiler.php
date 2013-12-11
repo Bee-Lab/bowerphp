@@ -113,7 +113,7 @@ class Compiler
         $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../LICENSE'), false);
 
         unset($phar);
-        chmod("bowerphp.phar", 700); 
+        chmod("bowerphp.phar", 0700); 
     }
 
     private function addFile($phar, $file, $strip = true)
