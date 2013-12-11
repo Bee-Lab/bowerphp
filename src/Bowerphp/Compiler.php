@@ -72,7 +72,8 @@ class Compiler
         foreach ($finder as $file) {
             $this->addFile($phar, $file);
         }
-        //$this->addFile($phar, new \SplFileInfo(__DIR__ . '/Autoload/ClassLoader.php'), false);
+
+        $this->addFile($phar, new \SplFileInfo(__DIR__ . '/Autoload/ClassLoader.php'), false);
 
         //$finder = new Finder();
         //$finder->files()
@@ -83,16 +84,23 @@ class Compiler
         //foreach ($finder as $file) {
         //    $this->addFile($phar, $file, false);
         //}
-        //$this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../src/Composer/IO/hiddeninput.exe'), false);
+        $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../src/Bowerphp/IO/hiddeninput.exe'), false);
 
         $finder = new Finder();
         $finder->files()
             ->ignoreVCS(true)
             ->name('*.php')
+            ->name('*.pem')
+            ->name('*.pem.md5')
             ->exclude('Tests')
             ->in(__DIR__.'/../../vendor/symfony/')
             ->in(__DIR__.'/../../vendor/seld/jsonlint/src/')
             ->in(__DIR__.'/../../vendor/justinrainbow/json-schema/src/')
+            ->in(__DIR__.'/../../vendor/guzzle/guzzle/src/')
+            ->in(__DIR__.'/../../vendor/pimple/pimple/lib/')
+            ->in(__DIR__.'/../../vendor/camspiers/json-pretty/src/')
+            ->in(__DIR__.'/../../vendor/knplabs/gaufrette/src/')
+            ->in(__DIR__.'/../../vendor/doctrine/cache/lib/')
         ;
 
         foreach ($finder as $file) {
