@@ -73,19 +73,6 @@ class Compiler
             $this->addFile($phar, $file);
         }
 
-        $this->addFile($phar, new \SplFileInfo(__DIR__ . '/Autoload/ClassLoader.php'), false);
-
-        //$finder = new Finder();
-        //$finder->files()
-        //    ->name('*.json')
-        //    ->in(__DIR__ . '/../../res')
-        //;
-
-        //foreach ($finder as $file) {
-        //    $this->addFile($phar, $file, false);
-        //}
-        $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../src/Bowerphp/IO/hiddeninput.exe'), false);
-
         $finder = new Finder();
         $finder->files()
             ->ignoreVCS(true)
@@ -94,8 +81,6 @@ class Compiler
             ->name('*.pem.md5')
             ->exclude('Tests')
             ->in(__DIR__.'/../../vendor/symfony/')
-            ->in(__DIR__.'/../../vendor/seld/jsonlint/src/')
-            ->in(__DIR__.'/../../vendor/justinrainbow/json-schema/src/')
             ->in(__DIR__.'/../../vendor/guzzle/guzzle/src/')
             ->in(__DIR__.'/../../vendor/pimple/pimple/lib/')
             ->in(__DIR__.'/../../vendor/camspiers/json-pretty/src/')
@@ -123,11 +108,12 @@ class Compiler
         $phar->stopBuffering();
 
         // disabled for interoperability with systems without gzip ext
-        // $phar->compressFiles(\Phar::GZ);
+        //$phar->compressFiles(\Phar::GZ);
 
         $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../LICENSE'), false);
 
         unset($phar);
+        chmod("bowerphp.phar", 755); 
     }
 
     private function addFile($phar, $file, $strip = true)

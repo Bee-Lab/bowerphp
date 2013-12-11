@@ -1,1 +1,4 @@
 vendor
+.bowerrc
+bower.json
+bowerphp.phar

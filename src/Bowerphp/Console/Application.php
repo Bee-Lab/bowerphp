@@ -57,7 +57,7 @@ class Application extends BaseApplication
         }
 
         ErrorHandler::register();
-        parent::__construct('Bowerphp', '0.1');
+        parent::__construct('Bowerphp', '0.1 Powered by BeeLab (bee-lab-net)');
     }
 
     /**
