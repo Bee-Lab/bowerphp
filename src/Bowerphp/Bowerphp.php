@@ -60,10 +60,12 @@ class Bowerphp
 
     /**
      * Install all dependencies
+     *
+     * @param InstallerInterface $installer
      */
     public function installDependencies(InstallerInterface $installer)
     {
-        $bowerJson = $this->filesystem->read('bower.json');
+        $bowerJson = $this->filesystem->read(getcwd() . '/bower.json');
 
         if (empty($bowerJson) || !is_array($decode = json_decode($bowerJson, true))) {
             throw new \RuntimeException(sprintf('Malformed JSON %s.', $bowerJson));

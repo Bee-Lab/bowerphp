@@ -62,7 +62,7 @@ EOT;
         $this->filesystem
             ->expects($this->once())
             ->method('read')
-            ->with('bower.json')
+            ->with(getcwd() . '/bower.json')
             ->will($this->returnValue($json))
         ;
         $installer
@@ -84,7 +84,7 @@ EOT;
         $this->filesystem
             ->expects($this->once())
             ->method('read')
-            ->with('bower.json')
+            ->with(getcwd() . '/bower.json')
             ->will($this->returnValue($json))
         ;
 
