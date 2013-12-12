@@ -20,10 +20,24 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 class BowerphpConsoleOutput extends ConsoleOutput
 {
 
+    /**
+     * writelnInfoPackage
+     *
+     * @params PackageInterface $package
+     *
+     */
     public function writelnInfoPackage(PackageInterface $package) {
         $this->writeln(sprintf('bower <info>%s</info>', str_pad($package->getName() . '#' . $package->getVersion(), 21, ' ', STR_PAD_RIGHT)));
     }
 
+
+    /**
+     * writelnInstalledPackage
+     *
+     * @params PackageInterface $package
+     * @params string $packageVersion
+     *
+     */
     public function writelnInstalledPackage(PackageInterface $package, $packageVersion) {
         $this->writeln(sprintf('bower <info>%s</info> <fg=cyan>%s</fg=cyan>', str_pad($package->getName() . '#' . $packageVersion, 21, ' ', STR_PAD_RIGHT), str_pad('install', 10, ' ', STR_PAD_LEFT)));
     }
