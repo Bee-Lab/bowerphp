@@ -120,14 +120,20 @@ class GithubRepository implements RepositoryInterface
      */
     private function fixVersion($version)
     {
+        $bits = explode('.', $version);
         if (substr($version, 0, 2) == '>=') {
-            $bits = explode('.', $version);
             if (count($bits) == 3) {
                 array_pop($bits);
                 $version = implode('.', $bits);
                 $version = substr($version, 2) . '.*';
             } else {
                 $version = substr($version, 2) . '.*';
+            }
+        } else {
+            if (count($bits) == 1) {
+                $version = $version . '.*.*';
+            } elseif (count($bits) == 2) {
+                $version = $version . '.*';
             }
         }
 

@@ -34,7 +34,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Inspired by Composer https://github.com/composer/composer
  */
-class InstallCommand extends Command
+class UpdateCommand extends Command
 {
     /**
      * {@inheritDoc}
@@ -42,8 +42,8 @@ class InstallCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('install')
-            ->setDescription('Installs the project dependencies from the bower.json file or a single specified package.')
+            ->setName('update')
+            ->setDescription('Update the project dependencies from the bower.json file or a single specified package.')
             ->setDefinition(array(
                 // TODO add all options...
                 new InputOption('verbose', 'v|vv|vvv', InputOption::VALUE_NONE, 'Shows more details including new commits pulled in when updating packages.'),
@@ -58,11 +58,11 @@ The <info>install</info> command reads the bower.json file from
 the current directory, processes it, and downloads and installs all the
 libraries and dependencies outlined in that file.
 
-<info>php bowerphp.phar install</info>
+<info>php bowerphp.phar update</info>
 
-If an optional package name is passed, that package is installed.
+If an optional package name is passed, that package is updated.
 
-<info>php bowerphp.phar install packageName[#version]</info>
+<info>php bowerphp.phar update packageName</info>
 
 EOT
             )
@@ -107,8 +107,8 @@ EOT
             $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new \ZipArchive(), new Config($filesystem));
 
             if (is_null($packageName)) {
-                $output->writeln('Installing dependencies:');
-                $installed = $bowerphp->installDependencies($installer);
+                $output->writeln('Updating dependencies:');
+                $installed = $bowerphp->updateDependencies($installer);
             } else {
                 $v = explode("#", $packageName);
                 $packageName = isset($v[0]) ? $v[0] : $packageName;
@@ -118,18 +118,13 @@ EOT
 
                 $package = new Package($packageName, $version);
 
-                $bowerphp->installPackage($package, $installer);
+                $bowerphp->updatePackage($package, $installer);
             }
         } catch (\RuntimeException $e) {
             $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
 
             return $e->getCode();
         }
-
-        // TODO this is ugly, since all output is in the end
-        #foreach ($installed as $lib => $version) {
-        #    $output->writeln(sprintf('<info>%s</info>: %s', $lib, $version));
-        #}
 
         $output->writeln('Done.');
     }

@@ -39,6 +39,13 @@ interface PackageInterface
     public function getVersion();
 
     /**
+     * Set the version of this package
+     *
+     * @param string version
+     */
+    public function setVersion($version);
+
+    /**
      * Returns a set of links to packages which need to be installed before
      * this package can be installed
      *

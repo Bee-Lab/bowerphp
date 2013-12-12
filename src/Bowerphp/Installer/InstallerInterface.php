@@ -29,12 +29,11 @@ interface InstallerInterface
     /**
      * Updates specific package.
      *
-     * @param PackageInterface $initial already installed package version
-     * @param PackageInterface $target  updated version
+     * @param PackageInterface $package
      *
-     * @throws InvalidArgumentException if $initial package is not installed
+     * @throws InvalidArgumentException if package is not installed
      */
-    public function update(PackageInterface $initial, PackageInterface $target);
+    public function update(PackageInterface $package);
 
     /**
      * Uninstalls specific package.

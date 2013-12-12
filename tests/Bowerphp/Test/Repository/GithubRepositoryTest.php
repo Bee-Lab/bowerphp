@@ -49,8 +49,6 @@ class GithubRepositoryTest extends TestCase
             ->will($this->returnValue($bowerJson))
         ;
 
-
-
         $bower = $this->repository->getBower();
 
         $this->assertEquals($bower, $bowerJson);
@@ -94,5 +92,9 @@ class GithubRepositoryTest extends TestCase
         $this->assertEquals('1.9.*', $fixVersion->invokeArgs($this->repository, array('>=1.9')));
         $this->assertEquals('1.9.*', $fixVersion->invokeArgs($this->repository, array('>=1.9.0')));
         $this->assertEquals('1.9.*', $fixVersion->invokeArgs($this->repository, array('>= 1.9.0')));
+        $this->assertEquals('1.*.*', $fixVersion->invokeArgs($this->repository, array('1')));
+        $this->assertEquals('1.*.*', $fixVersion->invokeArgs($this->repository, array('1.*')));
+        $this->assertEquals('1.5.*', $fixVersion->invokeArgs($this->repository, array('1.5')));
+        $this->assertEquals('1.5.*', $fixVersion->invokeArgs($this->repository, array('1.5.*')));
     }
 }

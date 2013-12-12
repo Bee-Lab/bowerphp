@@ -44,6 +44,14 @@ class Package implements PackageInterface
     /**
      * {@inheritDoc}
      */
+    public function setVersion($version)
+    {
+        return $this->version = $version;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setRepository(RepositoryInterface $repository)
     {
         if ($this->repository && $repository !== $this->repository) {

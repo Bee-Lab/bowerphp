@@ -140,6 +140,7 @@ class Application extends BaseApplication
         $commands = parent::getDefaultCommands();
         $commands[] = new Command\InitCommand();
         $commands[] = new Command\InstallCommand();
+        $commands[] = new Command\UpdateCommand();
 
         return $commands;
     }

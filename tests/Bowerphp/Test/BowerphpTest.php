@@ -59,6 +59,13 @@ EOT;
         $installer = $this->getMock('Bowerphp\Installer\InstallerInterface');
 
         $json = '{"name": "jquery-ui", "version": "1.10.3", "main": ["ui/jquery-ui.js"], "dependencies": {"jquery": ">=1.6"}}';
+
+        $this->filesystem
+            ->expects($this->once())
+            ->method('has')
+            ->with(getcwd() . '/bower.json')
+            ->will($this->returnValue(true))
+        ;
         $this->filesystem
             ->expects($this->once())
             ->method('read')
@@ -80,7 +87,14 @@ EOT;
     {
         $installer = $this->getMock('Bowerphp\Installer\InstallerInterface');
 
-        $json = '{"name": "jquery", "version": "1.6", "dependencies": }';
+        $json = '{"invalid json';
+
+        $this->filesystem
+            ->expects($this->once())
+            ->method('has')
+            ->with(getcwd() . '/bower.json')
+            ->will($this->returnValue(true))
+        ;
         $this->filesystem
             ->expects($this->once())
             ->method('read')
@@ -89,5 +103,139 @@ EOT;
         ;
 
         $this->bowerphp->installDependencies($installer);
+    }
+
+    public function testUpdatePackage()
+    {
+        $json = '{"name": "Foo", "dependencies": {"less": "*"}}';
+
+        $package = $this->getMock('Bowerphp\Package\PackageInterface');
+        $installer = $this->getMock('Bowerphp\Installer\InstallerInterface');
+
+        $package
+            ->expects($this->any())
+            ->method('getName')
+            ->will($this->returnValue('less'))
+        ;
+        $package
+            ->expects($this->once())
+            ->method('setVersion')
+            ->with('*')
+        ;
+
+        $this->filesystem
+            ->expects($this->once())
+            ->method('has')
+            ->with(getcwd() . '/bower.json')
+            ->will($this->returnValue(true))
+        ;
+        $this->filesystem
+            ->expects($this->once())
+            ->method('read')
+            ->with(getcwd() . '/bower.json')
+            ->will($this->returnValue($json))
+        ;
+
+        $installer
+            ->expects($this->once())
+            ->method('update')
+            ->with($package)
+        ;
+
+        $this->bowerphp->updatePackage($package, $installer);
+    }
+
+    public function testUpdateDependencies()
+    {
+        $installer = $this->getMock('Bowerphp\Installer\InstallerInterface');
+
+        $json = '{"name": "jquery-ui", "version": "1.10.3", "main": ["ui/jquery-ui.js"], "dependencies": {"jquery": ">=1.6"}}';
+
+        $this->filesystem
+            ->expects($this->once())
+            ->method('has')
+            ->with(getcwd() . '/bower.json')
+            ->will($this->returnValue(true))
+        ;
+        $this->filesystem
+            ->expects($this->once())
+            ->method('read')
+            ->with(getcwd() . '/bower.json')
+            ->will($this->returnValue($json))
+        ;
+        $installer
+            ->expects($this->once())
+            ->method('update')
+        ;
+
+        $this->bowerphp->updateDependencies($installer);
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testUpdateDependenciesException()
+    {
+        $installer = $this->getMock('Bowerphp\Installer\InstallerInterface');
+
+        $json = '{"invalid json';
+
+        $this->filesystem
+            ->expects($this->once())
+            ->method('has')
+            ->with(getcwd() . '/bower.json')
+            ->will($this->returnValue(true))
+        ;
+        $this->filesystem
+            ->expects($this->once())
+            ->method('read')
+            ->with(getcwd() . '/bower.json')
+            ->will($this->returnValue($json))
+        ;
+
+        $this->bowerphp->updateDependencies($installer);
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testUpdatePackageException()
+    {
+        $package = $this->getMock('Bowerphp\Package\PackageInterface');
+        $installer = $this->getMock('Bowerphp\Installer\InstallerInterface');
+
+        $json = '{"invalid json';
+
+        $this->filesystem
+            ->expects($this->once())
+            ->method('has')
+            ->with(getcwd() . '/bower.json')
+            ->will($this->returnValue(true))
+        ;
+        $this->filesystem
+            ->expects($this->once())
+            ->method('read')
+            ->with(getcwd() . '/bower.json')
+            ->will($this->returnValue($json))
+        ;
+
+        $this->bowerphp->updatePackage($package, $installer);
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testUpdateWithoutBowerJsonException()
+    {
+        $installer = $this->getMock('Bowerphp\Installer\InstallerInterface');
+
+        $this->filesystem
+            ->expects($this->once())
+            ->method('has')
+            ->with(getcwd() . '/bower.json')
+            ->will($this->returnValue(false))
+        ;
+
+        $this->bowerphp->updateDependencies($installer);
     }
 }
