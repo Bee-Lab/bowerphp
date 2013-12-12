@@ -104,7 +104,7 @@ EOT
         $bowerphp = new Bowerphp($filesystem, $httpClient);
 
         try {
-            $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new \ZipArchive(), new Config($filesystem));
+            $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new \ZipArchive(), new Config($filesystem), $output);
 
             if (is_null($packageName)) {
                 $output->writeln('Updating dependencies:');
@@ -113,8 +113,6 @@ EOT
                 $v = explode("#", $packageName);
                 $packageName = isset($v[0]) ? $v[0] : $packageName;
                 $version = isset($v[1]) ? $v[1] : "*";
-
-                $output->writeln('Installing:');
 
                 $package = new Package($packageName, $version);
 
@@ -126,7 +124,7 @@ EOT
             return $e->getCode();
         }
 
-        $output->writeln('Done.');
+        $output->writeln('');
     }
 
 }

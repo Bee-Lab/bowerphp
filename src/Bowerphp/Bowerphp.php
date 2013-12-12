@@ -38,6 +38,7 @@ class Bowerphp
     /**
      * Init bower.json
      *
+     * @param array $params
      */
     public function init(array $params)
     {

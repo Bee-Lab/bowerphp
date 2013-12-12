@@ -74,6 +74,6 @@ EOT
         $bowerphp = new Bowerphp($filesystem, $httpClient);
         $bowerphp->init($params);
 
-        $output->writeln('Done.');
+        $output->writeln('');
     }
 }

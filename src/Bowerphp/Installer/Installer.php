@@ -9,6 +9,7 @@ use Bowerphp\Repository\RepositoryInterface;
 use Gaufrette\Filesystem;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Exception\RequestException;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Package installation manager.
@@ -21,7 +22,8 @@ class Installer implements InstallerInterface
         $httpClient,
         $repository,
         $zipArchive,
-        $config
+        $config,
+        $output
     ;
 
     /**
@@ -32,14 +34,16 @@ class Installer implements InstallerInterface
      * @param RepositoryInterface $repository
      * @param ZipArchive          $zipArchive
      * @param ConfigInterface     $config
+     * @param OutputInterface     $output
      */
-    public function __construct(Filesystem $filesystem, ClientInterface $httpClient, RepositoryInterface $repository, \ZipArchive $zipArchive, ConfigInterface $config)
+    public function __construct(Filesystem $filesystem, ClientInterface $httpClient, RepositoryInterface $repository, \ZipArchive $zipArchive, ConfigInterface $config, OutputInterface $output)
     {
         $this->filesystem = $filesystem;
         $this->httpClient = $httpClient;
         $this->repository = $repository;
         $this->zipArchive = $zipArchive;
         $this->config     = $config;
+        $this->output     = $output;
     }
 
     /**
@@ -54,6 +58,8 @@ class Installer implements InstallerInterface
      */
     public function install(PackageInterface $package)
     {
+        $this->output->writeln(sprintf('bower <info>%s</info>', str_pad($package->getName() . '#' . $package->getVersion(), 21, ' ', STR_PAD_RIGHT)));
+
         $package->setTargetDir($this->config->getInstallDir());
         // look for package in bower
         try {
@@ -83,6 +89,8 @@ class Installer implements InstallerInterface
 
         // get release archive from repository
         $file = $this->repository->getRelease();
+
+        $this->output->writeln(sprintf('bower <info>%s</info> <fg=cyan>%s</fg=cyan>', str_pad($package->getName() . '#' . $packageVersion, 21, ' ', STR_PAD_RIGHT), str_pad('install', 10, ' ', STR_PAD_LEFT)));
 
         // install files
         $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();

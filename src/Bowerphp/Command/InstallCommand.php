@@ -104,17 +104,14 @@ EOT
         $bowerphp = new Bowerphp($filesystem, $httpClient);
 
         try {
-            $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new \ZipArchive(), new Config($filesystem));
+            $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new \ZipArchive(), new Config($filesystem), $output);
 
             if (is_null($packageName)) {
-                $output->writeln('Installing dependencies:');
                 $installed = $bowerphp->installDependencies($installer);
             } else {
                 $v = explode("#", $packageName);
                 $packageName = isset($v[0]) ? $v[0] : $packageName;
                 $version = isset($v[1]) ? $v[1] : "*";
-
-                $output->writeln('Installing:');
 
                 $package = new Package($packageName, $version);
 
@@ -126,12 +123,7 @@ EOT
             return $e->getCode();
         }
 
-        // TODO this is ugly, since all output is in the end
-        #foreach ($installed as $lib => $version) {
-        #    $output->writeln(sprintf('<info>%s</info>: %s', $lib, $version));
-        #}
-
-        $output->writeln('Done.');
+        $output->writeln('');
     }
 
 }

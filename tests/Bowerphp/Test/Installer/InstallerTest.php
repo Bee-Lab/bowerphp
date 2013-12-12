@@ -7,7 +7,7 @@ use Bowerphp\Test\TestCase;
 
 class InstallerTest extends TestCase
 {
-    protected $installer, $repository, $zipArchive, $configinder;
+    protected $installer, $repository, $zipArchive, $config, $output;
 
     public function setUp()
     {
@@ -15,8 +15,9 @@ class InstallerTest extends TestCase
         $this->repository = $this->getMock('Bowerphp\Repository\RepositoryInterface');
         $this->zipArchive = $this->getMock('ZipArchive');
         $this->config = $this->getMock('Bowerphp\Config\ConfigInterface');
+        $this->output = $this->getMock('Symfony\Component\Console\Output\OutputInterface');
 
-        $this->installer = new Installer($this->filesystem, $this->httpClient, $this->repository, $this->zipArchive, $this->config);
+        $this->installer = new Installer($this->filesystem, $this->httpClient, $this->repository, $this->zipArchive, $this->config, $this->output);
         $this->mockConfig();
     }
 
