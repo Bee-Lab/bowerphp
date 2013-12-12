@@ -58,7 +58,8 @@ class Installer implements InstallerInterface
      */
     public function install(PackageInterface $package)
     {
-        $this->output->writeln(sprintf('bower <info>%s</info>', str_pad($package->getName() . '#' . $package->getVersion(), 21, ' ', STR_PAD_RIGHT)));
+        //$this->output->writeln(sprintf('bower <info>%s</info>', str_pad($package->getName() . '#' . $package->getVersion(), 21, ' ', STR_PAD_RIGHT)));
+        $this->output->writelnInfoPackage($package);
 
         $package->setTargetDir($this->config->getInstallDir());
         // look for package in bower
@@ -90,7 +91,8 @@ class Installer implements InstallerInterface
         // get release archive from repository
         $file = $this->repository->getRelease();
 
-        $this->output->writeln(sprintf('bower <info>%s</info> <fg=cyan>%s</fg=cyan>', str_pad($package->getName() . '#' . $packageVersion, 21, ' ', STR_PAD_RIGHT), str_pad('install', 10, ' ', STR_PAD_LEFT)));
+        //$this->output->writeln(sprintf('bower <info>%s</info> <fg=cyan>%s</fg=cyan>', str_pad($package->getName() . '#' . $packageVersion, 21, ' ', STR_PAD_RIGHT), str_pad('install', 10, ' ', STR_PAD_LEFT)));
+        $this->output->writelnInstalledPackage($package, $packageVersion);
 
         // install files
         $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();

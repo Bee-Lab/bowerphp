@@ -13,6 +13,7 @@ namespace Bowerphp\Console;
 
 use Bowerphp\Command;
 use Bowerphp\Command\Helper\DialogHelper;
+use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Util\ErrorHandler;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Formatter\OutputFormatter;
@@ -68,7 +69,7 @@ class Application extends BaseApplication
         if (null === $output) {
             $styles = array();  // TODO
             $formatter = new OutputFormatter(null, $styles);
-            $output = new ConsoleOutput(ConsoleOutput::VERBOSITY_NORMAL, null, $formatter);
+            $output = new BowerphpConsoleOutput(ConsoleOutput::VERBOSITY_NORMAL, null, $formatter);
         }
 
         return parent::run($input, $output);

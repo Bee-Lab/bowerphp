@@ -15,7 +15,8 @@ class InstallerTest extends TestCase
         $this->repository = $this->getMock('Bowerphp\Repository\RepositoryInterface');
         $this->zipArchive = $this->getMock('ZipArchive');
         $this->config = $this->getMock('Bowerphp\Config\ConfigInterface');
-        $this->output = $this->getMock('Symfony\Component\Console\Output\OutputInterface');
+        //$this->output = $this->getMock('Symfony\Component\Console\Output\OutputInterface');
+        $this->output = $this->getMock('Bowerphp\Output\BowerphpConsoleOutput');
 
         $this->installer = new Installer($this->filesystem, $this->httpClient, $this->repository, $this->zipArchive, $this->config, $this->output);
         $this->mockConfig();
