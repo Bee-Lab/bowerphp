@@ -11,12 +11,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Bee-Lab/json-pretty.git",
-                "reference": "92f7157d8c67c0aaa5a6f9e57d255d871469be60"
+                "reference": "e129e1904bd386af403baa06cf352e8e1ae24952"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Bee-Lab/json-pretty/zipball/92f7157d8c67c0aaa5a6f9e57d255d871469be60",
-                "reference": "92f7157d8c67c0aaa5a6f9e57d255d871469be60",
+                "url": "https://api.github.com/repos/Bee-Lab/json-pretty/zipball/e129e1904bd386af403baa06cf352e8e1ae24952",
+                "reference": "e129e1904bd386af403baa06cf352e8e1ae24952",
                 "shasum": ""
             },
             "require": {
@@ -49,7 +49,7 @@
             "support": {
                 "source": "https://github.com/Bee-Lab/json-pretty/tree/master"
             },
-            "time": "2013-12-13 12:56:13"
+            "time": "2013-12-13 14:04:21"
         },
         {
             "name": "doctrine/cache",

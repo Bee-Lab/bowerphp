@@ -22,4 +22,4 @@ Still to do
 * search
 * info
 
-See [issues](https://github.com/Bee-Lab/bowerphp/issues) for more details.
+See [issues](https://github.com/Bee-Lab/bowerphp/issues) for more details ;)
