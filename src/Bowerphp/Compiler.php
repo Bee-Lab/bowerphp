@@ -9,7 +9,6 @@
  * file that was distributed with this source code.
  */
 
-
 namespace Bowerphp;
 
 use Symfony\Component\Finder\Finder;
@@ -23,6 +22,12 @@ class Compiler
 {
     private $version;
     private $versionDate;
+    private $gz;
+
+    public function __construct($gz = false)
+    {
+        $this->gz = $gz;
+    }
 
     /**
      * Compiles composer into a single phar file
@@ -107,8 +112,9 @@ class Compiler
 
         $phar->stopBuffering();
 
-        // disabled for interoperability with systems without gzip ext
-        //$phar->compressFiles(\Phar::GZ);
+        if ($this->gz) {
+            $phar->compressFiles(\Phar::GZ);
+        }
 
         $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../LICENSE'), false);
 
@@ -116,7 +122,7 @@ class Compiler
         chmod("bowerphp.phar", 0700);
     }
 
-    private function addFile($phar, $file, $strip = true)
+    private function addFile($phar, \SplFileInfo $file, $strip = true)
     {
         $path = strtr(str_replace(dirname(dirname(__DIR__)).DIRECTORY_SEPARATOR, '', $file->getRealPath()), '\\', '/');
 

@@ -80,7 +80,7 @@ EOT
 
         // debug http interactions
         if (OutputInterface::VERBOSITY_DEBUG <= $output->getVerbosity()) {
-            $logger = function ($message, $priority, $extras) use ($output) {
+            $logger = function ($message) use ($output) {
                 $output->writeln('<info>Guzzle</info> ' . $message);
             };
             $logAdapter = new ClosureLogAdapter($logger);
@@ -108,7 +108,7 @@ EOT
 
             if (is_null($packageName)) {
                 $output->writeln('Updating dependencies:');
-                $installed = $bowerphp->updateDependencies($installer);
+                $bowerphp->updateDependencies($installer);
             } else {
                 $v = explode("#", $packageName);
                 $packageName = isset($v[0]) ? $v[0] : $packageName;

@@ -45,7 +45,6 @@ class InstallCommand extends Command
             ->setName('install')
             ->setDescription('Installs the project dependencies from the bower.json file or a single specified package.')
             ->setDefinition(array(
-                // TODO add all options...
                 new InputOption('verbose', 'v|vv|vvv', InputOption::VALUE_NONE, 'Shows more details including new commits pulled in when updating packages.'),
             ))
             ->addArgument(
@@ -80,7 +79,7 @@ EOT
 
         // debug http interactions
         if (OutputInterface::VERBOSITY_DEBUG <= $output->getVerbosity()) {
-            $logger = function ($message, $priority, $extras) use ($output) {
+            $logger = function ($message) use ($output) {
                 $output->writeln('<info>Guzzle</info> ' . $message);
             };
             $logAdapter = new ClosureLogAdapter($logger);
@@ -107,7 +106,7 @@ EOT
             $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new \ZipArchive(), new Config($filesystem), $output);
 
             if (is_null($packageName)) {
-                $installed = $bowerphp->installDependencies($installer);
+                $bowerphp->installDependencies($installer);
             } else {
                 $v = explode("#", $packageName);
                 $packageName = isset($v[0]) ? $v[0] : $packageName;

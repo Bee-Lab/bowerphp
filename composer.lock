@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "175bf334c6baf519b766f2a91665ee01",
+    "hash": "5ae1e72d6358f6e8bbd2e12c0ddafc65",
     "packages": [
         {
             "name": "camspiers/json-pretty",
@@ -11,12 +11,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Bee-Lab/json-pretty.git",
-                "reference": "6ce305774b25ab6391585ae25e24416845becfa4"
+                "reference": "92f7157d8c67c0aaa5a6f9e57d255d871469be60"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Bee-Lab/json-pretty/zipball/6ce305774b25ab6391585ae25e24416845becfa4",
-                "reference": "6ce305774b25ab6391585ae25e24416845becfa4",
+                "url": "https://api.github.com/repos/Bee-Lab/json-pretty/zipball/92f7157d8c67c0aaa5a6f9e57d255d871469be60",
+                "reference": "92f7157d8c67c0aaa5a6f9e57d255d871469be60",
                 "shasum": ""
             },
             "require": {
@@ -26,6 +26,11 @@
                 "phpunit/phpunit": "3.7.*"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.1.x-dev"
+                }
+            },
             "autoload": {
                 "psr-0": {
                     "Camspiers": "src/"
@@ -44,7 +49,7 @@
             "support": {
                 "source": "https://github.com/Bee-Lab/json-pretty/tree/master"
             },
-            "time": "2013-12-10 07:57:38"
+            "time": "2013-12-13 12:56:13"
         },
         {
             "name": "doctrine/cache",

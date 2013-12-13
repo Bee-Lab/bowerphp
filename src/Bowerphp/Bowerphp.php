@@ -14,18 +14,15 @@ namespace Bowerphp;
 use Bowerphp\Installer\InstallerInterface;
 use Bowerphp\Package\Package;
 use Bowerphp\Package\PackageInterface;
-use Gaufrette\Filesystem;
 use Camspiers\JsonPretty\JsonPretty;
+use Gaufrette\Filesystem;
 
 /**
  * Main class
  */
 class Bowerphp
 {
-    protected
-        $installed = array(),
-        $filesystem
-    ;
+    protected $filesystem;
 
     /**
      * @param Filesystem $filesystem

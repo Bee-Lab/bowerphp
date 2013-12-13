@@ -12,18 +12,14 @@
 namespace Bowerphp\Tests\Output;
 
 use Bowerphp\Output\BowerphpConsoleOutput;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\Output;
 
 class ConsoleOutputTest extends \PHPUnit_Framework_TestCase
 {
-
-    
     public function testWritelnInfoPackage()
     {
         $BConsoleOutput = new TestOutput();
         $BConsoleOutput->setDecorated(false);
-            
+
         $package = $this->getMock('Bowerphp\Package\PackageInterface');
 
         $package
@@ -47,7 +43,7 @@ class ConsoleOutputTest extends \PHPUnit_Framework_TestCase
     {
         $BConsoleOutput = new TestOutput();
         $BConsoleOutput->setDecorated(false);
-            
+
         $package = $this->getMock('Bowerphp\Package\PackageInterface');
 
         $package

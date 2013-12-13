@@ -48,15 +48,6 @@ class Application extends BaseApplication
 
     public function __construct()
     {
-        if (function_exists('ini_set')) {
-            ini_set('xdebug.show_exception_trace', false);
-            ini_set('xdebug.scream', false);
-
-        }
-        if (function_exists('date_default_timezone_set') && function_exists('date_default_timezone_get')) {
-            date_default_timezone_set(@date_default_timezone_get());
-        }
-
         ErrorHandler::register();
         parent::__construct('Bowerphp', '0.1 Powered by BeeLab (bee-lab-net)');
     }
