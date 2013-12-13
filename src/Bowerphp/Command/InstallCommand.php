@@ -76,6 +76,7 @@ EOT
         $adapter = new LocalAdapter('/');
         $filesystem = new Filesystem($adapter);
         $httpClient = new Client();
+        $config = new Config($filesystem);
 
         // debug http interactions
         if (OutputInterface::VERBOSITY_DEBUG <= $output->getVerbosity()) {
@@ -88,11 +89,10 @@ EOT
         }
 
         // http cache
-        $cacheDir = getenv('HOME') . '/.cache/bowerphp';    // TODO read from .bowerrc
         $cachePlugin = new CachePlugin(array(
             'storage' => new DefaultCacheStorage(
                 new DoctrineCacheAdapter(
-                    new FilesystemCache($cacheDir)
+                    new FilesystemCache($config->getCacheDir())
                 )
             )
         ));
@@ -103,7 +103,7 @@ EOT
         $bowerphp = new Bowerphp($filesystem, $httpClient);
 
         try {
-            $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new \ZipArchive(), new Config($filesystem), $output);
+            $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new \ZipArchive(), $config, $output);
 
             if (is_null($packageName)) {
                 $bowerphp->installDependencies($installer);

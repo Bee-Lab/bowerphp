@@ -33,7 +33,6 @@ class InitCommand extends Command
             ->setName('init')
             ->setDescription('Initializes a bower.json file.')
             ->setDefinition(array(
-                // TODO add all options...
                 new InputOption('verbose', 'v|vv|vvv', InputOption::VALUE_NONE, 'Shows more details including new commits pulled in when updating packages.'),
             ))
             ->setHelp(<<<EOT

@@ -24,6 +24,9 @@ class Compiler
     private $versionDate;
     private $gz;
 
+    /**
+     * @param boolean $gz
+     */
     public function __construct($gz = false)
     {
         $this->gz = $gz;
@@ -122,7 +125,12 @@ class Compiler
         chmod("bowerphp.phar", 0700);
     }
 
-    private function addFile($phar, \SplFileInfo $file, $strip = true)
+    /**
+     * @param Phar        $phar
+     * @param SplFileInfo $file
+     * @param boolean     $strip
+     */
+    private function addFile(\Phar $phar, \SplFileInfo $file, $strip = true)
     {
         $path = strtr(str_replace(dirname(dirname(__DIR__)).DIRECTORY_SEPARATOR, '', $file->getRealPath()), '\\', '/');
 
@@ -141,7 +149,10 @@ class Compiler
         $phar->addFromString($path, $content);
     }
 
-    private function addComposerBin($phar)
+    /**
+     * @param Phar        $phar
+     */
+    private function addComposerBin(\Phar $phar)
     {
         $content = file_get_contents(__DIR__.'/../../bin/bowerphp');
         $content = preg_replace('{^#!/usr/bin/env php\s*}', '', $content);
@@ -182,6 +193,9 @@ class Compiler
         return $output;
     }
 
+    /**
+     * @return string
+     */
     private function getStub()
     {
         $stub = <<<'EOF'

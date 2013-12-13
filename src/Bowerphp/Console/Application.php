@@ -58,8 +58,7 @@ class Application extends BaseApplication
     public function run(InputInterface $input = null, OutputInterface $output = null)
     {
         if (null === $output) {
-            $styles = array();  // TODO
-            $formatter = new OutputFormatter(null, $styles);
+            $formatter = new OutputFormatter();
             $output = new BowerphpConsoleOutput(ConsoleOutput::VERBOSITY_NORMAL, null, $formatter);
         }
 

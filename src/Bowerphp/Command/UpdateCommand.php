@@ -45,7 +45,6 @@ class UpdateCommand extends Command
             ->setName('update')
             ->setDescription('Update the project dependencies from the bower.json file or a single specified package.')
             ->setDefinition(array(
-                // TODO add all options...
                 new InputOption('verbose', 'v|vv|vvv', InputOption::VALUE_NONE, 'Shows more details including new commits pulled in when updating packages.'),
             ))
             ->addArgument(
@@ -77,6 +76,7 @@ EOT
         $adapter = new LocalAdapter('/');
         $filesystem = new Filesystem($adapter);
         $httpClient = new Client();
+        $config = new Config($filesystem);
 
         // debug http interactions
         if (OutputInterface::VERBOSITY_DEBUG <= $output->getVerbosity()) {
@@ -89,11 +89,10 @@ EOT
         }
 
         // http cache
-        $cacheDir = getenv('HOME') . '/.cache/bowerphp';    // TODO read from .bowerrc
         $cachePlugin = new CachePlugin(array(
             'storage' => new DefaultCacheStorage(
                 new DoctrineCacheAdapter(
-                    new FilesystemCache($cacheDir)
+                    new FilesystemCache($config->getCacheDir())
                 )
             )
         ));
@@ -104,7 +103,7 @@ EOT
         $bowerphp = new Bowerphp($filesystem, $httpClient);
 
         try {
-            $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new \ZipArchive(), new Config($filesystem), $output);
+            $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new \ZipArchive(), $config, $output);
 
             if (is_null($packageName)) {
                 $output->writeln('Updating dependencies:');
