@@ -146,7 +146,7 @@ class Bowerphp
                 1 => $params['author']
             ),
             'private' => true,
-            'dependencies' => array(),
+            'dependencies' => new \StdClass(),
         );
 
         return $structure;

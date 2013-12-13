@@ -21,11 +21,8 @@ use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\Filesystem;
 use Guzzle\Cache\DoctrineCacheAdapter;
 use Guzzle\Http\Client;
-use Guzzle\Log\MessageFormatter;
-use Guzzle\Log\ClosureLogAdapter;
 use Guzzle\Plugin\Cache\CachePlugin;
 use Guzzle\Plugin\Cache\DefaultCacheStorage;
-use Guzzle\Plugin\Log\LogPlugin;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -78,15 +75,7 @@ EOT
         $httpClient = new Client();
         $config = new Config($filesystem);
 
-        // debug http interactions
-        if (OutputInterface::VERBOSITY_DEBUG <= $output->getVerbosity()) {
-            $logger = function ($message) use ($output) {
-                $output->writeln('<info>Guzzle</info> ' . $message);
-            };
-            $logAdapter = new ClosureLogAdapter($logger);
-            $logPlugin = new LogPlugin($logAdapter, MessageFormatter::DEBUG_FORMAT);
-            $httpClient->addSubscriber($logPlugin);
-        }
+        $this->logHttp($httpClient, $output);
 
         // http cache
         $cachePlugin = new CachePlugin(array(

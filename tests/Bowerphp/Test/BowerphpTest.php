@@ -25,9 +25,9 @@ class BowerphpTest extends TestCase
         "Mallo"
     ],
     "private": true,
-    "dependencies": [
+    "dependencies": {
 
-    ]
+    }
 }
 EOT;
         $params = array('name' => 'Foo', 'author' => 'Mallo');

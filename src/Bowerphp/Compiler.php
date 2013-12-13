@@ -150,7 +150,7 @@ class Compiler
     }
 
     /**
-     * @param Phar        $phar
+     * @param Phar $phar
      */
     private function addComposerBin(\Phar $phar)
     {
