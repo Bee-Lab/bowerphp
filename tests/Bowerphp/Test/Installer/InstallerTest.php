@@ -4,6 +4,7 @@ namespace Bowerphp\Test\Installer;
 
 use Bowerphp\Installer\Installer;
 use Bowerphp\Test\TestCase;
+use Mockery;
 
 class InstallerTest extends TestCase
 {
@@ -13,7 +14,7 @@ class InstallerTest extends TestCase
     {
         parent::setUp();
         $this->repository = $this->getMock('Bowerphp\Repository\RepositoryInterface');
-        $this->zipArchive = $this->getMock('ZipArchive');
+        $this->zipArchive = $this->getMock('Bowerphp\Util\ZipArchive');
         $this->config = $this->getMock('Bowerphp\Config\ConfigInterface');
         $this->output = $this->getMock('Bowerphp\Output\BowerphpConsoleOutput');
 
@@ -82,6 +83,11 @@ class InstallerTest extends TestCase
             ->method('open')
             ->with('./tmp/jquery')
             ->will($this->returnValue(true))
+        ;
+        $this->zipArchive
+            ->expects($this->once())
+            ->method('getNumFiles')
+            ->will($this->returnValue(0))
         ;
         $this->zipArchive
             ->expects($this->once())
@@ -199,22 +205,32 @@ class InstallerTest extends TestCase
         ;
         $this->zipArchive
             ->expects($this->at(2))
-            ->method('close')
+            ->method('getNumFiles')
+            ->will($this->returnValue(0))
         ;
         $this->zipArchive
             ->expects($this->at(3))
+            ->method('close')
+        ;
+        $this->zipArchive
+            ->expects($this->at(4))
             ->method('open')
             ->with('./tmp/jquery')
             ->will($this->returnValue(true))
         ;
         $this->zipArchive
-            ->expects($this->at(4))
+            ->expects($this->at(5))
             ->method('getNameIndex')
             ->with(0)
             ->will($this->returnValue(true))
         ;
         $this->zipArchive
-            ->expects($this->at(5))
+            ->expects($this->at(6))
+            ->method('getNumFiles')
+            ->will($this->returnValue(0))
+        ;
+        $this->zipArchive
+            ->expects($this->at(7))
             ->method('close')
         ;
 
@@ -624,22 +640,32 @@ class InstallerTest extends TestCase
         ;
         $this->zipArchive
             ->expects($this->at(2))
-            ->method('close')
+            ->method('getNumFiles')
+            ->will($this->returnValue(0))
         ;
         $this->zipArchive
             ->expects($this->at(3))
+            ->method('close')
+        ;
+        $this->zipArchive
+            ->expects($this->at(4))
             ->method('open')
             ->with('./tmp/jquery')
             ->will($this->returnValue(true))
         ;
         $this->zipArchive
-            ->expects($this->at(4))
+            ->expects($this->at(5))
             ->method('getNameIndex')
             ->with(0)
             ->will($this->returnValue(true))
         ;
         $this->zipArchive
-            ->expects($this->at(5))
+            ->expects($this->at(6))
+            ->method('getNumFiles')
+            ->will($this->returnValue(0))
+        ;
+        $this->zipArchive
+            ->expects($this->at(7))
             ->method('close')
         ;
 
@@ -648,6 +674,24 @@ class InstallerTest extends TestCase
 
     public function testUpdateWithNewDependenciesToInstall()
     {
+        $this->markTestIncomplete();
+    }
 
+    public function testFilterZipFiles()
+    {
+        $archive = Mockery::mock('Bowerphp\Util\ZipArchive');
+        $archive->shouldReceive('getNumFiles')->andReturn(6);
+        $archive->shouldReceive('statIndex')->times(6)->andReturn(
+            array('name' => 'foo', 'size' => 10),
+            array('name' => 'foo.md', 'size' => 12),
+            array('name' => 'foo.txt', 'size' => 13),
+            array('name' => '.foo', 'size' => 3),
+            array('name' => 'bower.json', 'size' => 3),
+            array('name' => 'package.json', 'size' => 3)
+        );
+        $filterZipFiles = $this->getMethod('Bowerphp\Installer\Installer', 'filterZipFiles');
+        $ignore = array('.*', '*.md', 'bower.json', 'package.json');
+        $expect = array('foo', 'foo.txt', 'bower.json', 'package.json');
+        $this->assertEquals($expect, $filterZipFiles->invokeArgs($this->installer, array($archive, $ignore)));
     }
 }

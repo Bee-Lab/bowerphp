@@ -6,6 +6,7 @@ use Bowerphp\Config\ConfigInterface;
 use Bowerphp\Package\Package;
 use Bowerphp\Package\PackageInterface;
 use Bowerphp\Repository\RepositoryInterface;
+use Bowerphp\Util\ZipArchive;
 use Gaufrette\Filesystem;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Exception\RequestException;
@@ -36,7 +37,7 @@ class Installer implements InstallerInterface
      * @param ConfigInterface     $config
      * @param OutputInterface     $output
      */
-    public function __construct(Filesystem $filesystem, ClientInterface $httpClient, RepositoryInterface $repository, \ZipArchive $zipArchive, ConfigInterface $config, OutputInterface $output)
+    public function __construct(Filesystem $filesystem, ClientInterface $httpClient, RepositoryInterface $repository, ZipArchive $zipArchive, ConfigInterface $config, OutputInterface $output)
     {
         $this->filesystem = $filesystem;
         $this->httpClient = $httpClient;
@@ -99,13 +100,11 @@ class Installer implements InstallerInterface
             throw new \RuntimeException(sprintf('Unable to open zip file %s.', $tmpFileName));
         }
         $dirName = trim($this->zipArchive->getNameIndex(0), '/');
-        for ($i = 1; $i < $this->zipArchive->numFiles; $i++) {
-            $stat = $this->zipArchive->statIndex($i);
-            if ($stat['size'] > 0) {    // directories have sizes 0
-                $fileName = $package->getTargetDir() . '/' . str_replace($dirName, $package->getName(), $stat['name']);
-                $fileContent = $this->zipArchive->getStream($stat['name']);
-                $this->filesystem->write($fileName, $fileContent, true);
-            }
+        $files = $this->filterZipFiles($this->zipArchive, isset($bower['ignore']) ? $bower['ignore'] : array());
+        foreach ($files as $file) {
+            $fileName = $package->getTargetDir() . '/' . str_replace($dirName, $package->getName(), $file);
+            $fileContent = $this->zipArchive->getStream($file);
+            $this->filesystem->write($fileName, $fileContent, true);
         }
         $this->zipArchive->close();
         // check for dependencies
@@ -187,13 +186,11 @@ class Installer implements InstallerInterface
             throw new \RuntimeException(sprintf('Unable to open zip file %s.', $tmpFileName));
         }
         $dirName = trim($this->zipArchive->getNameIndex(0), '/');
-        for ($i = 1; $i < $this->zipArchive->numFiles; $i++) {
-            $stat = $this->zipArchive->statIndex($i);
-            if ($stat['size'] > 0) {    // directories have sizes 0
-                $fileName = $package->getTargetDir() . '/' . str_replace($dirName, $package->getName(), $stat['name']);
-                $fileContent = $this->zipArchive->getStream($stat['name']);
-                $this->filesystem->write($fileName, $fileContent, true);
-            }
+        $files = $this->filterZipFiles($this->zipArchive, isset($bower['ignore']) ? $bower['ignore'] : array());
+        foreach ($files as $file) {
+            $fileName = $package->getTargetDir() . '/' . str_replace($dirName, $package->getName(), $file);
+            $fileContent = $this->zipArchive->getStream($file);
+            $this->filesystem->write($fileName, $fileContent, true);
         }
         $this->zipArchive->close();
 
@@ -225,7 +222,34 @@ class Installer implements InstallerInterface
     {
     }
 
-    protected function getPackageBasePath(PackageInterface $package)
+    /**
+     * Filter archive files based on an "ignore" list.
+     * Note: bower.json and package.json are never ignored
+     *
+     * @param  ZipArchive $archive
+     * @param  array      $ignore
+     * @return array
+     */
+    protected function filterZipFiles(ZipArchive $archive, array $ignore = array())
     {
+        $keep = array('bower.json', 'package.json');
+        $return = array();
+        for ($i = 0; $i < $archive->getNumFiles(); $i++) {
+            $stat = $archive->statIndex($i);
+            if ($stat['size'] > 0) {    // directories have sizes 0
+                $return[] = $stat['name'];
+            }
+        }
+        $filter = array_filter($return, function ($var) use($ignore, $keep) {
+            foreach ($ignore as $pattern) {
+                if (fnmatch($pattern, $var) && !in_array(basename($var), $keep)) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        return array_values($filter);
     }
 }

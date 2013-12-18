@@ -16,6 +16,7 @@ use Bowerphp\Config\Config;
 use Bowerphp\Installer\Installer;
 use Bowerphp\Package\Package;
 use Bowerphp\Repository\GithubRepository;
+use Bowerphp\Util\ZipArchive;
 use Doctrine\Common\Cache\FilesystemCache;
 use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\Filesystem;
@@ -92,7 +93,7 @@ EOT
         $bowerphp = new Bowerphp($filesystem, $httpClient);
 
         try {
-            $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new \ZipArchive(), $config, $output);
+            $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new ZipArchive(), $config, $output);
 
             if (is_null($packageName)) {
                 $bowerphp->installDependencies($installer);
