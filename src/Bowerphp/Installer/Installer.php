@@ -234,7 +234,8 @@ class Installer implements InstallerInterface
     {
         $keep = array('bower.json', 'package.json');
         $return = array();
-        for ($i = 0; $i < $archive->getNumFiles(); $i++) {
+        $numFiles = $archive->getNumFiles();
+        for ($i = 0; $i < $numFiles; $i++) {
             $stat = $archive->statIndex($i);
             if ($stat['size'] > 0) {    // directories have sizes 0
                 $return[] = $stat['name'];

@@ -12,257 +12,156 @@ class InstallerTest extends TestCase
 
     public function setUp()
     {
-        parent::setUp();
-        $this->repository = $this->getMock('Bowerphp\Repository\RepositoryInterface');
-        $this->zipArchive = $this->getMock('Bowerphp\Util\ZipArchive');
-        $this->config = $this->getMock('Bowerphp\Config\ConfigInterface');
-        $this->output = $this->getMock('Bowerphp\Output\BowerphpConsoleOutput');
+        #parent::setUp();
+
+        $this->filesystem = Mockery::mock('Gaufrette\Filesystem');
+        $this->httpClient = Mockery::mock('Guzzle\Http\ClientInterface');
+
+        $this->repository = Mockery::mock('Bowerphp\Repository\RepositoryInterface');
+        $this->zipArchive = Mockery::mock('Bowerphp\Util\ZipArchive');
+        $this->config = Mockery::mock('Bowerphp\Config\ConfigInterface');
+        $this->output = Mockery::mock('Bowerphp\Output\BowerphpConsoleOutput');
 
         $this->installer = new Installer($this->filesystem, $this->httpClient, $this->repository, $this->zipArchive, $this->config, $this->output);
-        $this->mockConfig();
+
+        $this->config
+            ->shouldReceive('getBasePackagesUrl')->andReturn('http://bower.herokuapp.com/packages/')
+            ->shouldReceive('getInstallDir')->andReturn(getcwd() . '/bower_components')
+            ->shouldReceive('getCacheDir')->andReturn('.')
+        ;
+    }
+
+    public function tearDown()
+    {
+        Mockery::close();
     }
 
     public function testInstall()
     {
-        $package = $this->getMock('Bowerphp\Package\PackageInterface');
-
-        $package
-            ->expects($this->once())
-            ->method('setTargetDir')
-            ->with(getcwd() . '/bower_components')
-        ;
-        $package
-            ->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue('jquery'))
-        ;
-        $package
-            ->expects($this->any())
-            ->method('getVersion')
-            ->will($this->returnValue('*'))
-        ;
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
 
         $packageJson = '{"name":"jquery","url":"git://github.com/components/jquery.git"}';
         $bowerJson = '{"name": "jquery", "version": "2.0.3", "main": "jquery.js"}';
 
-        $request = $this->getMock('Guzzle\Http\Message\RequestInterface');
-        $response = $this->getMockBuilder('Guzzle\Http\Message\Response')->disableOriginalConstructor()->getMock();
-
-        $this->mockRequest(0, 'http://bower.herokuapp.com/packages/jquery', $packageJson, $request, $response);
-
-        $this->repository
-            ->expects($this->once())
-            ->method('setUrl')
-            ->will($this->returnSelf())
-        ;
-        $this->repository
-            ->expects($this->once())
-            ->method('setHttpClient')
-            ->with($this->httpClient)
-            ->will($this->returnSelf())
-        ;
-        $this->repository
-            ->expects($this->once())
-            ->method('getBower')
-            ->will($this->returnValue($bowerJson))
-        ;
-        $this->repository
-            ->expects($this->once())
-            ->method('findPackage')
-            ->with('*')
-            ->will($this->returnValue('2.0.3'))
-        ;
-        $this->repository
-            ->expects($this->once())
-            ->method('getRelease')
-            ->will($this->returnValue('fileAsString...'))
+        $package
+            ->shouldReceive('setTargetDir')->with(getcwd() . '/bower_components')
+            ->shouldReceive('getName')->andReturn('jquery')
+            ->shouldReceive('getVersion')->andReturn('*')
+            ->shouldReceive('setRepository')->with($this->repository)
         ;
 
-        $this->zipArchive
-            ->expects($this->once())
-            ->method('open')
-            ->with('./tmp/jquery')
-            ->will($this->returnValue(true))
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andReturn($request)
         ;
-        $this->zipArchive
-            ->expects($this->once())
-            ->method('getNumFiles')
-            ->will($this->returnValue(0))
+        $request
+            ->shouldReceive('send')->andReturn($response)
         ;
-        $this->zipArchive
-            ->expects($this->once())
-            ->method('getNameIndex')
-            ->with(0)
-            ->will($this->returnValue(true))
+        $response
+            ->shouldReceive('getBody')->andReturn($packageJson)
         ;
+
+        $this->repository
+            ->shouldReceive('setUrl->setHttpClient');
+        $this->repository
+            ->shouldReceive('getBower')->andReturn($bowerJson)
+            ->shouldReceive('findPackage')->with('*')->andReturn('2.0.3')
+            ->shouldReceive('getRelease')->andReturn('fileAsString...')
+        ;
+
+        $this->output
+            ->shouldReceive('writelnInfoPackage')
+            ->shouldReceive('writelnInstalledPackage')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
+        ;
+
         $this->zipArchive
-            ->expects($this->once())
-            ->method('close')
+            ->shouldReceive('open')->with('./tmp/jquery')->andReturn(true)
+            ->shouldReceive('getNumFiles')->andReturn(0)
+            ->shouldReceive('getNameIndex')->with(0)->andReturn(true)
+            ->shouldReceive('close')
         ;
 
         $this->installer->install($package);
     }
 
+
     public function testInstallPackageWithDependencies()
     {
-        $package = $this->getMock('Bowerphp\Package\PackageInterface');
-
-        $package
-            ->expects($this->once())
-            ->method('setTargetDir')
-            ->with(getcwd() . '/bower_components')
-        ;
-        $package
-            ->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue('jquery-ui'))
-        ;
-        $package
-            ->expects($this->any())
-            ->method('getVersion')
-            ->will($this->returnValue('*'))
-        ;
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
 
         $packageJsonUI = '{"name":"jquery-ui","url":"git://github.com/components/jqueryui"}';
         $packageJsonJQ = '{"name":"jquery","url":"git://github.com/components/jquery.git"}';
         $bowerJsonUI = '{"name": "jquery-ui", "version": "1.10.3", "main": ["ui/jquery-ui.js"], "dependencies": {"jquery": ">=1.6"}}';
         $bowerJsonJQ = '{"name": "jquery", "version": "2.0.3", "main": "jquery.js"}';
 
-        $request = $this->getMock('Guzzle\Http\Message\RequestInterface');
-        $response = $this->getMockBuilder('Guzzle\Http\Message\Response')->disableOriginalConstructor()->getMock();
-
-        $this->mockRequest(0, 'http://bower.herokuapp.com/packages/jquery-ui', $packageJsonUI, $request, $response);
-
-        $this->repository
-            ->expects($this->at(0))
-            ->method('setUrl')
-            ->will($this->returnValue($this->repository))
-        ;
-        $this->repository
-            ->expects($this->at(1))
-            ->method('setHttpClient')
-            ->with($this->httpClient)
-            ->will($this->returnValue($this->repository))
-        ;
-        $this->repository
-            ->expects($this->at(2))
-            ->method('getBower')
-            ->will($this->returnValue($bowerJsonUI))
-        ;
-        $this->repository
-            ->expects($this->at(3))
-            ->method('findPackage')
-            ->with('*')
-            ->will($this->returnValue('*'))
-        ;
-        $this->repository
-            ->expects($this->at(4))
-            ->method('getRelease')
-            ->will($this->returnValue('fileAsString...'))
+        $package
+            ->shouldReceive('setTargetDir')->with(getcwd() . '/bower_components')
+            ->shouldReceive('getName')->andReturn('jquery-ui')
+            ->shouldReceive('getVersion')->andReturn('*')
+            ->shouldReceive('setRepository')->with($this->repository)
         ;
 
-        $this->mockRequest(1, 'http://bower.herokuapp.com/packages/jquery', $packageJsonJQ, $request, $response);
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery-ui')->andReturn($request)
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->times(2)->andReturn($packageJsonUI, $packageJsonJQ)
+        ;
 
         $this->repository
-            ->expects($this->at(5))
-            ->method('setUrl')
-            ->will($this->returnValue($this->repository))
-        ;
+            ->shouldReceive('setUrl->setHttpClient');
         $this->repository
-            ->expects($this->at(6))
-            ->method('setHttpClient')
-            ->with($this->httpClient)
-            ->will($this->returnValue($this->repository))
+            ->shouldReceive('getBower')->times(2)->andReturn($bowerJsonUI, $bowerJsonJQ)
+            ->shouldReceive('findPackage')->with('*')->andReturn('*')
+            ->shouldReceive('findPackage')->with('>=1.6')->andReturn('*')
+            ->shouldReceive('getRelease')->andReturn('fileAsString...')
         ;
-        $this->repository
-            ->expects($this->at(7))
-            ->method('getBower')
-            ->will($this->returnValue($bowerJsonJQ))
+
+        $this->output
+            ->shouldReceive('writelnInfoPackage')
+            ->shouldReceive('writelnInstalledPackage')
         ;
-        $this->repository
-            ->expects($this->at(8))
-            ->method('findPackage')
-            ->with('>=1.6')
-            ->will($this->returnValue('*'))
-        ;
-        $this->repository
-            ->expects($this->at(9))
-            ->method('getRelease')
-            ->will($this->returnValue('fileAsString...'))
+
+        $this->filesystem
+            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...', true)
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
         ;
 
         $this->zipArchive
-            ->expects($this->at(0))
-            ->method('open')
-            ->with('./tmp/jquery-ui')
-            ->will($this->returnValue(true))
-        ;
-        $this->zipArchive
-            ->expects($this->at(1))
-            ->method('getNameIndex')
-            ->with(0)
-            ->will($this->returnValue(true))
-        ;
-        $this->zipArchive
-            ->expects($this->at(2))
-            ->method('getNumFiles')
-            ->will($this->returnValue(0))
-        ;
-        $this->zipArchive
-            ->expects($this->at(3))
-            ->method('close')
-        ;
-        $this->zipArchive
-            ->expects($this->at(4))
-            ->method('open')
-            ->with('./tmp/jquery')
-            ->will($this->returnValue(true))
-        ;
-        $this->zipArchive
-            ->expects($this->at(5))
-            ->method('getNameIndex')
-            ->with(0)
-            ->will($this->returnValue(true))
-        ;
-        $this->zipArchive
-            ->expects($this->at(6))
-            ->method('getNumFiles')
-            ->will($this->returnValue(0))
-        ;
-        $this->zipArchive
-            ->expects($this->at(7))
-            ->method('close')
+            ->shouldReceive('open')->with('./tmp/jquery-ui')->andReturn(true)
+            ->shouldReceive('open')->with('./tmp/jquery')->andReturn(true)
+            ->shouldReceive('getNumFiles')->andReturn(0)
+            ->shouldReceive('getNameIndex')->with(0)->andReturn(true)
+            ->shouldReceive('close')
         ;
 
         $this->installer->install($package);
     }
 
+
     public function testUpdateToSpecificVersionPackageAlreadyAtThatVersion()
     {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+
         $this->filesystem
-            ->expects($this->once())
-            ->method('has')
-            ->with(getcwd() . '/bower_components/jquery/bower.json')
-            ->will($this->returnValue(true))
-        ;
-        $this->filesystem
-            ->expects($this->once())
-            ->method('read')
-            ->with(getcwd() . '/bower_components/jquery/bower.json')
-            ->will($this->returnValue('{"name": "jquery", "version": "1.10.2"}'))
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn('{"name": "jquery", "version": "1.10.2"}')
         ;
 
-        $package = $this->getMock('Bowerphp\Package\PackageInterface');
-
         $package
-            ->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue('jquery'))
-        ;
-        $package
-            ->expects($this->any())
-            ->method('getVersion')
-            ->will($this->returnValue('1.10.2'))
+            ->shouldReceive('getName')->andReturn('jquery')
+            ->shouldReceive('getVersion')->andReturn('1.10.2')
         ;
 
         $this->installer->update($package);
@@ -270,89 +169,49 @@ class InstallerTest extends TestCase
 
     public function testUpdateToSpecificVersionPackageAtOlderVersion()
     {
-        $this->filesystem
-            ->expects($this->once())
-            ->method('has')
-            ->with(getcwd() . '/bower_components/jquery/bower.json')
-            ->will($this->returnValue(true))
-        ;
-        $this->filesystem
-            ->expects($this->once())
-            ->method('read')
-            ->with(getcwd() . '/bower_components/jquery/bower.json')
-            ->will($this->returnValue('{"name": "jquery", "version": "1.4"}'))
-        ;
-        $this->filesystem
-            ->expects($this->once())
-            ->method('write')
-            ->with('./tmp/jquery')
-            ->will($this->returnValue(123))
-        ;
-
-        $package = $this->getMock('Bowerphp\Package\PackageInterface');
-
-        $package
-            ->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue('jquery'))
-        ;
-        $package
-            ->expects($this->any())
-            ->method('getVersion')
-            ->will($this->returnValue('1.5'))
-        ;
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
 
         $packageJson = '{"name":"jquery","url":"git://github.com/components/jquery.git"}';
         $bowerJson = '{"name": "jquery", "version": "2.0", "main": "jquery.js"}';
 
-        $request = $this->getMock('Guzzle\Http\Message\RequestInterface');
-        $response = $this->getMockBuilder('Guzzle\Http\Message\Response')->disableOriginalConstructor()->getMock();
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn('{"name": "jquery", "version": "1.4"}')
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)->andReturn(123)
+        ;
 
-        $this->mockRequest(0, 'http://bower.herokuapp.com/packages/jquery', $packageJson, $request, $response);
+        $package
+            ->shouldReceive('getName')->andReturn('jquery')
+            ->shouldReceive('getVersion')->andReturn('1.5')
+            ->shouldReceive('setTargetDir')->with(getcwd() . '/bower_components')
+            ->shouldReceive('setRepository')->with($this->repository)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn($packageJson)
+        ;
 
         $this->repository
-            ->expects($this->once())
-            ->method('setUrl')
-            ->will($this->returnSelf())
-        ;
+            ->shouldReceive('setUrl->setHttpClient');
         $this->repository
-            ->expects($this->once())
-            ->method('setHttpClient')
-            ->with($this->httpClient)
-            ->will($this->returnSelf())
-        ;
-        $this->repository
-            ->expects($this->once())
-            ->method('getBower')
-            ->will($this->returnValue($bowerJson))
-        ;
-        $this->repository
-            ->expects($this->once())
-            ->method('findPackage')
-            ->with('1.5')
-            ->will($this->returnValue('1.5.2'))
-        ;
-        $this->repository
-            ->expects($this->once())
-            ->method('getRelease')
-            ->will($this->returnValue('fileAsString...'))
+            ->shouldReceive('getBower')->andReturn($bowerJson)
+            ->shouldReceive('findPackage')->with('1.5')->andReturn('1.5.2')
+            ->shouldReceive('getRelease')->andReturn('fileAsString...')
         ;
 
         $this->zipArchive
-            ->expects($this->once())
-            ->method('open')
-            ->with('./tmp/jquery')
-            ->will($this->returnValue(true))
-        ;
-        $this->zipArchive
-            ->expects($this->once())
-            ->method('getNameIndex')
-            ->with(0)
-            ->will($this->returnValue(true))
-        ;
-        $this->zipArchive
-            ->expects($this->once())
-            ->method('close')
+            ->shouldReceive('open')->with('./tmp/jquery')->andReturn(true)
+            ->shouldReceive('getNameIndex')->with(0)->andReturn(true)
+            ->shouldReceive('getNumFiles')->andReturn(0)
+            ->shouldReceive('close')
         ;
 
         $this->installer->update($package);
@@ -360,84 +219,49 @@ class InstallerTest extends TestCase
 
     public function testUpdateToLatestVersionPackageNeeded()
     {
-        $this->filesystem
-            ->expects($this->once())
-            ->method('has')
-            ->with(getcwd() . '/bower_components/jquery/bower.json')
-            ->will($this->returnValue(true))
-        ;
-
-        $this->filesystem
-            ->expects($this->once())
-            ->method('read')
-            ->with(getcwd() . '/bower_components/jquery/bower.json')
-            ->will($this->returnValue('{"name": "jquery", "version": "1.4.1"}'))
-        ;
-
-        $package = $this->getMock('Bowerphp\Package\PackageInterface');
-
-        $package
-            ->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue('jquery'))
-        ;
-        $package
-            ->expects($this->any())
-            ->method('getVersion')
-            ->will($this->returnValue('*'))
-        ;
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
 
         $packageJson = '{"name":"jquery","url":"git://github.com/components/jquery.git"}';
         $bowerJson = '{"name": "jquery", "version": "1.5.3", "main": "jquery.js"}';
 
-        $request = $this->getMock('Guzzle\Http\Message\RequestInterface');
-        $response = $this->getMockBuilder('Guzzle\Http\Message\Response')->disableOriginalConstructor()->getMock();
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn('{"name": "jquery", "version": "1.4.1"}')
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)->andReturn(123)
+        ;
 
-        $this->mockRequest(0, 'http://bower.herokuapp.com/packages/jquery', $packageJson, $request, $response);
+        $package
+            ->shouldReceive('getName')->andReturn('jquery')
+            ->shouldReceive('getVersion')->andReturn('*')
+            ->shouldReceive('setTargetDir')->with(getcwd() . '/bower_components')
+            ->shouldReceive('setRepository')->with($this->repository)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn($packageJson)
+        ;
 
         $this->repository
-            ->expects($this->once())
-            ->method('setUrl')
-            ->will($this->returnSelf())
-        ;
+            ->shouldReceive('setUrl->setHttpClient');
         $this->repository
-            ->expects($this->once())
-            ->method('setHttpClient')
-            ->with($this->httpClient)
-            ->will($this->returnSelf())
-        ;
-        $this->repository
-            ->expects($this->once())
-            ->method('getBower')
-            ->will($this->returnValue($bowerJson))
-        ;
-        $this->repository
-            ->expects($this->once())
-            ->method('findPackage')
-            ->with('*')
-            ->will($this->returnValue('1.5.3'))
-        ;
-        $this->repository
-            ->expects($this->once())
-            ->method('getRelease')
-            ->will($this->returnValue('fileAsString...'))
+            ->shouldReceive('getBower')->andReturn($bowerJson)
+            ->shouldReceive('findPackage')->with('*')->andReturn('1.5.3')
+            ->shouldReceive('getRelease')->andReturn('fileAsString...')
         ;
 
         $this->zipArchive
-            ->expects($this->once())
-            ->method('open')
-            ->with('./tmp/jquery')
-            ->will($this->returnValue(true))
-        ;
-        $this->zipArchive
-            ->expects($this->once())
-            ->method('getNameIndex')
-            ->with(0)
-            ->will($this->returnValue(true))
-        ;
-        $this->zipArchive
-            ->expects($this->once())
-            ->method('close')
+            ->shouldReceive('open')->with('./tmp/jquery')->andReturn(true)
+            ->shouldReceive('getNameIndex')->with(0)->andReturn(true)
+            ->shouldReceive('getNumFiles')->andReturn(0)
+            ->shouldReceive('close')
         ;
 
         $this->installer->update($package);
@@ -445,62 +269,41 @@ class InstallerTest extends TestCase
 
     public function testUpdateToLatestVersionPackageNotNeeded()
     {
-        $this->filesystem
-            ->expects($this->once())
-            ->method('has')
-            ->with(getcwd() . '/bower_components/jquery/bower.json')
-            ->will($this->returnValue(true))
-        ;
-
-        $this->filesystem
-            ->expects($this->once())
-            ->method('read')
-            ->with(getcwd() . '/bower_components/jquery/bower.json')
-            ->will($this->returnValue('{"name": "jquery", "version": "1.4.1"}'))
-        ;
-
-        $package = $this->getMock('Bowerphp\Package\PackageInterface');
-
-        $package
-            ->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue('jquery'))
-        ;
-        $package
-            ->expects($this->any())
-            ->method('getVersion')
-            ->will($this->returnValue('*'))
-        ;
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
 
         $packageJson = '{"name":"jquery","url":"git://github.com/components/jquery.git"}';
         $bowerJson = '{"name": "jquery", "version": "1.4.1"}';
 
-        $request = $this->getMock('Guzzle\Http\Message\RequestInterface');
-        $response = $this->getMockBuilder('Guzzle\Http\Message\Response')->disableOriginalConstructor()->getMock();
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn('{"name": "jquery", "version": "1.4.1"}')
+        ;
 
-        $this->mockRequest(0, 'http://bower.herokuapp.com/packages/jquery', $packageJson, $request, $response);
+        $package
+            ->shouldReceive('getName')->andReturn('jquery')
+            ->shouldReceive('getVersion')->andReturn('*')
+            ->shouldReceive('setTargetDir')->with(getcwd() . '/bower_components')
+            ->shouldReceive('setRepository')->with($this->repository)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn($packageJson)
+        ;
 
         $this->repository
-            ->expects($this->once())
-            ->method('setUrl')
-            ->will($this->returnSelf())
-        ;
+            ->shouldReceive('setUrl->setHttpClient');
         $this->repository
-            ->expects($this->once())
-            ->method('setHttpClient')
-            ->with($this->httpClient)
-            ->will($this->returnSelf())
-        ;
-        $this->repository
-            ->expects($this->once())
-            ->method('getBower')
-            ->will($this->returnValue($bowerJson))
-        ;
-        $this->repository
-            ->expects($this->once())
-            ->method('findPackage')
-            ->with('*')
-            ->will($this->returnValue('1.4.1'))
+            ->shouldReceive('getBower')->andReturn($bowerJson)
+            ->shouldReceive('findPackage')->with('*')->andReturn('1.4.1')
+            ->shouldReceive('getRelease')->andReturn('fileAsString...')
         ;
 
         $this->installer->update($package);
@@ -508,165 +311,67 @@ class InstallerTest extends TestCase
 
     public function testUpdateWithOldDependenciesToUpdate()
     {
-        $package = $this->getMock('Bowerphp\Package\PackageInterface');
-
-        $package
-            ->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue('jquery-ui'))
-        ;
-        $package
-            ->expects($this->any())
-            ->method('getVersion')
-            ->will($this->returnValue('*'))
-        ;
-
-        $this->filesystem
-            ->expects($this->at(0))
-            ->method('has')
-            ->with(getcwd() . '/bower_components/jquery-ui/bower.json')
-            ->will($this->returnValue(true))
-        ;
-        $this->filesystem
-            ->expects($this->at(1))
-            ->method('read')
-            ->with(getcwd() . '/bower_components/jquery-ui/bower.json')
-            ->will($this->returnValue('{"name": "jquery-ui", "version": "1.0.0", "dependencies": {"jquery": "1.*"}}'))
-        ;
-        $this->filesystem
-            ->expects($this->at(2))
-            ->method('write')
-            ->with('./tmp/jquery-ui')
-            ->will($this->returnValue(123))
-        ;
-        $this->filesystem
-            ->expects($this->at(3))
-            ->method('has')
-            ->with(getcwd() . '/bower_components/jquery/bower.json')
-            ->will($this->returnValue(true))
-        ;
-        $this->filesystem
-            ->expects($this->at(4))
-            ->method('has')
-            ->with(getcwd() . '/bower_components/jquery/bower.json')
-            ->will($this->returnValue(true))
-        ;
-        $this->filesystem
-            ->expects($this->at(5))
-            ->method('read')
-            ->with(getcwd() . '/bower_components/jquery/bower.json')
-            ->will($this->returnValue('{"name": "jquery", "version": "1.0.0"}'))
-        ;
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
 
         $packageJsonUI = '{"name":"jquery-ui","url":"git://github.com/components/jqueryui"}';
         $packageJsonJQ = '{"name":"jquery","url":"git://github.com/components/jquery.git"}';
         $bowerJsonUI = '{"name": "jquery-ui", "version": "2.0.", "dependencies": {"jquery": "2.*"}}';
         $bowerJsonJQ = '{"name": "jquery", "version": "2.0.3"}';
 
-        $request = $this->getMock('Guzzle\Http\Message\RequestInterface');
-        $response = $this->getMockBuilder('Guzzle\Http\Message\Response')->disableOriginalConstructor()->getMock();
-
-        $this->mockRequest(0, 'http://bower.herokuapp.com/packages/jquery-ui', $packageJsonUI, $request, $response);
-
-        $this->repository
-            ->expects($this->at(0))
-            ->method('setUrl')
-            ->will($this->returnValue($this->repository))
-        ;
-        $this->repository
-            ->expects($this->at(1))
-            ->method('setHttpClient')
-            ->with($this->httpClient)
-            ->will($this->returnValue($this->repository))
-        ;
-        $this->repository
-            ->expects($this->at(2))
-            ->method('getBower')
-            ->will($this->returnValue($bowerJsonUI))
-        ;
-        $this->repository
-            ->expects($this->at(3))
-            ->method('findPackage')
-            ->with('*')
-            ->will($this->returnValue('2.0.0'))
-        ;
-        $this->repository
-            ->expects($this->at(4))
-            ->method('getRelease')
-            ->will($this->returnValue('fileAsString...'))
+        $package
+            ->shouldReceive('getName')->andReturn('jquery-ui')
+            ->shouldReceive('getVersion')->andReturn('*')
+            ->shouldReceive('setTargetDir')->with(getcwd() . '/bower_components')
+            ->shouldReceive('setRepository')->with($this->repository)
         ;
 
-        $this->mockRequest(1, 'http://bower.herokuapp.com/packages/jquery', $packageJsonJQ, $request, $response);
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery-ui/bower.json')->andReturn(true)
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery-ui/bower.json')->andReturn('{"name": "jquery-ui", "version": "1.0.0", "dependencies": {"jquery": "1.*"}}')
+            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn('{"name": "jquery", "version": "1.4"}')
+            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...', true)->andReturn(123)
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)->andReturn(123)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery-ui')->andReturn($request)
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->times(2)->andReturn($packageJsonUI, $packageJsonJQ)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn($packageJsonUI)
+        ;
 
         $this->repository
-            ->expects($this->at(5))
-            ->method('setUrl')
-            ->will($this->returnValue($this->repository))
-        ;
+            ->shouldReceive('setUrl->setHttpClient');
         $this->repository
-            ->expects($this->at(6))
-            ->method('setHttpClient')
-            ->with($this->httpClient)
-            ->will($this->returnValue($this->repository))
-        ;
-        $this->repository
-            ->expects($this->at(7))
-            ->method('getBower')
-            ->will($this->returnValue($bowerJsonJQ))
-        ;
-        $this->repository
-            ->expects($this->at(8))
-            ->method('findPackage')
-            ->with('2.*')
-            ->will($this->returnValue('2.0.3'))
-        ;
-        $this->repository
-            ->expects($this->at(9))
-            ->method('getRelease')
-            ->will($this->returnValue('fileAsString...'))
+            ->shouldReceive('getBower')->times(2)->andReturn($bowerJsonUI, $bowerJsonJQ)
+            ->shouldReceive('findPackage')->with('*')->andReturn('2.0.0')
+            ->shouldReceive('findPackage')->with('2.*')->andReturn('2.0.3')
+            ->shouldReceive('getRelease')->andReturn('fileAsString...')
         ;
 
         $this->zipArchive
-            ->expects($this->at(0))
-            ->method('open')
-            ->with('./tmp/jquery-ui')
-            ->will($this->returnValue(true))
-        ;
-        $this->zipArchive
-            ->expects($this->at(1))
-            ->method('getNameIndex')
-            ->with(0)
-            ->will($this->returnValue(true))
-        ;
-        $this->zipArchive
-            ->expects($this->at(2))
-            ->method('getNumFiles')
-            ->will($this->returnValue(0))
-        ;
-        $this->zipArchive
-            ->expects($this->at(3))
-            ->method('close')
-        ;
-        $this->zipArchive
-            ->expects($this->at(4))
-            ->method('open')
-            ->with('./tmp/jquery')
-            ->will($this->returnValue(true))
-        ;
-        $this->zipArchive
-            ->expects($this->at(5))
-            ->method('getNameIndex')
-            ->with(0)
-            ->will($this->returnValue(true))
-        ;
-        $this->zipArchive
-            ->expects($this->at(6))
-            ->method('getNumFiles')
-            ->will($this->returnValue(0))
-        ;
-        $this->zipArchive
-            ->expects($this->at(7))
-            ->method('close')
+            ->shouldReceive('open')->with('./tmp/jquery-ui')->andReturn(true)
+            ->shouldReceive('open')->with('./tmp/jquery')->andReturn(true)
+            ->shouldReceive('getNumFiles')->andReturn(0)
+            ->shouldReceive('getNameIndex')->with(0)->andReturn(true)
+            ->shouldReceive('close')
         ;
 
         $this->installer->update($package);
