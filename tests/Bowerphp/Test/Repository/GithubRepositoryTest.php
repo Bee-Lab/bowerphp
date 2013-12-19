@@ -4,6 +4,7 @@ namespace Bowerphp\Test\Repository;
 
 use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Test\TestCase;
+use Mockery;
 
 class GithubRepositoryTest extends TestCase
 {
@@ -12,41 +13,28 @@ class GithubRepositoryTest extends TestCase
     public function setUp()
     {
         parent::setUp();
+
         $this->repository = new GithubRepository();
         $this->repository->setUrl('https://raw.github.com/components/jquery')->setHttpClient($this->httpClient);
     }
 
     public function testGetBower()
     {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
         $bowerJson = '{"name": "jquery", "version": "2.0.3", "main": "jquery.js"}';
-
-        $request = $this->getMock('Guzzle\Http\Message\RequestInterface');
-        $response = $this->getMockBuilder('Guzzle\Http\Message\Response')->disableOriginalConstructor()->getMock();
-
         $url = 'https://raw.github.com/components/jquery/master/bower.json';
 
         $this->httpClient
-            ->expects($this->once())
-            ->method('get')
-            ->with($url)
-            ->will($this->returnValue($request))
+            ->shouldReceive('get')->with($url)->andReturn($request)
         ;
         $request
-            ->expects($this->once())
-            ->method('send')
-            ->will($this->returnValue($response))
-        ;
-
-        $response
-            ->expects($this->once())
-            ->method('getEffectiveUrl')
-            ->will($this->returnValue($url))
+            ->shouldReceive('send')->andReturn($response)
         ;
         $response
-            ->expects($this->once())
-            ->method('getBody')
-            ->with(true)
-            ->will($this->returnValue($bowerJson))
+            ->shouldReceive('getEffectiveUrl')->andReturn($url)
+            ->shouldReceive('getBody')->andReturn($bowerJson)
         ;
 
         $bower = $this->repository->getBower();
@@ -56,12 +44,19 @@ class GithubRepositoryTest extends TestCase
 
     public function testFindPackage()
     {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
         $tagsJson = '[{"name": "2.0.3", "zipball_url": "https://api.github.com/repos/components/jquery/zipball/2.0.3", "tarball_url": ""}, {"name": "2.0.2", "zipball_url": "", "tarball_url": ""}]';
 
-        $request = $this->getMock('Guzzle\Http\Message\RequestInterface');
-        $response = $this->getMockBuilder('Guzzle\Http\Message\Response')->disableOriginalConstructor()->getMock();
-
-        $this->mockRequest(0, 'https://api.github.com/repos/components/jquery/tags', $tagsJson, $request, $response);
+        $this->httpClient
+            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->with(true)->andReturn($tagsJson)
+        ;
 
         $tag = $this->repository->findPackage();
         $this->assertEquals('2.0.3', $tag);
@@ -69,12 +64,20 @@ class GithubRepositoryTest extends TestCase
 
     public function testGetRelease()
     {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
         $this->repository->setTag(array('zipball_url' => 'foo'));
 
-        $request = $this->getMock('Guzzle\Http\Message\RequestInterface');
-        $response = $this->getMockBuilder('Guzzle\Http\Message\Response')->disableOriginalConstructor()->getMock();
-
-        $this->mockRequest(0, 'foo', '...', $request, $response, false);
+        $this->httpClient
+            ->shouldReceive('get')->with('foo')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn('...')
+        ;
 
         $this->repository->getRelease();
     }

@@ -94,7 +94,7 @@ class GithubRepository implements RepositoryInterface
 
             return $response->getBody();
         } catch (\Exception $e) {
-            throw new \RuntimeException(sprintf('Cannot open file %s (%).', $file, $e->getMessage()));
+            throw new \RuntimeException(sprintf('Cannot open file %s (%s).', $file, $e->getMessage()));
         }
     }
 

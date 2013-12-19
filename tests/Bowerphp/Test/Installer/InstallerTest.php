@@ -12,10 +12,7 @@ class InstallerTest extends TestCase
 
     public function setUp()
     {
-        #parent::setUp();
-
-        $this->filesystem = Mockery::mock('Gaufrette\Filesystem');
-        $this->httpClient = Mockery::mock('Guzzle\Http\ClientInterface');
+        parent::setUp();
 
         $this->repository = Mockery::mock('Bowerphp\Repository\RepositoryInterface');
         $this->zipArchive = Mockery::mock('Bowerphp\Util\ZipArchive');
@@ -29,11 +26,6 @@ class InstallerTest extends TestCase
             ->shouldReceive('getInstallDir')->andReturn(getcwd() . '/bower_components')
             ->shouldReceive('getCacheDir')->andReturn('.')
         ;
-    }
-
-    public function tearDown()
-    {
-        Mockery::close();
     }
 
     public function testInstall()

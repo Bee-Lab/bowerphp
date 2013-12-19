@@ -12,60 +12,43 @@
 namespace Bowerphp\Tests\Output;
 
 use Bowerphp\Output\BowerphpConsoleOutput;
+use Mockery;
 
 class ConsoleOutputTest extends \PHPUnit_Framework_TestCase
 {
     public function testWritelnInfoPackage()
     {
-        $BConsoleOutput = new TestOutput();
-        $BConsoleOutput->setDecorated(false);
-
-        $package = $this->getMock('Bowerphp\Package\PackageInterface');
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
 
         $package
-            ->expects($this->any())
-            ->method('getVersion')
-            ->will($this->returnValue("2.1"))
+            ->shouldReceive('getVersion')->andReturn('2.1')
+            ->shouldReceive('getName')->andReturn('jquery')
         ;
 
-         $package
-            ->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue("Jquery"))
-        ;
-
+        $BConsoleOutput = new TestOutput();
+        $BConsoleOutput->setDecorated(false);
         $BConsoleOutput->writelnInfoPackage($package);
 
-        $this->assertEquals("bower Jquery#2.1", $BConsoleOutput->output);
+        $this->assertEquals("bower jquery#2.1", $BConsoleOutput->output);
     }
 
     public function testWritelnInstalledPackage()
     {
-        $BConsoleOutput = new TestOutput();
-        $BConsoleOutput->setDecorated(false);
-
-        $package = $this->getMock('Bowerphp\Package\PackageInterface');
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
 
         $package
-            ->expects($this->any())
-            ->method('getVersion')
-            ->will($this->returnValue("2.1"))
+            ->shouldReceive('getVersion')->andReturn('2.1')
+            ->shouldReceive('getName')->andReturn('jquery')
         ;
 
-         $package
-            ->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue("Jquery"))
-        ;
+        $BConsoleOutput = new TestOutput();
+        $BConsoleOutput->setDecorated(false);
+        $BConsoleOutput->writelnInstalledPackage($package, '3.0');
 
-        $version = "3.0";
-        $BConsoleOutput->writelnInstalledPackage($package, $version);
-
-        $this->assertEquals("bower Jquery#3.0               install", $BConsoleOutput->output);
+        $this->assertEquals("bower jquery#3.0               install", $BConsoleOutput->output);
     }
 
 }
-
 
 class TestOutput extends BowerphpConsoleOutput
 {

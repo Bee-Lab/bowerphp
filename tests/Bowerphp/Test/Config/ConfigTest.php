@@ -4,6 +4,7 @@ namespace Bowerphp\Test;
 
 use Bowerphp\Config\Config;
 use Bowerphp\Test\TestCase;
+use Mockery;
 
 class ConfigTest extends TestCase
 {
@@ -12,17 +13,8 @@ class ConfigTest extends TestCase
         $json = '{"directory": "app/Resources/bower", "storage": { "packages": "/tmp/bower" }}';
 
         $this->filesystem
-            ->expects($this->once())
-            ->method('has')
-            ->with(getcwd() . '/.bowerrc')
-            ->will($this->returnValue(true))
-        ;
-
-        $this->filesystem
-            ->expects($this->once())
-            ->method('read')
-            ->with(getcwd() . '/.bowerrc')
-            ->will($this->returnValue($json))
+            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/.bowerrc')->andReturn($json)
         ;
 
         $config = new Config($this->filesystem);
@@ -34,10 +26,7 @@ class ConfigTest extends TestCase
     public function testDefaultOptions()
     {
         $this->filesystem
-            ->expects($this->once())
-            ->method('has')
-            ->with(getcwd() . '/.bowerrc')
-            ->will($this->returnValue(false))
+            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
         ;
 
         $config = new Config($this->filesystem);
@@ -54,17 +43,8 @@ class ConfigTest extends TestCase
         $json = '{invalid';
 
         $this->filesystem
-            ->expects($this->once())
-            ->method('has')
-            ->with(getcwd() . '/.bowerrc')
-            ->will($this->returnValue(true))
-        ;
-
-        $this->filesystem
-            ->expects($this->once())
-            ->method('read')
-            ->with(getcwd() . '/.bowerrc')
-            ->will($this->returnValue($json))
+            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/.bowerrc')->andReturn($json)
         ;
 
         $config = new Config($this->filesystem);

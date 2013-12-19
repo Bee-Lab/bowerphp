@@ -4,6 +4,7 @@ namespace Bowerphp\Test;
 
 use Bowerphp\Bowerphp;
 use Bowerphp\Test\TestCase;
+use Mockery;
 
 class BowerphpTest extends TestCase
 {
@@ -31,24 +32,21 @@ class BowerphpTest extends TestCase
 }
 EOT;
         $params = array('name' => 'Foo', 'author' => 'Mallo');
+
         $this->filesystem
-            ->expects($this->once())
-            ->method('write')
-            ->with('bower.json', $json)
-            ->will($this->returnValue(10))
+            ->shouldReceive('write')->with('bower.json', $json)->andReturn(10)
         ;
+
         $this->bowerphp->init($params);
     }
 
     public function testInstallPackage()
     {
-        $package = $this->getMock('Bowerphp\Package\PackageInterface');
-        $installer = $this->getMock('Bowerphp\Installer\InstallerInterface');
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
         $installer
-            ->expects($this->once())
-            ->method('install')
-            ->with($package)
+            ->shouldReceive('install')->with($package)
         ;
 
         $this->bowerphp->installPackage($package, $installer);
@@ -56,25 +54,17 @@ EOT;
 
     public function testInstallDependencies()
     {
-        $installer = $this->getMock('Bowerphp\Installer\InstallerInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
         $json = '{"name": "jquery-ui", "version": "1.10.3", "main": ["ui/jquery-ui.js"], "dependencies": {"jquery": ">=1.6"}}';
 
         $this->filesystem
-            ->expects($this->once())
-            ->method('has')
-            ->with(getcwd() . '/bower.json')
-            ->will($this->returnValue(true))
+            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
         ;
-        $this->filesystem
-            ->expects($this->once())
-            ->method('read')
-            ->with(getcwd() . '/bower.json')
-            ->will($this->returnValue($json))
-        ;
+
         $installer
-            ->expects($this->once())
-            ->method('install')
+            ->shouldReceive('install');
         ;
 
         $this->bowerphp->installDependencies($installer);
@@ -85,21 +75,13 @@ EOT;
      */
     public function testInstallDependenciesException()
     {
-        $installer = $this->getMock('Bowerphp\Installer\InstallerInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
         $json = '{"invalid json';
 
         $this->filesystem
-            ->expects($this->once())
-            ->method('has')
-            ->with(getcwd() . '/bower.json')
-            ->will($this->returnValue(true))
-        ;
-        $this->filesystem
-            ->expects($this->once())
-            ->method('read')
-            ->with(getcwd() . '/bower.json')
-            ->will($this->returnValue($json))
+            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
         ;
 
         $this->bowerphp->installDependencies($installer);
@@ -107,39 +89,24 @@ EOT;
 
     public function testUpdatePackage()
     {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+
         $json = '{"name": "Foo", "dependencies": {"less": "*"}}';
 
-        $package = $this->getMock('Bowerphp\Package\PackageInterface');
-        $installer = $this->getMock('Bowerphp\Installer\InstallerInterface');
 
         $package
-            ->expects($this->any())
-            ->method('getName')
-            ->will($this->returnValue('less'))
-        ;
-        $package
-            ->expects($this->once())
-            ->method('setVersion')
-            ->with('*')
+            ->shouldReceive('getName')->andReturn('less')
+            ->shouldReceive('setVersion')->with('*')
         ;
 
         $this->filesystem
-            ->expects($this->once())
-            ->method('has')
-            ->with(getcwd() . '/bower.json')
-            ->will($this->returnValue(true))
-        ;
-        $this->filesystem
-            ->expects($this->once())
-            ->method('read')
-            ->with(getcwd() . '/bower.json')
-            ->will($this->returnValue($json))
+            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
         ;
 
         $installer
-            ->expects($this->once())
-            ->method('update')
-            ->with($package)
+            ->shouldReceive('update')->with($package)
         ;
 
         $this->bowerphp->updatePackage($package, $installer);
@@ -147,25 +114,17 @@ EOT;
 
     public function testUpdateDependencies()
     {
-        $installer = $this->getMock('Bowerphp\Installer\InstallerInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
         $json = '{"name": "jquery-ui", "version": "1.10.3", "main": ["ui/jquery-ui.js"], "dependencies": {"jquery": ">=1.6"}}';
 
         $this->filesystem
-            ->expects($this->once())
-            ->method('has')
-            ->with(getcwd() . '/bower.json')
-            ->will($this->returnValue(true))
+            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
         ;
-        $this->filesystem
-            ->expects($this->once())
-            ->method('read')
-            ->with(getcwd() . '/bower.json')
-            ->will($this->returnValue($json))
-        ;
+
         $installer
-            ->expects($this->once())
-            ->method('update')
+            ->shouldReceive('update')
         ;
 
         $this->bowerphp->updateDependencies($installer);
@@ -176,21 +135,13 @@ EOT;
      */
     public function testUpdateDependenciesException()
     {
-        $installer = $this->getMock('Bowerphp\Installer\InstallerInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
         $json = '{"invalid json';
 
         $this->filesystem
-            ->expects($this->once())
-            ->method('has')
-            ->with(getcwd() . '/bower.json')
-            ->will($this->returnValue(true))
-        ;
-        $this->filesystem
-            ->expects($this->once())
-            ->method('read')
-            ->with(getcwd() . '/bower.json')
-            ->will($this->returnValue($json))
+            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
         ;
 
         $this->bowerphp->updateDependencies($installer);
@@ -201,22 +152,14 @@ EOT;
      */
     public function testUpdatePackageException()
     {
-        $package = $this->getMock('Bowerphp\Package\PackageInterface');
-        $installer = $this->getMock('Bowerphp\Installer\InstallerInterface');
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
         $json = '{"invalid json';
 
         $this->filesystem
-            ->expects($this->once())
-            ->method('has')
-            ->with(getcwd() . '/bower.json')
-            ->will($this->returnValue(true))
-        ;
-        $this->filesystem
-            ->expects($this->once())
-            ->method('read')
-            ->with(getcwd() . '/bower.json')
-            ->will($this->returnValue($json))
+            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
         ;
 
         $this->bowerphp->updatePackage($package, $installer);
@@ -227,13 +170,10 @@ EOT;
      */
     public function testUpdateWithoutBowerJsonException()
     {
-        $installer = $this->getMock('Bowerphp\Installer\InstallerInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
         $this->filesystem
-            ->expects($this->once())
-            ->method('has')
-            ->with(getcwd() . '/bower.json')
-            ->will($this->returnValue(false))
+            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(false)
         ;
 
         $this->bowerphp->updateDependencies($installer);
