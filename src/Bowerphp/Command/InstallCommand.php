@@ -44,6 +44,7 @@ class InstallCommand extends Command
             ->setDescription('Installs the project dependencies from the bower.json file or a single specified package.')
             ->setDefinition(array(
                 new InputOption('verbose', 'v|vv|vvv', InputOption::VALUE_NONE, 'Shows more details including new commits pulled in when updating packages.'),
+                new InputOption('save', 'S', InputOption::VALUE_NONE, 'If flag -S or --save is passed to install, package will be added to bower.json file (only if bower.json file already exists)'),
             ))
             ->addArgument(
                 'package',
@@ -71,10 +72,12 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $adapter = new LocalAdapter('/');
-        $filesystem = new Filesystem($adapter);
-        $httpClient = new Client();
-        $config = new Config($filesystem);
+        $adapter        = new LocalAdapter('/');
+        $filesystem     = new Filesystem($adapter);
+        $httpClient     = new Client();
+        $config         = new Config($filesystem);
+        $config->setSaveToBowerJsonFile($input->getOption('save'));
+
 
         $this->logHttp($httpClient, $output);
 
@@ -90,7 +93,7 @@ EOT
 
         $packageName = $input->getArgument('package');
 
-        $bowerphp = new Bowerphp($filesystem, $httpClient);
+        $bowerphp = new Bowerphp($filesystem, $config);
 
         try {
             $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new ZipArchive(), $config, $output);

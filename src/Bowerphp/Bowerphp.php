@@ -11,6 +11,7 @@
 
 namespace Bowerphp;
 
+use Bowerphp\Config\ConfigInterface;
 use Bowerphp\Installer\InstallerInterface;
 use Bowerphp\Package\Package;
 use Bowerphp\Package\PackageInterface;
@@ -22,14 +23,15 @@ use Gaufrette\Filesystem;
  */
 class Bowerphp
 {
-    protected $filesystem;
+    protected $filesystem, $config;
 
     /**
      * @param Filesystem $filesystem
      */
-    public function __construct(Filesystem $filesystem)
+    public function __construct(Filesystem $filesystem, ConfigInterface $config)
     {
-        $this->filesystem = $filesystem;
+        $this->filesystem   = $filesystem;
+        $this->config       = $config;
     }
 
     /**
@@ -39,7 +41,7 @@ class Bowerphp
      */
     public function init(array $params)
     {
-        $file = 'bower.json';
+        $file = $this->config->getBowerFileName();
         $json = $this->json_readable_encode($this->createAClearBowerFile($params));
 
         $this->filesystem->write($file, $json);
@@ -63,15 +65,7 @@ class Bowerphp
      */
     public function installDependencies(InstallerInterface $installer)
     {
-        if (!$this->filesystem->has(getcwd() . '/bower.json')) {
-            throw new \RuntimeException('No bower.json found. You can run "init" command to create it.');
-        }
-
-        $bowerJson = $this->filesystem->read(getcwd() . '/bower.json');
-
-        if (empty($bowerJson) || !is_array($decode = json_decode($bowerJson, true))) {
-            throw new \RuntimeException(sprintf('Malformed JSON %s.', $bowerJson));
-        }
+        $decode = $this->config->getBowerFileContent();
 
         if (!empty($decode['dependencies'])) {
             foreach ($decode['dependencies'] as $name => $version) {
@@ -89,15 +83,7 @@ class Bowerphp
      */
     public function updatePackage(PackageInterface $package, InstallerInterface $installer)
     {
-        if (!$this->filesystem->has(getcwd() . '/bower.json')) {
-            throw new \RuntimeException('No bower.json found. You can run "init" command to create it.');
-        }
-
-        $bowerJson = $this->filesystem->read(getcwd() . '/bower.json');
-
-        if (empty($bowerJson) || !is_array($decode = json_decode($bowerJson, true))) {
-            throw new \RuntimeException(sprintf('Malformed JSON %s.', $bowerJson));
-        }
+        $decode = $this->config->getBowerFileContent();
 
         if (empty($decode['dependencies']) || empty($decode['dependencies'][$package->getName()])) {
             throw new \InvalidArgumentException(sprintf('Package %s not found in bower.json.', $package->getName()));
@@ -115,15 +101,7 @@ class Bowerphp
      */
     public function updateDependencies(InstallerInterface $installer)
     {
-        if (!$this->filesystem->has(getcwd() . '/bower.json')) {
-            throw new \RuntimeException('No bower.json found. You can run "init" command to create it.');
-        }
-
-        $bowerJson = $this->filesystem->read(getcwd() . '/bower.json');
-
-        if (empty($bowerJson) || !is_array($decode = json_decode($bowerJson, true))) {
-            throw new \RuntimeException(sprintf('Malformed JSON %s.', $bowerJson));
-        }
+        $decode = $this->config->getBowerFileContent();
 
         if (!empty($decode['dependencies'])) {
             foreach ($decode['dependencies'] as $name => $version) {

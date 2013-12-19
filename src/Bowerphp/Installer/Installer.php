@@ -106,6 +106,12 @@ class Installer implements InstallerInterface
             $fileContent = $this->zipArchive->getStream($file);
             $this->filesystem->write($fileName, $fileContent, true);
         }
+
+
+        if($this->config->getSaveToBowerJsonFile()) {
+            $this->config->updateBowerJsonFile($package, $packageVersion);
+        }
+
         $this->zipArchive->close();
         // check for dependencies
         if (!empty($bower['dependencies'])) {

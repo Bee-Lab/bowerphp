@@ -13,7 +13,7 @@ class BowerphpTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->bowerphp = new Bowerphp($this->filesystem, $this->httpClient);
+        $this->config     = Mockery::mock('Bowerphp\Config\ConfigInterface');
     }
 
     public function testInit()
@@ -36,8 +36,13 @@ EOT;
         $this->filesystem
             ->shouldReceive('write')->with('bower.json', $json)->andReturn(10)
         ;
+     
+        $this->config
+            ->shouldReceive('getBowerFileName')->andReturn('bower.json')
+        ;
 
-        $this->bowerphp->init($params);
+        $bowerphp = new Bowerphp($this->filesystem, $this->config);
+        $bowerphp->init($params);
     }
 
     public function testInstallPackage()
@@ -49,7 +54,8 @@ EOT;
             ->shouldReceive('install')->with($package)
         ;
 
-        $this->bowerphp->installPackage($package, $installer);
+        $bowerphp = new Bowerphp($this->filesystem, $this->config);
+        $bowerphp->installPackage($package, $installer);
     }
 
     public function testInstallDependencies()
@@ -67,7 +73,11 @@ EOT;
             ->shouldReceive('install');
         ;
 
-        $this->bowerphp->installDependencies($installer);
+        $this->config
+            ->shouldReceive('getBowerFileContent')
+        ;
+        $bowerphp = new Bowerphp($this->filesystem, $this->config);
+        $bowerphp->installDependencies($installer);
     }
 
     /**
@@ -78,13 +88,12 @@ EOT;
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
         $json = '{"invalid json';
-
-        $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
-            ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
+        $this->config
+            ->shouldReceive('getBowerFileContent')->andThrow(new \RuntimeException(sprintf('Malformed JSON')));;
         ;
 
-        $this->bowerphp->installDependencies($installer);
+        $bowerphp = new Bowerphp($this->filesystem, $this->config);
+        $bowerphp->installDependencies($installer);
     }
 
     public function testUpdatePackage()
@@ -94,28 +103,27 @@ EOT;
 
         $json = '{"name": "Foo", "dependencies": {"less": "*"}}';
 
-
         $package
             ->shouldReceive('getName')->andReturn('less')
             ->shouldReceive('setVersion')->with('*')
         ;
 
-        $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
-            ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
-        ;
 
         $installer
             ->shouldReceive('update')->with($package)
         ;
 
-        $this->bowerphp->updatePackage($package, $installer);
+        $this->config
+            ->shouldReceive('getBowerFileContent')->andReturn(json_decode($json,true))
+        ;
+
+        $bowerphp = new Bowerphp($this->filesystem,$this->config);
+        $bowerphp->updatePackage($package, $installer);
     }
 
     public function testUpdateDependencies()
     {
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
-
         $json = '{"name": "jquery-ui", "version": "1.10.3", "main": ["ui/jquery-ui.js"], "dependencies": {"jquery": ">=1.6"}}';
 
         $this->filesystem
@@ -127,7 +135,13 @@ EOT;
             ->shouldReceive('update')
         ;
 
-        $this->bowerphp->updateDependencies($installer);
+
+        $this->config
+            ->shouldReceive('getBowerFileContent')->andReturn(json_decode($json,true))
+        ;
+
+        $bowerphp = new Bowerphp($this->filesystem, $this->config);
+        $bowerphp->updateDependencies($installer);
     }
 
     /**
@@ -144,7 +158,12 @@ EOT;
             ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
         ;
 
-        $this->bowerphp->updateDependencies($installer);
+        $this->config    
+            ->shouldReceive('getBowerFileContent')->andThrow(new \RuntimeException());
+        ;
+
+        $bowerphp = new Bowerphp($this->filesystem, $this->config);
+        $bowerphp->updateDependencies($installer);
     }
 
     /**
@@ -155,14 +174,18 @@ EOT;
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
-        $json = '{"invalid json';
+         $json = '{"invalid json';
 
         $this->filesystem
             ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
             ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
         ;
 
-        $this->bowerphp->updatePackage($package, $installer);
+        $this->config
+            ->shouldReceive('getBowerFileContent')->andThrow(new \RuntimeException(sprintf('Malformed JSON')));;
+        ;
+        $bowerphp = new Bowerphp($this->filesystem, $this->config);
+        $bowerphp->updatePackage($package, $installer);
     }
 
     /**
@@ -176,6 +199,11 @@ EOT;
             ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(false)
         ;
 
-        $this->bowerphp->updateDependencies($installer);
+        $this->config
+            ->shouldReceive('getBowerFileContent')->andThrow(new \RuntimeException(sprintf('Malformed JSON')))
+        ;
+
+        $bowerphp = new Bowerphp($this->filesystem, $this->config);
+        $bowerphp->updateDependencies($installer);
     }
 }

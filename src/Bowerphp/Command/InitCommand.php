@@ -12,9 +12,9 @@
 namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
+use Bowerphp\Config\Config;
 use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\Filesystem;
-use Guzzle\Http\Client;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -51,9 +51,9 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $adapter = new LocalAdapter(getcwd());
-        $filesystem = new Filesystem($adapter);
-        $httpClient = new Client();
+        $adapter        = new LocalAdapter(getcwd());
+        $filesystem     = new Filesystem($adapter);
+        $config         = new Config($filesystem);
 
         $dialog = $this->getHelperSet()->get('dialog');
 
@@ -70,7 +70,7 @@ EOT
             'An author'
         );
 
-        $bowerphp = new Bowerphp($filesystem, $httpClient);
+        $bowerphp = new Bowerphp($filesystem, $config);
         $bowerphp->init($params);
 
         $output->writeln('');

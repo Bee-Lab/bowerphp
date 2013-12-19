@@ -11,6 +11,9 @@
 
 namespace Bowerphp\Config;
 
+use Bowerphp\Package\PackageInterface;
+
+
 /**
  * ConfigInterface
  */
@@ -30,4 +33,47 @@ interface ConfigInterface
      * @return string
      */
     public function getInstallDir();
+
+    /**
+     * @return boolean
+     */
+    public function getSaveToBowerJsonFile();
+
+    /**
+     * Set true|false for decide if add package reference on bower.json file during install procedure
+     *
+     * @params boolean $flag default true
+     */
+    public function setSaveToBowerJsonFile($flag = true);
+
+    /**
+     *
+     * @params Package $package
+     * @params string $packageVersion
+     *
+     * @return boolean
+     */
+    public function updateBowerJsonFile(PackageInterface $package, $packageVersion);
+
+
+    /**
+     * @return string
+     */
+    public function getBowerFileName();
+
+    /**
+     * @return array | Exception if bower.json does not exist
+     */
+    public function getBowerFileContent();
+
+    /**
+     * @return array | Exception if bower.json or package.json does not exist in a dir of installed package
+     */
+    public function getPackageBowerFileContent(PackageInterface $package);
+
+    /**
+     * @return boolead
+     */
+    public function writeBowerFile();
+
 }

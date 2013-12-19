@@ -78,9 +78,68 @@ class InstallerTest extends TestCase
             ->shouldReceive('close')
         ;
 
+        $this->config
+            ->shouldReceive('getSaveToBowerJsonFile')->andReturn(false)
+        ;
         $this->installer->install($package);
     }
 
+    public function testInstallWithUpdatingBowerJsonFile()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $packageJson = '{"name":"jquery","url":"git://github.com/components/jquery.git"}';
+        $bowerJson = '{"name": "jquery", "version": "2.0.3", "main": "jquery.js"}';
+
+        $package
+            ->shouldReceive('setTargetDir')->with(getcwd() . '/bower_components')
+            ->shouldReceive('getName')->andReturn('jquery')
+            ->shouldReceive('getVersion')->andReturn('*')
+            ->shouldReceive('setRepository')->with($this->repository)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn($packageJson)
+        ;
+
+        $this->repository
+            ->shouldReceive('setUrl->setHttpClient');
+        $this->repository
+            ->shouldReceive('getBower')->andReturn($bowerJson)
+            ->shouldReceive('findPackage')->with('*')->andReturn('2.0.3')
+            ->shouldReceive('getRelease')->andReturn('fileAsString...')
+        ;
+
+        $this->output
+            ->shouldReceive('writelnInfoPackage')
+            ->shouldReceive('writelnInstalledPackage')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
+        ;
+
+        $this->zipArchive
+            ->shouldReceive('open')->with('./tmp/jquery')->andReturn(true)
+            ->shouldReceive('getNumFiles')->andReturn(0)
+            ->shouldReceive('getNameIndex')->with(0)->andReturn(true)
+            ->shouldReceive('close')
+        ;
+
+        $this->config
+            ->shouldReceive('getSaveToBowerJsonFile')->andReturn(true)
+            ->shouldReceive('updateBowerJsonFile')->andReturn(true)
+        ;
+        $this->installer->install($package);
+    }
 
     public function testInstallPackageWithDependencies()
     {
@@ -138,6 +197,11 @@ class InstallerTest extends TestCase
             ->shouldReceive('close')
         ;
 
+        
+        $this->config
+            ->shouldReceive('getSaveToBowerJsonFile')->andReturn(false)
+        ;
+ 
         $this->installer->install($package);
     }
 
