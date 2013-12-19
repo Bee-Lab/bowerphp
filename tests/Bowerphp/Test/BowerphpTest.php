@@ -64,11 +64,6 @@ EOT;
 
         $json = '{"name": "jquery-ui", "version": "1.10.3", "main": ["ui/jquery-ui.js"], "dependencies": {"jquery": ">=1.6"}}';
 
-        $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
-            ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
-        ;
-
         $installer
             ->shouldReceive('install');
         ;
@@ -126,11 +121,6 @@ EOT;
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
         $json = '{"name": "jquery-ui", "version": "1.10.3", "main": ["ui/jquery-ui.js"], "dependencies": {"jquery": ">=1.6"}}';
 
-        $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
-            ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
-        ;
-
         $installer
             ->shouldReceive('update')
         ;
@@ -153,11 +143,6 @@ EOT;
 
         $json = '{"invalid json';
 
-        $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
-            ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
-        ;
-
         $this->config    
             ->shouldReceive('getBowerFileContent')->andThrow(new \RuntimeException());
         ;
@@ -176,11 +161,6 @@ EOT;
 
          $json = '{"invalid json';
 
-        $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
-            ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
-        ;
-
         $this->config
             ->shouldReceive('getBowerFileContent')->andThrow(new \RuntimeException(sprintf('Malformed JSON')));;
         ;
@@ -194,10 +174,6 @@ EOT;
     public function testUpdateWithoutBowerJsonException()
     {
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
-
-        $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(false)
-        ;
 
         $this->config
             ->shouldReceive('getBowerFileContent')->andThrow(new \RuntimeException(sprintf('Malformed JSON')))
