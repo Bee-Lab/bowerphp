@@ -105,4 +105,51 @@ class Bowerphp
         }
     }
 
+    /**
+     * @param  PackageInterface   $package
+     * @param  InstallerInterface $installer
+     * @return string
+     */
+    public function getPackageInfo(PackageInterface $package, InstallerInterface $installer)
+    {
+        return $installer->getPackageInfo($package);
+    }
+
+    /**
+     * @param  array $params
+     * @return array
+     */
+    protected function createAClearBowerFile(array $params)
+    {
+        $structure =  array(
+            'name' => $params['name'],
+            'authors' => array (
+                0 => 'Beelab <info@bee-lab.net>',
+                1 => $params['author']
+            ),
+            'private' => true,
+            'dependencies' => new \StdClass(),
+        );
+
+        return $structure;
+    }
+
+    /**
+     * FOR php 5.3 from php >= 5.4* use parameter JSON_PRETTY_PRINT
+     * See http://www.php.net/manual/en/function.json-encode.php
+     *
+     * @param  array  $array
+     * @return string
+     */
+    private function json_readable_encode(array $array)
+    {
+        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
+            return json_encode($array, JSON_PRETTY_PRINT);
+        }
+
+        $jsonPretty = new JsonPretty();
+
+        return $jsonPretty->prettify($array, null, '    ');
+    }
+
 }

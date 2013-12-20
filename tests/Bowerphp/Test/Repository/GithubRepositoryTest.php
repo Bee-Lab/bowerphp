@@ -62,6 +62,28 @@ class GithubRepositoryTest extends TestCase
         $this->assertEquals('2.0.3', $tag);
     }
 
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testFindPackageNotFound()
+    {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+        $tagsJson = '[{"name": "2.0.3", "zipball_url": "https://api.github.com/repos/components/jquery/zipball/2.0.3", "tarball_url": ""}, {"name": "2.0.2", "zipball_url": "", "tarball_url": ""}]';
+
+        $this->httpClient
+            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->with(true)->andReturn($tagsJson)
+        ;
+
+        $tag = $this->repository->findPackage('3');
+    }
+
     public function testGetRelease()
     {
         $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
@@ -80,6 +102,13 @@ class GithubRepositoryTest extends TestCase
         ;
 
         $this->repository->getRelease();
+    }
+
+    public function testGetUrl()
+    {
+        $this->assertEquals('https://raw.github.com/components/jquery', $this->repository->getUrl());
+        $this->repository->setUrl('git://github.com/components/jquery-ui.git', false);
+        $this->assertEquals('https://github.com/components/jquery-ui', $this->repository->getUrl());
     }
 
     public function testClearUrl()

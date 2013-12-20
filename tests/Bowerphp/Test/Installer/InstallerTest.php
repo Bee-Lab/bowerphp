@@ -197,14 +197,13 @@ class InstallerTest extends TestCase
             ->shouldReceive('close')
         ;
 
-        
+
         $this->config
             ->shouldReceive('getSaveToBowerJsonFile')->andReturn(false)
         ;
- 
+
         $this->installer->install($package);
     }
-
 
     public function testUpdateToSpecificVersionPackageAlreadyAtThatVersion()
     {
@@ -436,6 +435,37 @@ class InstallerTest extends TestCase
     public function testUpdateWithNewDependenciesToInstall()
     {
         $this->markTestIncomplete();
+    }
+
+    public function testGetPackageInfo()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $package
+            ->shouldReceive('getName')->andReturn('colorbox')
+            ->shouldReceive('getVersion')->andReturn('1.1')
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/colorbox')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn('{"name":"colorbox","url":"git://github.com/jackmoore/colorbox.git"}')
+        ;
+
+        $this->repository
+            ->shouldReceive('setUrl->setHttpClient');
+        $this->repository
+            ->shouldReceive('getUrl')->andReturn('https://github.com/jackmoore/colorbox')
+            ->shouldReceive('findPackage')->with('1.1')->andReturn($package)
+        ;
+
+        $this->assertEquals('https://github.com/jackmoore/colorbox', $this->installer->getPackageInfo($package));
     }
 
     public function testFilterZipFiles()

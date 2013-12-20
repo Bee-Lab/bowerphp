@@ -15,13 +15,19 @@ class GithubRepository implements RepositoryInterface
 
     /**
      * @param  string           $url
+     * @param  boolean          $raw
      * @return GithubRepository
      */
-    public function setUrl($url)
+    public function setUrl($url, $raw = true)
     {
-        $this->url = preg_replace('/\.git$/', '', str_replace('git://', 'https://raw.', $url));
+        $this->url = preg_replace('/\.git$/', '', str_replace('git://', 'https://' . ($raw ? 'raw.' : ''), $url));
 
         return $this;
+    }
+
+    public function getUrl()
+    {
+        return $this->url;
     }
 
     /**
@@ -68,16 +74,20 @@ class GithubRepository implements RepositoryInterface
         } catch (\Exception $e) {
             throw new \RuntimeException(sprintf('Cannot open repo %s/%s (%s).', $repoUser, $repoName, $e->getMessage()));
         }
-
         $version = $this->fixVersion($version);
 
+        $tagsString = '';
         foreach ($tags as $tag) {
             if (fnmatch($version, $tag['name'])) {
                 $this->setTag($tag);
 
                 return $tag['name'];
             }
+            $tagsString .= $tag['name'] . ', ';
         }
+        $tagsString = substr($tagsString, 0, -2);
+
+        throw new \RuntimeException(sprintf('Version %s not found. Available versions: %s', $version, $tagsString));
     }
 
     /**

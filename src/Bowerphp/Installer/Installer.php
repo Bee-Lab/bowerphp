@@ -234,6 +234,29 @@ class Installer implements InstallerInterface
     }
 
     /**
+     * @param  PackageInterface $package
+     * @return string
+     */
+    public function getPackageInfo(PackageInterface $package)
+    {
+        // look for package in bower
+        try {
+            $request = $this->httpClient->get($this->config->getBasePackagesUrl() . $package->getName());
+            $response = $request->send();
+        } catch (RequestException $e) {
+            throw new \RuntimeException(sprintf('Cannot download package %s (%s).', $package->getName(), $e->getMessage()));
+        }
+        $decode = json_decode($response->getBody(true), true);
+        if (!is_array($decode) || empty($decode['url'])) {
+            throw new \RuntimeException(sprintf('Package %s has malformed json or is missing "url".', $package->getName()));
+        }
+        $this->repository->setUrl($decode['url'], false)->setHttpClient($this->httpClient);
+        $this->repository->findPackage($package->getVersion());
+
+        return $this->repository->getUrl();
+    }
+
+    /**
      * Filter archive files based on an "ignore" list.
      * Note: bower.json and package.json are never ignored
      *
@@ -252,7 +275,7 @@ class Installer implements InstallerInterface
                 $return[] = $stat['name'];
             }
         }
-        $filter = array_filter($return, function ($var) use($ignore, $keep) {
+        $filter = array_filter($return, function ($var) use ($ignore, $keep) {
             foreach ($ignore as $pattern) {
                 if (fnmatch($pattern, $var) && !in_array(basename($var), $keep)) {
                     return false;

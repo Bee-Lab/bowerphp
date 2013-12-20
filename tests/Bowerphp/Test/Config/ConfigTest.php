@@ -55,7 +55,7 @@ class ConfigTest extends TestCase
     {
 
         $json = '{"name": "jquery-ui", "version": "1.10.4", "main": ["ui/jquery-ui.js"], "dependencies": {"jquery": ">=1.6"}}';
-   
+
         $this->filesystem
             ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(true)
             ->shouldReceive('read')->with(getcwd() . '/.bowerrc')->andReturn($json)
@@ -63,7 +63,7 @@ class ConfigTest extends TestCase
             ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
         ;
 
-        
+
 
         $config = new Config($this->filesystem);
 
@@ -71,16 +71,16 @@ class ConfigTest extends TestCase
         $this->assertEquals(json_decode($json,true), $config->getBowerFileContent());
 
     }
-    
+
     /**
      * @expectedException RuntimeException
      */
     public function testGetBowerFileContentWithExceptionOnInvalidJson() {
         $json = '{"directory": "app/Resources/bower", "storage": { "packages": "/tmp/bower" }}';
-    
+
 
         $filesystem = Mockery::mock('Gaufrette\Filesystem');
-   
+
         $filesystem
             ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(true)
             ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
@@ -98,10 +98,10 @@ class ConfigTest extends TestCase
     public function testGetBowerFileContentWithExceptionOnBowerJsonNotExist() {
         $json = '{"directory": "app/Resources/bower", "storage": { "packages": "/tmp/bower" }}';
         $jsonPackage = '{"name": "jquery-ui", "version": "1.10.4", "main": ["ui/jquery-ui.js"], "dependencies": {"jquery": ">=1.6"}}';
-    
+
 
         $filesystem = Mockery::mock('Gaufrette\Filesystem');
-   
+
         $filesystem
             ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
             ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(false)
