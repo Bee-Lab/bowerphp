@@ -23,8 +23,9 @@ interface InstallerInterface
      * Installs specific package.
      *
      * @param PackageInterface $package package instance
+     * @param Boolean $isDepency
      */
-    public function install(PackageInterface $package);
+    public function install(PackageInterface $package, $isDependency = false);
 
     /**
      * Updates specific package.

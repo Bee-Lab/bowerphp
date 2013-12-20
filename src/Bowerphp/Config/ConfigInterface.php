@@ -48,13 +48,19 @@ interface ConfigInterface
 
     /**
      *
+     * @params array $params
+     * @return integer
+     */
+    public function initBowerJsonFile(array $params);
+
+    /**
+     *
      * @params Package $package
      * @params string $packageVersion
      *
      * @return boolean
      */
     public function updateBowerJsonFile(PackageInterface $package, $packageVersion);
-
 
     /**
      * @return string

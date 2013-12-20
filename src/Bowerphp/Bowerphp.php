@@ -15,8 +15,6 @@ use Bowerphp\Config\ConfigInterface;
 use Bowerphp\Installer\InstallerInterface;
 use Bowerphp\Package\Package;
 use Bowerphp\Package\PackageInterface;
-use Camspiers\JsonPretty\JsonPretty;
-use Gaufrette\Filesystem;
 
 /**
  * Main class
@@ -28,9 +26,8 @@ class Bowerphp
     /**
      * @param Filesystem $filesystem
      */
-    public function __construct(Filesystem $filesystem, ConfigInterface $config)
+    public function __construct(ConfigInterface $config)
     {
-        $this->filesystem   = $filesystem;
         $this->config       = $config;
     }
 
@@ -41,10 +38,7 @@ class Bowerphp
      */
     public function init(array $params)
     {
-        $file = $this->config->getBowerFileName();
-        $json = $this->json_readable_encode($this->createAClearBowerFile($params));
-
-        $this->filesystem->write($file, $json);
+        $this->config->initBowerJsonFile($params);
     }
 
     /**
@@ -109,43 +103,6 @@ class Bowerphp
                 $installer->update($package);
             }
         }
-    }
-
-    /**
-     * @param  array $params
-     * @return array
-     */
-    protected function createAClearBowerFile(array $params)
-    {
-        $structure =  array(
-            'name' => $params['name'],
-            'authors' => array (
-                0 => 'Beelab <info@bee-lab.net>',
-                1 => $params['author']
-            ),
-            'private' => true,
-            'dependencies' => new \StdClass(),
-        );
-
-        return $structure;
-    }
-
-    /**
-     * FOR php 5.3 from php >= 5.4* use parameter JSON_PRETTY_PRINT
-     * See http://www.php.net/manual/en/function.json-encode.php
-     *
-     * @param  array  $array
-     * @return string
-     */
-    private function json_readable_encode(array $array)
-    {
-        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            return json_encode($array, JSON_PRETTY_PRINT);
-        }
-
-        $jsonPretty = new JsonPretty();
-
-        return $jsonPretty->prettify($array, null, '    ');
     }
 
 }

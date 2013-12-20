@@ -93,7 +93,7 @@ EOT
 
         $packageName = $input->getArgument('package');
 
-        $bowerphp = new Bowerphp($filesystem, $config);
+        $bowerphp = new Bowerphp($config);
 
         try {
             $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new ZipArchive(), $config, $output);

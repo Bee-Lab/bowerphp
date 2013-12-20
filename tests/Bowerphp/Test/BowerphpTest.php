@@ -33,15 +33,12 @@ class BowerphpTest extends TestCase
 EOT;
         $params = array('name' => 'Foo', 'author' => 'Mallo');
 
-        $this->filesystem
-            ->shouldReceive('write')->with('bower.json', $json)->andReturn(10)
-        ;
-     
         $this->config
             ->shouldReceive('getBowerFileName')->andReturn('bower.json')
+            ->shouldReceive('initBowerJsonFile')->with($params)->andReturn(123) 
         ;
 
-        $bowerphp = new Bowerphp($this->filesystem, $this->config);
+        $bowerphp = new Bowerphp($this->config);
         $bowerphp->init($params);
     }
 
@@ -54,7 +51,7 @@ EOT;
             ->shouldReceive('install')->with($package)
         ;
 
-        $bowerphp = new Bowerphp($this->filesystem, $this->config);
+        $bowerphp = new Bowerphp($this->config);
         $bowerphp->installPackage($package, $installer);
     }
 
@@ -71,7 +68,7 @@ EOT;
         $this->config
             ->shouldReceive('getBowerFileContent')
         ;
-        $bowerphp = new Bowerphp($this->filesystem, $this->config);
+        $bowerphp = new Bowerphp($this->config);
         $bowerphp->installDependencies($installer);
     }
 
@@ -87,7 +84,7 @@ EOT;
             ->shouldReceive('getBowerFileContent')->andThrow(new \RuntimeException(sprintf('Malformed JSON')));;
         ;
 
-        $bowerphp = new Bowerphp($this->filesystem, $this->config);
+        $bowerphp = new Bowerphp($this->config);
         $bowerphp->installDependencies($installer);
     }
 
@@ -112,7 +109,7 @@ EOT;
             ->shouldReceive('getBowerFileContent')->andReturn(json_decode($json,true))
         ;
 
-        $bowerphp = new Bowerphp($this->filesystem,$this->config);
+        $bowerphp = new Bowerphp($this->config);
         $bowerphp->updatePackage($package, $installer);
     }
 
@@ -130,7 +127,7 @@ EOT;
             ->shouldReceive('getBowerFileContent')->andReturn(json_decode($json,true))
         ;
 
-        $bowerphp = new Bowerphp($this->filesystem, $this->config);
+        $bowerphp = new Bowerphp($this->config);
         $bowerphp->updateDependencies($installer);
     }
 
@@ -147,7 +144,7 @@ EOT;
             ->shouldReceive('getBowerFileContent')->andThrow(new \RuntimeException());
         ;
 
-        $bowerphp = new Bowerphp($this->filesystem, $this->config);
+        $bowerphp = new Bowerphp($this->config);
         $bowerphp->updateDependencies($installer);
     }
 
@@ -164,7 +161,7 @@ EOT;
         $this->config
             ->shouldReceive('getBowerFileContent')->andThrow(new \RuntimeException(sprintf('Malformed JSON')));;
         ;
-        $bowerphp = new Bowerphp($this->filesystem, $this->config);
+        $bowerphp = new Bowerphp($this->config);
         $bowerphp->updatePackage($package, $installer);
     }
 
@@ -179,7 +176,7 @@ EOT;
             ->shouldReceive('getBowerFileContent')->andThrow(new \RuntimeException(sprintf('Malformed JSON')))
         ;
 
-        $bowerphp = new Bowerphp($this->filesystem, $this->config);
+        $bowerphp = new Bowerphp($this->config);
         $bowerphp->updateDependencies($installer);
     }
 }

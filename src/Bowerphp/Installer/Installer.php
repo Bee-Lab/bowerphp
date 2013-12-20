@@ -11,6 +11,7 @@ use Gaufrette\Filesystem;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Exception\RequestException;
 use Symfony\Component\Console\Output\OutputInterface;
+use RuntimeException;
 
 /**
  * Package installation manager.
@@ -57,7 +58,7 @@ class Installer implements InstallerInterface
     /**
      * {@inheritDoc}
      */
-    public function install(PackageInterface $package)
+    public function install(PackageInterface $package, $isDependency = false)
     {
         $this->output->writelnInfoPackage($package);
 
@@ -108,8 +109,12 @@ class Installer implements InstallerInterface
         }
 
 
-        if($this->config->getSaveToBowerJsonFile()) {
-            $this->config->updateBowerJsonFile($package, $packageVersion);
+        if($this->config->getSaveToBowerJsonFile() && !$isDependency) {
+            try {
+                $this->config->updateBowerJsonFile($package, $packageVersion);
+            } catch (RuntimeException $e) {
+                $this->output->writelnNoBowerJsonFile();
+            }
         }
 
         $this->zipArchive->close();
@@ -117,7 +122,7 @@ class Installer implements InstallerInterface
         if (!empty($bower['dependencies'])) {
             foreach ($bower['dependencies'] as $name => $version) {
                 $depPackage = new Package($name, $version);
-                $this->install($depPackage);
+                $this->install($depPackage, true);
             }
         }
     }

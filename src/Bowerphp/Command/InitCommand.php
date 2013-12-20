@@ -70,7 +70,7 @@ EOT
             'An author'
         );
 
-        $bowerphp = new Bowerphp($filesystem, $config);
+        $bowerphp = new Bowerphp($config);
         $bowerphp->init($params);
 
         $output->writeln('');

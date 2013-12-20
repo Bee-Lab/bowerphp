@@ -34,8 +34,10 @@ abstract class Command extends BaseCommand
     {
         // debug http interactions
         if (OutputInterface::VERBOSITY_DEBUG <= $output->getVerbosity()) {
-            $logger = function ($message) use ($output) {
-                $msg = $this->isText($message) ? $message : '(binary string)';
+            $self = $this;
+            $logger = function ($message) use ($output, $self) {
+                $finfo = new \finfo(FILEINFO_MIME);
+                $msg =  (substr($finfo->buffer($message), 0, 4) == 'text') ? $message : '(binary string)';
                 $output->writeln('<info>Guzzle</info> ' . $msg);
             };
             $logAdapter = new ClosureLogAdapter($logger);
@@ -44,17 +46,4 @@ abstract class Command extends BaseCommand
         }
     }
 
-    /**
-     * Check if a sting is text (or binary)
-     * Inspired by http://stackoverflow.com/questions/632685
-     *
-     * @param  string  $string
-     * @return boolean
-     */
-    private function isText($string)
-    {
-        $finfo = new \finfo(FILEINFO_MIME);
-
-        return substr($finfo->buffer($string), 0, 4) == 'text';
-    }
 }

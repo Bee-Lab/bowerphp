@@ -113,4 +113,19 @@ class ConfigTest extends TestCase
 
     }
 
+    public function testuUpdateBowerJsonFile() {
+        $this->markTestIncomplete();
+    }
+
+    public function testGetPackageBowerFileContent() {
+        $this->markTestIncomplete();
+
+    }
+
+    public function testWriteBowerFile() {
+        $this->markTestIncomplete();
+
+    }
+
+
 }
