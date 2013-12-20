@@ -108,8 +108,7 @@ class Installer implements InstallerInterface
             $this->filesystem->write($fileName, $fileContent, true);
         }
 
-
-        if($this->config->getSaveToBowerJsonFile() && !$isDependency) {
+        if ($this->config->getSaveToBowerJsonFile() && !$isDependency) {
             try {
                 $this->config->updateBowerJsonFile($package, $packageVersion);
             } catch (RuntimeException $e) {

@@ -16,7 +16,6 @@ use Camspiers\JsonPretty\JsonPretty;
 use Gaufrette\Filesystem;
 use RuntimeException;
 
-
 /**
  * Config
  */
@@ -79,7 +78,7 @@ class Config implements ConfigInterface
     {
         return $this->installDir;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -87,30 +86,27 @@ class Config implements ConfigInterface
     {
         return $this->saveToBowerJsonFile;;
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    public function setSaveToBowerJsonFile( $flag = true)
+    public function setSaveToBowerJsonFile($flag = true)
     {
          $this->saveToBowerJsonFile = $flag;
     }
 
-
-    public function initBowerJsonFile(array $params) 
+    public function initBowerJsonFile(array $params)
     {
         $file = $this->getBowerFileName();
         $json = $this->json_readable_encode($this->createAClearBowerFile($params));
-        
+
         return $this->filesystem->write($file, $json);
     }
-
-    
 
     /**
      * {@inheritDoc}
      */
-    public function updateBowerJsonFile( PackageInterface $package, $packageVersion)
+    public function updateBowerJsonFile(PackageInterface $package, $packageVersion)
     {
         if (!$this->getSaveToBowerJsonFile()) {
             return false;
@@ -120,23 +116,25 @@ class Config implements ConfigInterface
         $decode['dependencies'][$package->getName()] = $packageVersion;
         $file = $this->getBowerFileName();
         $json = $this->json_readable_encode($decode);
-            
+
         $a = $this->filesystem->write(getcwd() . "/" . $file, $json, true);
+
         return $a;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getBowerFileName() {
+    public function getBowerFileName()
+    {
         return $this->standardBowerFileName;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getBowerFileContent() {
-  
+    public function getBowerFileContent()
+    {
         if (!$this->filesystem->has(getcwd() . '/' . $this->getBowerFileName())) {
             throw new RuntimeException('No ' . $this->getBowerFileName() . ' found. You can run "init" command to create it.');
         }
@@ -144,22 +142,23 @@ class Config implements ConfigInterface
         if (empty($bowerJson) || !is_array($decode = json_decode($bowerJson, true))) {
             throw new RuntimeException(sprintf('Malformed JSON %s.', $bowerJson));
         }
+
         return $decode;
- 
+
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getPackageBowerFileContent(PackageInterface $package) {
-    
+    public function getPackageBowerFileContent(PackageInterface $package)
+    {
     }
 
     /**
      * {@inheritDoc}
      */
-    public function writeBowerFile() {
-    
+    public function writeBowerFile()
+    {
     }
 
     /**
@@ -198,6 +197,5 @@ class Config implements ConfigInterface
 
         return $jsonPretty->prettify($array, null, '    ');
     }
-
 
 }

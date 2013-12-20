@@ -78,7 +78,6 @@ EOT
         $config         = new Config($filesystem);
         $config->setSaveToBowerJsonFile($input->getOption('save'));
 
-
         $this->logHttp($httpClient, $output);
 
         // http cache

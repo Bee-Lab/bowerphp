@@ -13,7 +13,6 @@ namespace Bowerphp\Config;
 
 use Bowerphp\Package\PackageInterface;
 
-
 /**
  * ConfigInterface
  */

@@ -35,7 +35,7 @@ EOT;
 
         $this->config
             ->shouldReceive('getBowerFileName')->andReturn('bower.json')
-            ->shouldReceive('initBowerJsonFile')->with($params)->andReturn(123) 
+            ->shouldReceive('initBowerJsonFile')->with($params)->andReturn(123)
         ;
 
         $bowerphp = new Bowerphp($this->config);
@@ -100,7 +100,6 @@ EOT;
             ->shouldReceive('setVersion')->with('*')
         ;
 
-
         $installer
             ->shouldReceive('update')->with($package)
         ;
@@ -122,7 +121,6 @@ EOT;
             ->shouldReceive('update')
         ;
 
-
         $this->config
             ->shouldReceive('getBowerFileContent')->andReturn(json_decode($json,true))
         ;
@@ -140,7 +138,7 @@ EOT;
 
         $json = '{"invalid json';
 
-        $this->config    
+        $this->config
             ->shouldReceive('getBowerFileContent')->andThrow(new \RuntimeException());
         ;
 

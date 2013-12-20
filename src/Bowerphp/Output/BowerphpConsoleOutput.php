@@ -43,7 +43,7 @@ class BowerphpConsoleOutput extends ConsoleOutput
 
     public function writelnNoBowerJsonFile()
     {
-        $this->writeln(sprintf('bower <info>%s</info> <fg=yellow>%s</fg=yellow> %s', 
+        $this->writeln(sprintf('bower <info>%s</info> <fg=yellow>%s</fg=yellow> %s',
             str_pad("", 21, ' ', STR_PAD_RIGHT),
             str_pad('no-json', 10, ' ', STR_PAD_LEFT),
             'No bower.json file to save to, use bower init to create one', 10, ' ', STR_PAD_LEFT

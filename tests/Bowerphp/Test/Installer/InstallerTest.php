@@ -197,7 +197,6 @@ class InstallerTest extends TestCase
             ->shouldReceive('close')
         ;
 
-
         $this->config
             ->shouldReceive('getSaveToBowerJsonFile')->andReturn(false)
         ;

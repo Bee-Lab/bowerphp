@@ -50,7 +50,6 @@ class ConfigTest extends TestCase
         $config = new Config($this->filesystem);
     }
 
-
     public function testGetBowerFileContent()
     {
 
@@ -63,8 +62,6 @@ class ConfigTest extends TestCase
             ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
         ;
 
-
-
         $config = new Config($this->filesystem);
 
         $getBowerFileContent = $this->getMethod('Bowerphp\Config\Config', 'getBowerFileContent');
@@ -75,9 +72,9 @@ class ConfigTest extends TestCase
     /**
      * @expectedException RuntimeException
      */
-    public function testGetBowerFileContentWithExceptionOnInvalidJson() {
+    public function testGetBowerFileContentWithExceptionOnInvalidJson()
+    {
         $json = '{"directory": "app/Resources/bower", "storage": { "packages": "/tmp/bower" }}';
-
 
         $filesystem = Mockery::mock('Gaufrette\Filesystem');
 
@@ -95,10 +92,10 @@ class ConfigTest extends TestCase
     /**
      * @expectedException RuntimeException
      */
-    public function testGetBowerFileContentWithExceptionOnBowerJsonNotExist() {
+    public function testGetBowerFileContentWithExceptionOnBowerJsonNotExist()
+    {
         $json = '{"directory": "app/Resources/bower", "storage": { "packages": "/tmp/bower" }}';
         $jsonPackage = '{"name": "jquery-ui", "version": "1.10.4", "main": ["ui/jquery-ui.js"], "dependencies": {"jquery": ">=1.6"}}';
-
 
         $filesystem = Mockery::mock('Gaufrette\Filesystem');
 
@@ -113,19 +110,21 @@ class ConfigTest extends TestCase
 
     }
 
-    public function testuUpdateBowerJsonFile() {
+    public function testuUpdateBowerJsonFile()
+    {
         $this->markTestIncomplete();
     }
 
-    public function testGetPackageBowerFileContent() {
-        $this->markTestIncomplete();
-
-    }
-
-    public function testWriteBowerFile() {
+    public function testGetPackageBowerFileContent()
+    {
         $this->markTestIncomplete();
 
     }
 
+    public function testWriteBowerFile()
+    {
+        $this->markTestIncomplete();
+
+    }
 
 }
