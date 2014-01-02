@@ -60,7 +60,6 @@ class Bowerphp
     public function installDependencies(InstallerInterface $installer)
     {
         $decode = $this->config->getBowerFileContent();
-
         if (!empty($decode['dependencies'])) {
             foreach ($decode['dependencies'] as $name => $version) {
                 $package = new Package($name, $version);
@@ -108,11 +107,12 @@ class Bowerphp
     /**
      * @param  PackageInterface   $package
      * @param  InstallerInterface $installer
+     * @param  string             $info
      * @return string
      */
-    public function getPackageInfo(PackageInterface $package, InstallerInterface $installer)
+    public function getPackageInfo(PackageInterface $package, InstallerInterface $installer, $info = 'url')
     {
-        return $installer->getPackageInfo($package);
+        return $installer->getPackageInfo($package, $info);
     }
 
     /**

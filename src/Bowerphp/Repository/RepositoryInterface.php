@@ -26,15 +26,15 @@ interface RepositoryInterface
     /**
      * Get repo bower.json
      *
+     * @param  string $version
      * @return string
      */
-    public function getBower();
+    public function getBower($version = 'master');
 
     /**
      * Searches for the first match of a package version.
      *
-     * @param string $version package version
-     *
+     * @param  string      $version package version
      * @return string|null
      */
     public function findPackage($version = '*');
@@ -56,4 +56,9 @@ interface RepositoryInterface
      * @return array
      */
     public function getTag();
+
+    /**
+     * @return array
+     */
+    public function getTags();
 }

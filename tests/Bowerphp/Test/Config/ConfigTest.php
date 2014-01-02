@@ -52,7 +52,6 @@ class ConfigTest extends TestCase
 
     public function testGetBowerFileContent()
     {
-
         $json = '{"name": "jquery-ui", "version": "1.10.4", "main": ["ui/jquery-ui.js"], "dependencies": {"jquery": ">=1.6"}}';
 
         $this->filesystem
@@ -64,7 +63,6 @@ class ConfigTest extends TestCase
 
         $config = new Config($this->filesystem);
 
-        $getBowerFileContent = $this->getMethod('Bowerphp\Config\Config', 'getBowerFileContent');
         $this->assertEquals(json_decode($json,true), $config->getBowerFileContent());
 
     }
@@ -74,27 +72,25 @@ class ConfigTest extends TestCase
      */
     public function testGetBowerFileContentWithExceptionOnInvalidJson()
     {
-        $json = '{"directory": "app/Resources/bower", "storage": { "packages": "/tmp/bower" }}';
+        $json = '{invalid';
 
         $filesystem = Mockery::mock('Gaufrette\Filesystem');
 
         $filesystem
             ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(true)
             ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
-            ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn("[asdasd")
+            ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
         ;
 
         $config = new Config($filesystem);
         $config->getBowerFileContent();
-
     }
 
     /**
      * @expectedException RuntimeException
      */
-    public function testGetBowerFileContentWithExceptionOnBowerJsonNotExist()
+    public function testGetBowerFileContentWithExceptionOnBowerJsonDoesNotExist()
     {
-        $json = '{"directory": "app/Resources/bower", "storage": { "packages": "/tmp/bower" }}';
         $jsonPackage = '{"name": "jquery-ui", "version": "1.10.4", "main": ["ui/jquery-ui.js"], "dependencies": {"jquery": ">=1.6"}}';
 
         $filesystem = Mockery::mock('Gaufrette\Filesystem');
@@ -107,24 +103,92 @@ class ConfigTest extends TestCase
 
         $config = new Config($filesystem);
         $config->getBowerFileContent();
-
     }
 
-    public function testuUpdateBowerJsonFile()
+    public function testUpdateBowerJsonFile()
     {
-        $this->markTestIncomplete();
+        $json = '{
+    "dependencies": {
+        "foobar": "*"
+    }
+}';
+
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+
+        $package
+            ->shouldReceive('getName')->andReturn('foobar')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
+            ->shouldReceive('write')->with(getcwd() . '/bower.json', $json, true)->andReturn(123)
+        ;
+
+        $config = new Config($this->filesystem);
+
+        $this->assertFalse($config->updateBowerJsonFile($package, '*'));
+
+        $config->setSaveToBowerJsonFile(true);
+
+        $this->assertEquals(123, $config->updateBowerJsonFile($package, '*'));
     }
 
     public function testGetPackageBowerFileContent()
     {
         $this->markTestIncomplete();
-
     }
 
     public function testWriteBowerFile()
     {
         $this->markTestIncomplete();
+    }
 
+    public function testSetSaveToBowerJsonFile()
+    {
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
+        ;
+
+        $config = new Config($this->filesystem);
+
+        $config->setSaveToBowerJsonFile();
+    }
+
+    public function testInitBowerJsonFile()
+    {
+        $json = '{
+    "name": "foo",
+    "authors": [
+        "Beelab <info@bee-lab.net>",
+        "bar"
+    ],
+    "private": true,
+    "dependencies": {
+
+    }
+}';
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('write')->with('bower.json', $json)->andReturn(123)
+        ;
+
+        $config = new Config($this->filesystem);
+
+        $this->assertEquals(123, $config->initBowerJsonFile(array('name' => 'foo', 'author' => 'bar')));
+    }
+
+    public function testGetBasePackagesUrl()
+    {
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
+        ;
+
+        $config = new Config($this->filesystem);
+
+        $this->assertEquals('http://bower.herokuapp.com/packages/', $config->getBasePackagesUrl());
     }
 
 }

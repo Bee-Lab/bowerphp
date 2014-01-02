@@ -59,14 +59,14 @@ EOT;
     {
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
-        $json = '{"name": "jquery-ui", "version": "1.10.3", "main": ["ui/jquery-ui.js"], "dependencies": {"jquery": ">=1.6"}}';
+        $json = array('name' => 'jquery-ui', 'dependencies' => array('jquery' => '>=1.6'));
 
         $installer
             ->shouldReceive('install');
         ;
 
         $this->config
-            ->shouldReceive('getBowerFileContent')
+            ->shouldReceive('getBowerFileContent')->andReturn($json)
         ;
         $bowerphp = new Bowerphp($this->config);
         $bowerphp->installDependencies($installer);
@@ -105,11 +105,39 @@ EOT;
         ;
 
         $this->config
-            ->shouldReceive('getBowerFileContent')->andReturn(json_decode($json,true))
+            ->shouldReceive('getBowerFileContent')->andReturn(json_decode($json, true))
         ;
 
         $bowerphp = new Bowerphp($this->config);
         $bowerphp->updatePackage($package, $installer);
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testUpdatePackageNotFound()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+
+        $json = '{"name": "Foo", "dependencies": {"less": "*"}}';
+
+        $package
+            ->shouldReceive('getName')->andReturn('unexistant')
+            ->shouldReceive('setVersion')->with('*')
+        ;
+
+        $installer
+            ->shouldReceive('update')->with($package)
+        ;
+
+        $this->config
+            ->shouldReceive('getBowerFileContent')->andReturn(json_decode($json, true))
+        ;
+
+        $bowerphp = new Bowerphp($this->config);
+        $bowerphp->updatePackage($package, $installer);
+
     }
 
     public function testUpdateDependencies()
@@ -154,7 +182,7 @@ EOT;
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
-         $json = '{"invalid json';
+        $json = '{"invalid json';
 
         $this->config
             ->shouldReceive('getBowerFileContent')->andThrow(new \RuntimeException(sprintf('Malformed JSON')));;
@@ -176,5 +204,18 @@ EOT;
 
         $bowerphp = new Bowerphp($this->config);
         $bowerphp->updateDependencies($installer);
+    }
+
+    public function testGetPackageInfo()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+
+        $installer
+            ->shouldReceive('getPackageInfo');
+        ;
+
+        $bowerphp = new Bowerphp($this->config);
+        $bowerphp->getPackageInfo($package, $installer);
     }
 }

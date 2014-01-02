@@ -4,6 +4,7 @@ namespace Bowerphp\Test\Repository;
 
 use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Test\TestCase;
+use Guzzle\Http\Exception\RequestException;
 use Mockery;
 
 class GithubRepositoryTest extends TestCase
@@ -42,6 +43,20 @@ class GithubRepositoryTest extends TestCase
         $this->assertEquals($bower, $bowerJson);
     }
 
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testGetBowerPackageNotFound()
+    {
+        $url = 'https://raw.github.com/components/jquery/master/bower.json';
+
+        $this->httpClient
+            ->shouldReceive('get')->with($url)->andThrow(new RequestException())
+        ;
+
+        $bower = $this->repository->getBower();
+    }
+
     public function testFindPackage()
     {
         $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
@@ -65,20 +80,34 @@ class GithubRepositoryTest extends TestCase
     /**
      * @expectedException RuntimeException
      */
-    public function testFindPackageNotFound()
+    public function testFindPackageVersionNotFound()
     {
         $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
         $response = Mockery::mock('Guzzle\Http\Message\Response');
         $tagsJson = '[{"name": "2.0.3", "zipball_url": "https://api.github.com/repos/components/jquery/zipball/2.0.3", "tarball_url": ""}, {"name": "2.0.2", "zipball_url": "", "tarball_url": ""}]';
 
         $this->httpClient
-            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags')->andReturn($request)
+            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags')->andThrow($request)
         ;
         $request
             ->shouldReceive('send')->andReturn($response)
         ;
         $response
             ->shouldReceive('getBody')->with(true)->andReturn($tagsJson)
+        ;
+
+        $tag = $this->repository->findPackage('3');
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testFindPackageRepoNotFound()
+    {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+
+        $this->httpClient
+            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags')->andThrow(new RequestException())
         ;
 
         $tag = $this->repository->findPackage('3');
@@ -99,6 +128,22 @@ class GithubRepositoryTest extends TestCase
         ;
         $response
             ->shouldReceive('getBody')->andReturn('...')
+        ;
+
+        $this->repository->getRelease();
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testGetReleaseFileNotFound()
+    {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+
+        $this->repository->setTag(array('zipball_url' => 'foo'));
+
+        $this->httpClient
+            ->shouldReceive('get')->with('foo')->andThrow(new RequestException())
         ;
 
         $this->repository->getRelease();
@@ -128,5 +173,38 @@ class GithubRepositoryTest extends TestCase
         $this->assertEquals('1.*.*', $fixVersion->invokeArgs($this->repository, array('1.*')));
         $this->assertEquals('1.5.*', $fixVersion->invokeArgs($this->repository, array('1.5')));
         $this->assertEquals('1.5.*', $fixVersion->invokeArgs($this->repository, array('1.5.*')));
+    }
+
+    public function testGetTags()
+    {
+        $tagJson = '[{"name": "2.0.3", "zipball_url": "https://api.github.com/repos/components/jquery/zipball/2.0.3"},
+            {"name": "2.0.2", "zipball_url": "https://api.github.com/repos/components/jquery/zipball/2.0.2"}]';
+
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $this->httpClient
+            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn($tagJson)
+        ;
+
+        $this->assertEquals(array('2.0.3', '2.0.2'), $this->repository->getTags());
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testGetTagsException()
+    {
+        $this->httpClient
+            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags')->andThrow(new RequestException())
+        ;
+
+        $this->repository->getTags();
     }
 }

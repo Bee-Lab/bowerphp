@@ -27,12 +27,11 @@ use Guzzle\Plugin\Cache\DefaultCacheStorage;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 
 /**
- * Home
+ * Info
  */
-class HomeCommand extends Command
+class InfoCommand extends Command
 {
     /**
      * {@inheritDoc}
@@ -40,11 +39,13 @@ class HomeCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('home')
-            ->setDescription('Opens a package homepage into your favorite browser.')
+            ->setName('info')
+            ->setDescription('Displays overall information of a package or of a particular version.')
             ->addArgument('package', InputArgument::REQUIRED, 'Choose a package.')
+            ->addArgument('property', InputArgument::OPTIONAL, 'A property present in bower.json.')
             ->setHelp(<<<EOT
-The <info>home</info> command opens a package homepage into your favorite browser.
+The <info>info</info> command displays overall information of a package or of a particular version.
+If you pass a property present in bower.json, you can get the correspondent value.
 EOT
             )
         ;
@@ -73,6 +74,7 @@ EOT
         $httpClient->addSubscriber($cachePlugin);
 
         $packageName = $input->getArgument('package');
+        $property = $input->getArgument('property');
 
         $v = explode("#", $packageName);
         $packageName = isset($v[0]) ? $v[0] : $packageName;
@@ -82,43 +84,18 @@ EOT
         $bowerphp = new Bowerphp($config);
         $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new ZipArchive(), $config, $output);
 
-        $url = $bowerphp->getPackageInfo($package, $installer);
-
-        $default = $this->getDefaulBrowser();
-
-        $arg = "$default \"$url\"";
-
-        if (OutputInterface::VERBOSITY_DEBUG <= $output->getVerbosity()) {
-            $output->writeln($arg);
-        } else {
-            $output->writeln('');
+        $bower = $bowerphp->getPackageInfo($package, $installer, 'bower');
+        if ($version == '*') {
+            $versions = $bowerphp->getPackageInfo($package, $installer, 'versions');
         }
 
-        $browser = new Process($arg);
-        $browser->start();
-        while ($browser->isRunning()) {
-            // do nothing...
-        }
-    }
-
-    /**
-     * @return string
-     */
-    private function getDefaulBrowser()
-    {
-        $xdgOpen = new Process('which xdg-open');
-        $xdgOpen->run();
-        if (!$xdgOpen->isSuccessful()) {
-            $open = new Process('which open');
-            $open->run();
-            if (!$open->isSuccessful()) {
-                throw new \RuntimeException('Cound not open default browser.');
+        // TODO add colors!
+        $output->writeln($bower);
+        if ($version == '*') {
+            $output->writeln('Available versions:');
+            foreach ($versions as $v) {
+                $output->writeln("- $v");
             }
-
-            return trim($open->getOutput());
         }
-
-        return trim($xdgOpen->getOutput());
     }
-
 }

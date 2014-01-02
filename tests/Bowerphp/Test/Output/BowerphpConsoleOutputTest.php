@@ -48,6 +48,15 @@ class ConsoleOutputTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("bower jquery#3.0               install", $BConsoleOutput->output);
     }
 
+    public function testWritelnNoBowerJsonFile()
+    {
+        $BConsoleOutput = new TestOutput();
+        $BConsoleOutput->setDecorated(false);
+        $BConsoleOutput->writelnNoBowerJsonFile();
+
+        $this->assertEquals('bower                          no-json No bower.json file to save to, use bower init to create one', $BConsoleOutput->output);
+    }
+
 }
 
 class TestOutput extends BowerphpConsoleOutput

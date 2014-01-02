@@ -4,6 +4,7 @@ namespace Bowerphp\Repository;
 
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Exception\RequestException;
+use RuntimeException;
 
 /**
  * GithubRepository
@@ -25,6 +26,9 @@ class GithubRepository implements RepositoryInterface
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getUrl()
     {
         return $this->url;
@@ -42,26 +46,25 @@ class GithubRepository implements RepositoryInterface
     }
 
     /**
-     * @return string
+     * {@inheritDoc}
      */
-    public function getBower()
+    public function getBower($version = 'master')
     {
-        $depBowerJsonURL = $this->url . '/master/bower.json';
+        $depBowerJsonURL = $this->url . '/' . $version . '/bower.json';
         try {
             $request = $this->httpClient->get($depBowerJsonURL);
             $response = $request->send();
             // we need this in case of redirect (e.g. 'less/less' becomes 'less/less.js')
             $this->setUrl($response->getEffectiveUrl());
         } catch (RequestException $e) {
-            throw new \RuntimeException(sprintf('Cannot open package git URL %s (%s).', $depBowerJsonURL, $e->getMessage()), 5);
+            throw new RuntimeException(sprintf('Cannot open package git URL %s (%s).', $depBowerJsonURL, $e->getMessage()), 5);
         }
 
         return $response->getBody(true);
     }
 
     /**
-     * @param  string $version
-     * @return string
+     * {@inheritDoc}
      */
     public function findPackage($version = '*')
     {
@@ -71,8 +74,8 @@ class GithubRepository implements RepositoryInterface
             $request = $this->httpClient->get($githubTagsURL);
             $response = $request->send();
             $tags = json_decode($response->getBody(true), true);
-        } catch (\Exception $e) {
-            throw new \RuntimeException(sprintf('Cannot open repo %s/%s (%s).', $repoUser, $repoName, $e->getMessage()));
+        } catch (RequestException $e) {
+            throw new RuntimeException(sprintf('Cannot open repo %s/%s (%s).', $repoUser, $repoName, $e->getMessage()));
         }
         $version = $this->fixVersion($version);
 
@@ -87,12 +90,11 @@ class GithubRepository implements RepositoryInterface
         }
         $tagsString = substr($tagsString, 0, -2);
 
-        throw new \RuntimeException(sprintf('Version %s not found. Available versions: %s', $version, $tagsString));
+        throw new RuntimeException(sprintf('Version %s not found. Available versions: %s', $version, $tagsString));
     }
 
     /**
-     * @param  string $type
-     * @return string
+     * {@inheritDoc}
      */
     public function getRelease($type = 'zip')
     {
@@ -103,13 +105,13 @@ class GithubRepository implements RepositoryInterface
             $response = $request->send();
 
             return $response->getBody();
-        } catch (\Exception $e) {
-            throw new \RuntimeException(sprintf('Cannot open file %s (%s).', $file, $e->getMessage()));
+        } catch (RequestException $e) {
+            throw new RuntimeException(sprintf('Cannot open file %s (%s).', $file, $e->getMessage()));
         }
     }
 
     /**
-     * @return array
+     * {@inheritDoc}
      */
     public function getTag()
     {
@@ -117,11 +119,31 @@ class GithubRepository implements RepositoryInterface
     }
 
     /**
-     * @param array $tag
+     * {@inheritDoc}
      */
     public function setTag(array $tag)
     {
         $this->tag = $tag;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTags()
+    {
+        list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
+        try {
+            $githubTagsURL = sprintf('https://api.github.com/repos/%s/%s/tags', $repoUser, $repoName);
+            $request = $this->httpClient->get($githubTagsURL);
+            $response = $request->send();
+            $tags = json_decode($response->getBody(true), true);
+
+            return array_map(function ($var) {
+                return $var['name'];
+            }, $tags);
+        } catch (RequestException $e) {
+            throw new RuntimeException(sprintf('Cannot open repo %s/%s (%s).', $repoUser, $repoName, $e->getMessage()));
+        }
     }
 
     /**

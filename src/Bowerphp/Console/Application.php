@@ -33,11 +33,6 @@ class Application extends BaseApplication
      */
     protected $bowerphp;
 
-    /**
-     * @var IOInterface
-     */
-    protected $io;
-
     private static $logo = '    ____                                __
    / __ )____ _      _____  _________  / /_  ____
   / __  / __ \ | /| / / _ \/ ___/ __ \/ __ \/ __ \
@@ -110,14 +105,6 @@ class Application extends BaseApplication
         return $workingDir;
     }
 
-    /**
-     * @return IOInterface
-     */
-    public function getIO()
-    {
-        return $this->io;
-    }
-
     public function getHelp()
     {
         return self::$logo . parent::getHelp();
@@ -130,6 +117,7 @@ class Application extends BaseApplication
     {
         $commands = parent::getDefaultCommands();
         $commands[] = new Command\HomeCommand();
+        $commands[] = new Command\InfoCommand();
         $commands[] = new Command\InitCommand();
         $commands[] = new Command\InstallCommand();
         $commands[] = new Command\UpdateCommand();

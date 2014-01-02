@@ -234,9 +234,10 @@ class Installer implements InstallerInterface
 
     /**
      * @param  PackageInterface $package
+     * @param  string           $info
      * @return string
      */
-    public function getPackageInfo(PackageInterface $package)
+    public function getPackageInfo(PackageInterface $package, $info = 'url')
     {
         // look for package in bower
         try {
@@ -250,9 +251,23 @@ class Installer implements InstallerInterface
             throw new \RuntimeException(sprintf('Package %s has malformed json or is missing "url".', $package->getName()));
         }
         $this->repository->setUrl($decode['url'], false)->setHttpClient($this->httpClient);
-        $this->repository->findPackage($package->getVersion());
+        $tag = $this->repository->findPackage($package->getVersion());
 
-        return $this->repository->getUrl();
+        if ($info == 'url') {
+            return $this->repository->getUrl();
+        }
+
+        if ($info == 'bower') {
+            $this->repository->setUrl($decode['url'], true);
+
+            return $this->repository->getBower($tag);
+        }
+
+        if ($info == 'versions') {
+            return $this->repository->getTags();
+        }
+
+        throw new RuntimeException(sprintf('Unsupported info option "%s".', $info));
     }
 
     /**

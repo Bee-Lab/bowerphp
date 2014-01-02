@@ -117,9 +117,7 @@ class Config implements ConfigInterface
         $file = $this->getBowerFileName();
         $json = $this->json_readable_encode($decode);
 
-        $a = $this->filesystem->write(getcwd() . "/" . $file, $json, true);
-
-        return $a;
+        return $this->filesystem->write(getcwd() . '/' . $file, $json, true);
     }
 
     /**

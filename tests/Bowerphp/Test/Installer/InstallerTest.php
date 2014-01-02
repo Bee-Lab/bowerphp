@@ -4,6 +4,7 @@ namespace Bowerphp\Test\Installer;
 
 use Bowerphp\Installer\Installer;
 use Bowerphp\Test\TestCase;
+use Guzzle\Http\Exception\RequestException;
 use Mockery;
 
 class InstallerTest extends TestCase
@@ -199,6 +200,198 @@ class InstallerTest extends TestCase
 
         $this->config
             ->shouldReceive('getSaveToBowerJsonFile')->andReturn(false)
+        ;
+
+        $this->installer->install($package);
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testInstallRequestException()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+
+        $package
+            ->shouldReceive('setTargetDir')->with(getcwd() . '/bower_components')
+            ->shouldReceive('getName')->andReturn('foo')
+        ;
+
+        $this->output
+            ->shouldReceive('writelnInfoPackage')
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/foo')->andThrow(new RequestException);
+        ;
+
+        $this->installer->install($package);
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testInstallJsonException()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $packageJson = '{}';
+
+        $package
+            ->shouldReceive('setTargetDir')->with(getcwd() . '/bower_components')
+            ->shouldReceive('getName')->andReturn('jquery')
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn($packageJson)
+        ;
+
+        $this->output
+            ->shouldReceive('writelnInfoPackage')
+        ;
+
+        $this->installer->install($package);
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testInstallBowerJsonException()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $packageJson = '{"name":"jquery","url":"git://github.com/components/jquery.git"}';
+        $bowerJson = '{invalid';
+
+        $package
+            ->shouldReceive('setTargetDir')->with(getcwd() . '/bower_components')
+            ->shouldReceive('getName')->andReturn('jquery')
+            ->shouldReceive('getVersion')->andReturn('*')
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn($packageJson)
+        ;
+
+        $this->repository
+            ->shouldReceive('setUrl->setHttpClient');
+        $this->repository
+            ->shouldReceive('getBower')->andReturn($bowerJson)
+        ;
+
+        $this->output
+            ->shouldReceive('writelnInfoPackage')
+        ;
+
+        $this->installer->install($package);
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testInstallVersionNotFoundException()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $packageJson = '{"name":"jquery","url":"git://github.com/components/jquery.git"}';
+        $bowerJson = '{"name": "jquery", "version": "2.0.3", "main": "jquery.js"}';
+
+        $package
+            ->shouldReceive('setTargetDir')->with(getcwd() . '/bower_components')
+            ->shouldReceive('getName')->andReturn('jquery')
+            ->shouldReceive('getVersion')->andReturn('*')
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn($packageJson)
+        ;
+
+        $this->repository
+            ->shouldReceive('setUrl->setHttpClient');
+        $this->repository
+            ->shouldReceive('getBower')->andReturn($bowerJson)
+            ->shouldReceive('findPackage')->with('*')->andReturn(null)
+        ;
+
+        $this->output
+            ->shouldReceive('writelnInfoPackage')
+        ;
+
+        $this->installer->install($package);
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testInstallZipOpenException()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $packageJson = '{"name":"jquery","url":"git://github.com/components/jquery.git"}';
+        $bowerJson = '{"name": "jquery", "version": "2.0.3", "main": "jquery.js"}';
+
+        $package
+            ->shouldReceive('setTargetDir')->with(getcwd() . '/bower_components')
+            ->shouldReceive('getName')->andReturn('jquery')
+            ->shouldReceive('getVersion')->andReturn('*')
+            ->shouldReceive('setRepository')->with($this->repository)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn($packageJson)
+        ;
+
+        $this->repository
+            ->shouldReceive('setUrl->setHttpClient');
+        $this->repository
+            ->shouldReceive('getBower')->andReturn($bowerJson)
+            ->shouldReceive('findPackage')->with('*')->andReturn('2.0.3')
+            ->shouldReceive('getRelease')->andReturn('fileAsString...')
+        ;
+
+        $this->output
+            ->shouldReceive('writelnInfoPackage')
+            ->shouldReceive('writelnInstalledPackage')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
+        ;
+
+        $this->zipArchive
+            ->shouldReceive('open')->with('./tmp/jquery')->andReturn(false)
         ;
 
         $this->installer->install($package);
@@ -461,7 +654,93 @@ class InstallerTest extends TestCase
             ->shouldReceive('setUrl->setHttpClient');
         $this->repository
             ->shouldReceive('getUrl')->andReturn('https://github.com/jackmoore/colorbox')
-            ->shouldReceive('findPackage')->with('1.1')->andReturn($package)
+            ->shouldReceive('findPackage')->with('1.1')->andReturn('1.1.0')
+            ->shouldReceive('setUrl')->with('https://github.com/jackmoore/colorbox', true)
+            ->shouldReceive('getBower')->with('1.1.0')->andReturn('a json...')
+            ->shouldReceive('getTags')->andReturn(array('1.1.0', '1.0.0'))
+        ;
+
+        $this->assertEquals('https://github.com/jackmoore/colorbox', $this->installer->getPackageInfo($package));
+        $this->assertEquals('a json...', $this->installer->getPackageInfo($package, 'bower'));
+        $this->assertEquals(array('1.1.0', '1.0.0'), $this->installer->getPackageInfo($package, 'versions'));
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testGetPackageInfoInvalidInfo()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $package
+            ->shouldReceive('getName')->andReturn('colorbox')
+            ->shouldReceive('getVersion')->andReturn('1.1')
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/colorbox')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn('{"name":"colorbox","url":"git://github.com/jackmoore/colorbox.git"}')
+        ;
+
+        $this->repository
+            ->shouldReceive('setUrl->setHttpClient');
+        $this->repository
+            ->shouldReceive('getUrl')->andReturn('https://github.com/jackmoore/colorbox')
+            ->shouldReceive('findPackage')->with('1.1')->andReturn('1.1.0')
+            ->shouldReceive('setUrl')->with('https://github.com/jackmoore/colorbox', true)
+        ;
+
+        $this->installer->getPackageInfo($package, 'baz');
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testGetPackageInfoRequestException()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+
+        $package
+            ->shouldReceive('getName')->andReturn('colorbox')
+            ->shouldReceive('getVersion')->andReturn('1.1')
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/colorbox')->andThrow(new RequestException)
+        ;
+
+        $this->assertEquals('https://github.com/jackmoore/colorbox', $this->installer->getPackageInfo($package));
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testGetPackageInfoJsonException()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $package
+            ->shouldReceive('getName')->andReturn('colorbox')
+            ->shouldReceive('getVersion')->andReturn('1.1')
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/colorbox')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn('{invalid')
         ;
 
         $this->assertEquals('https://github.com/jackmoore/colorbox', $this->installer->getPackageInfo($package));
@@ -483,5 +762,15 @@ class InstallerTest extends TestCase
         $ignore = array('.*', '*.md', 'bower.json', 'package.json');
         $expect = array('foo', 'foo.txt', 'bower.json', 'package.json');
         $this->assertEquals($expect, $filterZipFiles->invokeArgs($this->installer, array($archive, $ignore)));
+    }
+
+    public function testIsInstalled()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testUninstall()
+    {
+        $this->markTestIncomplete();
     }
 }

@@ -11,11 +11,11 @@
 
 namespace Bowerphp\Util;
 
+use ErrorException;
+
 /**
  * Convert PHP errors into exceptions
  * Copied by Composer https://github.com/composer/composer
- *
- * @author Artem Lopata <biozshock@gmail.com>
  */
 class ErrorHandler
 {
@@ -33,7 +33,7 @@ class ErrorHandler
     public static function handle($level, $message, $file, $line)
     {
         // respect error_reporting being disabled
-        if (!error_reporting()) {
+        if (error_reporting() === 0) {
             return;
         }
 
@@ -42,7 +42,7 @@ class ErrorHandler
             "\na legitimately suppressed error that you were not supposed to see.";
         }
 
-        throw new \ErrorException($message, 0, $level, $file, $line);
+        throw new ErrorException($message, 0, $level, $file, $line);
     }
 
     /**
