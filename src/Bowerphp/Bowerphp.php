@@ -21,14 +21,14 @@ use Bowerphp\Package\PackageInterface;
  */
 class Bowerphp
 {
-    protected $filesystem, $config;
+    protected $config;
 
     /**
-     * @param Filesystem $filesystem
+     * @param ConfigInterface $config
      */
     public function __construct(ConfigInterface $config)
     {
-        $this->config       = $config;
+        $this->config = $config;
     }
 
     /**
@@ -133,23 +133,4 @@ class Bowerphp
 
         return $structure;
     }
-
-    /**
-     * FOR php 5.3 from php >= 5.4* use parameter JSON_PRETTY_PRINT
-     * See http://www.php.net/manual/en/function.json-encode.php
-     *
-     * @param  array  $array
-     * @return string
-     */
-    private function json_readable_encode(array $array)
-    {
-        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            return json_encode($array, JSON_PRETTY_PRINT);
-        }
-
-        $jsonPretty = new JsonPretty();
-
-        return $jsonPretty->prettify($array, null, '    ');
-    }
-
 }

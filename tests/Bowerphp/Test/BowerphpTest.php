@@ -218,4 +218,12 @@ EOT;
         $bowerphp = new Bowerphp($this->config);
         $bowerphp->getPackageInfo($package, $installer);
     }
+
+    public function testCreateAClearBowerFile()
+    {
+        $bowerphp = new Bowerphp($this->config);
+        $expected = array('name' => '', 'authors' => array('Beelab <info@bee-lab.net>', ''), 'private' => true, 'dependencies' => new \StdClass());
+        $createAClearBowerFile = $this->getMethod('Bowerphp\Bowerphp', 'createAClearBowerFile');
+        $this->assertEquals($expected, $createAClearBowerFile->invokeArgs($bowerphp, array(array('name' => '', 'author' => ''))));
+    }
 }
