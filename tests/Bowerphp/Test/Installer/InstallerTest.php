@@ -656,7 +656,7 @@ class InstallerTest extends TestCase
             ->shouldReceive('getUrl')->andReturn('https://github.com/jackmoore/colorbox')
             ->shouldReceive('findPackage')->with('1.1')->andReturn('1.1.0')
             ->shouldReceive('setUrl')->with('https://github.com/jackmoore/colorbox', true)
-            ->shouldReceive('getBower')->with('1.1.0')->andReturn('a json...')
+            ->shouldReceive('getBower')->with('1.1.0', true, "git://github.com/jackmoore/colorbox.git")->andReturn('a json...')
             ->shouldReceive('getTags')->andReturn(array('1.1.0', '1.0.0'))
         ;
 

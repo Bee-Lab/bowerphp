@@ -57,6 +57,23 @@ class ConsoleOutputTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('bower                          no-json No bower.json file to save to, use bower init to create one', $BConsoleOutput->output);
     }
 
+    public function testWritelnJson()
+    {
+        $BConsoleOutput = new TestOutput();
+        $BConsoleOutput->setDecorated(false);
+        $BConsoleOutput->writelnJson('{"name": "foo"}');
+
+        $this->assertEquals("{name: 'foo'}", $BConsoleOutput->output);
+    }
+
+    public function testWritelnJsonText()
+    {
+        $BConsoleOutput = new TestOutput();
+        $BConsoleOutput->setDecorated(false);
+        $BConsoleOutput->writelnJsonText("name");
+
+        $this->assertEquals('"name"', $BConsoleOutput->output);
+    }
 }
 
 class TestOutput extends BowerphpConsoleOutput

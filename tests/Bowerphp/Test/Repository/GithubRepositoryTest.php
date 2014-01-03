@@ -25,7 +25,7 @@ class GithubRepositoryTest extends TestCase
         $response = Mockery::mock('Guzzle\Http\Message\Response');
 
         $bowerJson = '{"name": "jquery", "version": "2.0.3", "main": "jquery.js"}';
-        $url = 'https://raw.github.com/components/jquery/master/bower.json';
+        $url = '/master/bower.json';
 
         $this->httpClient
             ->shouldReceive('get')->with($url)->andReturn($request)

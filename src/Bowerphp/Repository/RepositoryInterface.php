@@ -26,10 +26,12 @@ interface RepositoryInterface
     /**
      * Get repo bower.json
      *
-     * @param  string $version
+     * @param  string  $version
+     * @param  boolean $includeHomepage
+     * @param  string  $url
      * @return string
      */
-    public function getBower($version = 'master');
+    public function getBower($version = 'master', $includeHomepage = false, $url = '');
 
     /**
      * Searches for the first match of a package version.

@@ -89,13 +89,20 @@ EOT
             $versions = $bowerphp->getPackageInfo($package, $installer, 'versions');
         }
 
-        // TODO add colors!
-        $output->writeln($bower);
-        if ($version == '*') {
-            $output->writeln('Available versions:');
-            foreach ($versions as $v) {
-                $output->writeln("- $v");
+        if (!is_null($property)) {
+            $bowerArray = json_decode($bower, true);
+            $propertyValue = isset($bowerArray[$property]) ? $bowerArray[$property] : '';
+            $output->writelnJsonText($propertyValue);
+        } else {
+            $output->writelnJson($bower);
+            if ($version == '*') {
+                $output->writeln('');
+                $output->writeln('<fg=cyan>Available versions:</fg=cyan>');
+                foreach ($versions as $v) {
+                    $output->writeln("- $v");
+                }
             }
         }
     }
+
 }

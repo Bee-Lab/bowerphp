@@ -48,8 +48,12 @@ class GithubRepository implements RepositoryInterface
     /**
      * {@inheritDoc}
      */
-    public function getBower($version = 'master')
+    public function getBower($version = 'master', $includeHomepage = false, $url = '')
     {
+        // we need to save current $this->url
+        $oldUrl = $this->url;
+        // then, we call setUrl(), to get the http url
+        $this->setUrl($url, true);
         $depBowerJsonURL = $this->url . '/' . $version . '/bower.json';
         try {
             $request = $this->httpClient->get($depBowerJsonURL);
@@ -60,7 +64,16 @@ class GithubRepository implements RepositoryInterface
             throw new RuntimeException(sprintf('Cannot open package git URL %s (%s).', $depBowerJsonURL, $e->getMessage()), 5);
         }
 
-        return $response->getBody(true);
+        $json = $response->getBody(true);
+        if ($includeHomepage) {
+            $array = json_decode($json, true);
+            // here, we set again original $this->url. to pass it in bower.json
+            $this->setUrl($oldUrl, true);
+            $array['homepage'] = $this->url;
+            $json = $this->json_readable_encode($array);
+        }
+
+        return $json;
     }
 
     /**
@@ -196,4 +209,21 @@ class GithubRepository implements RepositoryInterface
         return $url;
     }
 
+    /**
+     * FOR php 5.3 from php >= 5.4* use parameter JSON_PRETTY_PRINT
+     * See http://www.php.net/manual/en/function.json-encode.php
+     *
+     * @param  array  $array
+     * @return string
+     */
+    private function json_readable_encode(array $array)
+    {
+        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
+            return json_encode($array, JSON_PRETTY_PRINT);
+        }
+
+        $jsonPretty = new JsonPretty();
+
+        return $jsonPretty->prettify($array, null, '    ');
+    }
 }
