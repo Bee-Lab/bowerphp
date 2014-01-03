@@ -2,6 +2,7 @@
 
 namespace Bowerphp\Repository;
 
+use Camspiers\JsonPretty\JsonPretty;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Exception\RequestException;
 use RuntimeException;
