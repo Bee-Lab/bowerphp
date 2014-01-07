@@ -22,3 +22,4 @@ Still to do
 * search
 
 See [issues](https://github.com/Bee-Lab/bowerphp/issues) for more details ;)
+
