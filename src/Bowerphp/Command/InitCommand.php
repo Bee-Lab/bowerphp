@@ -51,15 +51,15 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $adapter        = new LocalAdapter(getcwd());
-        $filesystem     = new Filesystem($adapter);
-        $config         = new Config($filesystem);
-
-        $dialog = $this->getHelperSet()->get('dialog');
+        $adapter    = new LocalAdapter('/');
+        $filesystem = new Filesystem($adapter);
+        $config     = new Config($filesystem);
 
         $params = array('name' => null, 'author' => null);
 
         if ($input->isInteractive()) {
+            $dialog = $this->getHelperSet()->get('dialog');
+
             $params['name'] = $dialog->ask(
                 $output,
                 '<question>Please specify a name for project:</question> ',

@@ -27,7 +27,7 @@ class Config implements ConfigInterface
         $filesystem,
         $basePackagesUrl        = 'http://bower.herokuapp.com/packages/',
         $saveToBowerJsonFile    = false,
-        $bowerFileName          = array('bower.json','package.json'),
+        $bowerFileName          = array('bower.json', 'package.json'),
         $standardBowerFileName  = 'bower.json'
     ;
 
@@ -84,7 +84,7 @@ class Config implements ConfigInterface
      */
     public function getSaveToBowerJsonFile()
     {
-        return $this->saveToBowerJsonFile;;
+        return $this->saveToBowerJsonFile;
     }
 
     /**
@@ -92,12 +92,15 @@ class Config implements ConfigInterface
      */
     public function setSaveToBowerJsonFile($flag = true)
     {
-         $this->saveToBowerJsonFile = $flag;
+        $this->saveToBowerJsonFile = $flag;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function initBowerJsonFile(array $params)
     {
-        $file = $this->getBowerFileName();
+        $file = getcwd() . '/' . $this->getBowerFileName();
         $json = Json::encode($this->createAClearBowerFile($params));
 
         return $this->filesystem->write($file, $json);
@@ -114,10 +117,21 @@ class Config implements ConfigInterface
 
         $decode = $this->getBowerFileContent();
         $decode['dependencies'][$package->getName()] = $packageVersion;
-        $file = $this->getBowerFileName();
+        $file = getcwd() . '/' . $this->getBowerFileName();
         $json = Json::encode($decode);
 
-        return $this->filesystem->write(getcwd() . '/' . $file, $json, true);
+        return $this->filesystem->write($file, $json, true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function updateBowerJsonFile2(array $old, array $new)
+    {
+        $json = Json::encode(array_merge($old, $new));
+        $file = getcwd() . '/' . $this->getBowerFileName();
+
+        return $this->filesystem->write($file, $json, true);
     }
 
     /**
@@ -157,6 +171,14 @@ class Config implements ConfigInterface
      */
     public function writeBowerFile()
     {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function bowerFileExists()
+    {
+        return $this->filesystem->has(getcwd() . '/' . $this->getBowerFileName());
     }
 
     /**

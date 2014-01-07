@@ -14,8 +14,10 @@ namespace Bowerphp\Command;
 use Bowerphp\Bowerphp;
 use Bowerphp\Config\Config;
 use Bowerphp\Installer\Installer;
+use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Package\Package;
 use Bowerphp\Repository\GithubRepository;
+use Bowerphp\Util\ZipArchive;
 use Doctrine\Common\Cache\FilesystemCache;
 use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\Filesystem;
@@ -92,7 +94,7 @@ EOT
         $bowerphp = new Bowerphp($config);
 
         try {
-            $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new \ZipArchive(), $config, $output);
+            $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new ZipArchive(), $config, new BowerphpConsoleOutput($output));
 
             if (is_null($packageName)) {
                 $output->writeln('Updating dependencies:');

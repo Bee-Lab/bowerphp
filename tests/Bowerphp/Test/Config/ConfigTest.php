@@ -135,6 +135,20 @@ class ConfigTest extends TestCase
         $this->assertEquals(123, $config->updateBowerJsonFile($package, '*'));
     }
 
+    public function testUpdateBowerJsonFile2()
+    {
+        $json = "{\n    \"foo\": 2,\n    \"bar\": 3\n}";
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('write')->with(getcwd() . '/bower.json', $json, true)->andReturn(456)
+        ;
+
+        $config = new Config($this->filesystem);
+
+        $this->assertEquals(456, $config->updateBowerJsonFile2(array('foo' => 1), array('foo' => 2, 'bar' => 3)));
+    }
+
     public function testGetPackageBowerFileContent()
     {
         $this->markTestIncomplete();
@@ -172,7 +186,7 @@ class ConfigTest extends TestCase
 
         $this->filesystem
             ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
-            ->shouldReceive('write')->with('bower.json', $json)->andReturn(123)
+            ->shouldReceive('write')->with(getcwd() . '/bower.json', $json)->andReturn(123)
         ;
 
         $config = new Config($this->filesystem);
@@ -191,4 +205,16 @@ class ConfigTest extends TestCase
         $this->assertEquals('http://bower.herokuapp.com/packages/', $config->getBasePackagesUrl());
     }
 
+    public function testBowerFileExists()
+    {
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(false, true)
+        ;
+
+        $config = new Config($this->filesystem);
+
+        $this->assertFalse($config->bowerFileExists());
+        $this->assertTrue($config->bowerFileExists());
+    }
 }

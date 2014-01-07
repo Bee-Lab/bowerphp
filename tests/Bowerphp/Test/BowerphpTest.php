@@ -6,6 +6,9 @@ use Bowerphp\Bowerphp;
 use Bowerphp\Test\TestCase;
 use Mockery;
 
+/**
+ * @group pippo
+ */
 class BowerphpTest extends TestCase
 {
     protected $bowerphp;
@@ -36,9 +39,14 @@ EOT;
         $this->config
             ->shouldReceive('getBowerFileName')->andReturn('bower.json')
             ->shouldReceive('initBowerJsonFile')->with($params)->andReturn(123)
+            ->shouldReceive('bowerFileExists')->andReturn(false, true)
+            ->shouldReceive('getBowerFileContent')->andReturn(array('name' => 'Bar'))
+            ->shouldReceive('setSaveToBowerJsonFile')->with(true)
+            ->shouldReceive('updateBowerJsonFile2')->with(array('name' => 'Bar'), $params)->andReturn(456)
         ;
 
         $bowerphp = new Bowerphp($this->config);
+        $bowerphp->init($params);
         $bowerphp->init($params);
     }
 
