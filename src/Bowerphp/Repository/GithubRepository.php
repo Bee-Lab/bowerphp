@@ -2,7 +2,7 @@
 
 namespace Bowerphp\Repository;
 
-use Camspiers\JsonPretty\JsonPretty;
+use Bowerphp\Util\Json;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Exception\RequestException;
 use RuntimeException;
@@ -75,7 +75,7 @@ class GithubRepository implements RepositoryInterface
                 $this->setUrl($oldUrl, true);
             }
             $array['homepage'] = $this->url;
-            $json = $this->json_readable_encode($array);
+            $json = Json::encode($array);
         }
 
         return $json;
@@ -209,23 +209,5 @@ class GithubRepository implements RepositoryInterface
         }
 
         return $url;
-    }
-
-    /**
-     * FOR php 5.3 from php >= 5.4* use parameter JSON_PRETTY_PRINT
-     * See http://www.php.net/manual/en/function.json-encode.php
-     *
-     * @param  array  $array
-     * @return string
-     */
-    private function json_readable_encode(array $array)
-    {
-        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            return json_encode($array, JSON_PRETTY_PRINT);
-        }
-
-        $jsonPretty = new JsonPretty();
-
-        return $jsonPretty->prettify($array, null, '    ');
     }
 }

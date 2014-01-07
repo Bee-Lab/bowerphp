@@ -12,7 +12,7 @@
 namespace Bowerphp\Output;
 
 use Bowerphp\Package\PackageInterface;
-use Camspiers\JsonPretty\JsonPretty;
+use Bowerphp\Util\Json;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 class BowerphpConsoleOutput extends ConsoleOutput
@@ -75,24 +75,6 @@ class BowerphpConsoleOutput extends ConsoleOutput
      */
     public function writelnJsonText($jsonPart)
     {
-        $this->writeln(sprintf('<fg=cyan>%s</fg=cyan>', $this->json_readable_encode($jsonPart)));
-    }
-
-    /**
-     * FOR php 5.3 from php >= 5.4* use parameter JSON_PRETTY_PRINT
-     * See http://www.php.net/manual/en/function.json-encode.php
-     *
-     * @param  mixed  $value
-     * @return string
-     */
-    private function json_readable_encode($value)
-    {
-        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            return json_encode($value, JSON_PRETTY_PRINT);
-        }
-
-        $jsonPretty = new JsonPretty();
-
-        return $jsonPretty->prettify($value, null, '    ');
+        $this->writeln(sprintf('<fg=cyan>%s</fg=cyan>', Json::encode($jsonPart)));
     }
 }

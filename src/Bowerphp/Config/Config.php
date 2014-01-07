@@ -12,7 +12,7 @@
 namespace Bowerphp\Config;
 
 use Bowerphp\Package\PackageInterface;
-use Camspiers\JsonPretty\JsonPretty;
+use Bowerphp\Util\Json;
 use Gaufrette\Filesystem;
 use RuntimeException;
 
@@ -98,7 +98,7 @@ class Config implements ConfigInterface
     public function initBowerJsonFile(array $params)
     {
         $file = $this->getBowerFileName();
-        $json = $this->json_readable_encode($this->createAClearBowerFile($params));
+        $json = Json::encode($this->createAClearBowerFile($params));
 
         return $this->filesystem->write($file, $json);
     }
@@ -115,7 +115,7 @@ class Config implements ConfigInterface
         $decode = $this->getBowerFileContent();
         $decode['dependencies'][$package->getName()] = $packageVersion;
         $file = $this->getBowerFileName();
-        $json = $this->json_readable_encode($decode);
+        $json = Json::encode($decode);
 
         return $this->filesystem->write(getcwd() . '/' . $file, $json, true);
     }
@@ -177,23 +177,4 @@ class Config implements ConfigInterface
 
         return $structure;
     }
-
-    /**
-     * FOR php 5.3 from php >= 5.4* use parameter JSON_PRETTY_PRINT
-     * See http://www.php.net/manual/en/function.json-encode.php
-     *
-     * @param  array  $array
-     * @return string
-     */
-    private function json_readable_encode(array $array)
-    {
-        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            return json_encode($array, JSON_PRETTY_PRINT);
-        }
-
-        $jsonPretty = new JsonPretty();
-
-        return $jsonPretty->prettify($array, null, '    ');
-    }
-
 }

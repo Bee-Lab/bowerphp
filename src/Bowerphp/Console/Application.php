@@ -91,20 +91,6 @@ class Application extends BaseApplication
         return $result;
     }
 
-    /**
-     * @param  InputInterface    $input
-     * @throws \RuntimeException
-     */
-    private function getNewWorkingDir(InputInterface $input)
-    {
-        $workingDir = $input->getParameterOption(array('--working-dir', '-d'));
-        if (false !== $workingDir && !is_dir($workingDir)) {
-            throw new \RuntimeException('Invalid working directory specified.');
-        }
-
-        return $workingDir;
-    }
-
     public function getHelp()
     {
         return self::$logo . parent::getHelp();
@@ -147,5 +133,19 @@ class Application extends BaseApplication
         $helperSet->set(new DialogHelper());
 
         return $helperSet;
+    }
+
+    /**
+     * @param  InputInterface    $input
+     * @throws \RuntimeException
+     */
+    private function getNewWorkingDir(InputInterface $input)
+    {
+        $workingDir = $input->getParameterOption(array('--working-dir', '-d'));
+        if (false !== $workingDir && !is_dir($workingDir)) {
+            throw new \RuntimeException('Invalid working directory specified.');
+        }
+
+        return $workingDir;
     }
 }
