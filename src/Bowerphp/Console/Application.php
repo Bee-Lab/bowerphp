@@ -13,7 +13,6 @@ namespace Bowerphp\Console;
 
 use Bowerphp\Command;
 use Bowerphp\Command\Helper\DialogHelper;
-use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Util\ErrorHandler;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Formatter\OutputFormatter;
@@ -45,19 +44,6 @@ class Application extends BaseApplication
     {
         ErrorHandler::register();
         parent::__construct('Bowerphp', '0.1 Powered by BeeLab (bee-lab.net)');
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function run(InputInterface $input = null, OutputInterface $output = null)
-    {
-        if (null === $output) {
-            $formatter = new OutputFormatter();
-            $output = new BowerphpConsoleOutput(ConsoleOutput::VERBOSITY_NORMAL, null, $formatter);
-        }
-
-        return parent::run($input, $output);
     }
 
     /**

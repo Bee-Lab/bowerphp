@@ -13,10 +13,17 @@ namespace Bowerphp\Output;
 
 use Bowerphp\Package\PackageInterface;
 use Bowerphp\Util\Json;
-use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 
-class BowerphpConsoleOutput extends ConsoleOutput
+class BowerphpConsoleOutput
 {
+    protected $output;
+
+    public function __construct(OutputInterface $output)
+    {
+        $this->output = $output;
+    }
+
     /**
      * writelnInfoPackage
      *
@@ -24,7 +31,7 @@ class BowerphpConsoleOutput extends ConsoleOutput
      */
     public function writelnInfoPackage(PackageInterface $package)
     {
-        $this->writeln(sprintf('bower <info>%s</info>',
+        $this->output->writeln(sprintf('bower <info>%s</info>',
             str_pad($package->getName() . '#' . $package->getVersion(), 21, ' ', STR_PAD_RIGHT)
         ));
     }
@@ -37,7 +44,7 @@ class BowerphpConsoleOutput extends ConsoleOutput
      */
     public function writelnInstalledPackage(PackageInterface $package, $packageVersion)
     {
-        $this->writeln(sprintf('bower <info>%s</info> <fg=cyan>%s</fg=cyan>',
+        $this->output->writeln(sprintf('bower <info>%s</info> <fg=cyan>%s</fg=cyan>',
             str_pad($package->getName() . '#' . $packageVersion, 21, ' ', STR_PAD_RIGHT),
             str_pad('install', 10, ' ', STR_PAD_LEFT)
         ));
@@ -48,7 +55,7 @@ class BowerphpConsoleOutput extends ConsoleOutput
      */
     public function writelnNoBowerJsonFile()
     {
-        $this->writeln(sprintf('bower <info>%s</info> <fg=yellow>%s</fg=yellow> %s',
+        $this->output->writeln(sprintf('bower <info>%s</info> <fg=yellow>%s</fg=yellow> %s',
             str_pad("", 21, ' ', STR_PAD_RIGHT),
             str_pad('no-json', 10, ' ', STR_PAD_LEFT),
             'No bower.json file to save to, use bower init to create one', 10, ' ', STR_PAD_LEFT
@@ -65,7 +72,7 @@ class BowerphpConsoleOutput extends ConsoleOutput
         $keyColor = preg_replace('/"(\w+)": /', '<info>$1</info>: ', $jsonString);
         $valColor = preg_replace('/"([^"]+)"/', "<fg=cyan>'$1'</fg=cyan>", $keyColor);
 
-        $this->writeln(stripslashes($valColor));
+        $this->output->writeln(stripslashes($valColor));
     }
 
     /**
@@ -75,6 +82,6 @@ class BowerphpConsoleOutput extends ConsoleOutput
      */
     public function writelnJsonText($jsonPart)
     {
-        $this->writeln(sprintf('<fg=cyan>%s</fg=cyan>', Json::encode($jsonPart)));
+        $this->output->writeln(sprintf('<fg=cyan>%s</fg=cyan>', Json::encode($jsonPart)));
     }
 }

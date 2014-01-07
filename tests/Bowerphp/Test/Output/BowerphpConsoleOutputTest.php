@@ -18,6 +18,7 @@ class ConsoleOutputTest extends \PHPUnit_Framework_TestCase
 {
     public function testWritelnInfoPackage()
     {
+        $output = Mockery::mock('Symfony\Component\Console\Output\OutputInterface');
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
 
         $package
@@ -25,15 +26,17 @@ class ConsoleOutputTest extends \PHPUnit_Framework_TestCase
             ->shouldReceive('getName')->andReturn('jquery')
         ;
 
-        $BConsoleOutput = new TestOutput();
-        $BConsoleOutput->setDecorated(false);
-        $BConsoleOutput->writelnInfoPackage($package);
+        $output
+            ->shouldReceive('writeln')->with('bower <info>jquery#2.1           </info>')
+        ;
 
-        $this->assertEquals("bower jquery#2.1", $BConsoleOutput->output);
+        $BConsoleOutput = new BowerphpConsoleOutput($output);
+        $BConsoleOutput->writelnInfoPackage($package);
     }
 
     public function testWritelnInstalledPackage()
     {
+        $output = Mockery::mock('Symfony\Component\Console\Output\OutputInterface');
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
 
         $package
@@ -41,52 +44,47 @@ class ConsoleOutputTest extends \PHPUnit_Framework_TestCase
             ->shouldReceive('getName')->andReturn('jquery')
         ;
 
-        $BConsoleOutput = new TestOutput();
-        $BConsoleOutput->setDecorated(false);
-        $BConsoleOutput->writelnInstalledPackage($package, '3.0');
+        $output
+            ->shouldReceive('writeln')->with('bower <info>jquery#3.0           </info> <fg=cyan>   install</fg=cyan>')
+        ;
 
-        $this->assertEquals("bower jquery#3.0               install", $BConsoleOutput->output);
+        $BConsoleOutput = new BowerphpConsoleOutput($output);
+        $BConsoleOutput->writelnInstalledPackage($package, '3.0');
     }
 
     public function testWritelnNoBowerJsonFile()
     {
-        $BConsoleOutput = new TestOutput();
-        $BConsoleOutput->setDecorated(false);
-        $BConsoleOutput->writelnNoBowerJsonFile();
+        $output = Mockery::mock('Symfony\Component\Console\Output\OutputInterface');
 
-        $this->assertEquals('bower                          no-json No bower.json file to save to, use bower init to create one', $BConsoleOutput->output);
+        $output
+            ->shouldReceive('writeln')->with('bower <info>                     </info> <fg=yellow>   no-json</fg=yellow> No bower.json file to save to, use bower init to create one')
+        ;
+
+        $BConsoleOutput = new BowerphpConsoleOutput($output);
+        $BConsoleOutput->writelnNoBowerJsonFile();
     }
 
     public function testWritelnJson()
     {
-        $BConsoleOutput = new TestOutput();
-        $BConsoleOutput->setDecorated(false);
-        $BConsoleOutput->writelnJson('{"name": "foo"}');
+        $output = Mockery::mock('Symfony\Component\Console\Output\OutputInterface');
 
-        $this->assertEquals("{name: 'foo'}", $BConsoleOutput->output);
+        $output
+            ->shouldReceive('writeln')->with('{<info>name</info>: <fg=cyan>\'foo\'</fg=cyan>}')
+        ;
+
+        $BConsoleOutput = new BowerphpConsoleOutput($output);
+        $BConsoleOutput->writelnJson('{"name": "foo"}');
     }
 
     public function testWritelnJsonText()
     {
-        $BConsoleOutput = new TestOutput();
-        $BConsoleOutput->setDecorated(false);
+        $output = Mockery::mock('Symfony\Component\Console\Output\OutputInterface');
+
+        $output
+            ->shouldReceive('writeln')->with('<fg=cyan>"name"</fg=cyan>')
+        ;
+
+        $BConsoleOutput = new BowerphpConsoleOutput($output);
         $BConsoleOutput->writelnJsonText("name");
-
-        $this->assertEquals('"name"', $BConsoleOutput->output);
-    }
-}
-
-class TestOutput extends BowerphpConsoleOutput
-{
-    public $output = '';
-
-    public function clear()
-    {
-        $this->output = '';
-    }
-
-    protected function doWrite($message, $newline)
-    {
-        $this->output .= trim($message);
     }
 }

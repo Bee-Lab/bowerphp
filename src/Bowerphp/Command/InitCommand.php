@@ -57,18 +57,21 @@ EOT
 
         $dialog = $this->getHelperSet()->get('dialog');
 
-        $params = array();
-        $params['name'] = $dialog->ask(
-            $output,
-            '<question>Please specify a name for project:</question> ',
-            'A name'
-        );
+        $params = array('name' => null, 'author' => null);
 
-        $params['author'] = $dialog->ask(
-            $output,
-            '<question>Please specify an author (Ex. Adam Smith \<noreply@example.org>):</question> ',
-            'An author'
-        );
+        if ($input->isInteractive()) {
+            $params['name'] = $dialog->ask(
+                $output,
+                '<question>Please specify a name for project:</question> ',
+                'A name'
+            );
+
+            $params['author'] = $dialog->ask(
+                $output,
+                '<question>Please specify an author (Ex. Adam Smith \<noreply@example.org>):</question> ',
+                'An author'
+            );
+        }
 
         $bowerphp = new Bowerphp($config);
         $bowerphp->init($params);

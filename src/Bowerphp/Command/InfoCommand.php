@@ -14,6 +14,7 @@ namespace Bowerphp\Command;
 use Bowerphp\Bowerphp;
 use Bowerphp\Config\Config;
 use Bowerphp\Installer\Installer;
+use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Package\Package;
 use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Util\ZipArchive;
@@ -82,7 +83,8 @@ EOT
 
         $package = new Package($packageName, $version);
         $bowerphp = new Bowerphp($config);
-        $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new ZipArchive(), $config, $output);
+        $consoleOutput = new BowerphpConsoleOutput($output);
+        $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new ZipArchive(), $config, $consoleOutput);
 
         $bower = $bowerphp->getPackageInfo($package, $installer, 'bower');
         if ($version == '*') {
@@ -92,9 +94,9 @@ EOT
         if (!is_null($property)) {
             $bowerArray = json_decode($bower, true);
             $propertyValue = isset($bowerArray[$property]) ? $bowerArray[$property] : '';
-            $output->writelnJsonText($propertyValue);
+            $consoleOutput->writelnJsonText($propertyValue);
         } else {
-            $output->writelnJson($bower);
+            $consoleOutput->writelnJson($bower);
             if ($version == '*') {
                 $output->writeln('');
                 $output->writeln('<fg=cyan>Available versions:</fg=cyan>');

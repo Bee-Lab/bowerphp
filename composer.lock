@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "c24c251403ac643a78a6a429e61c41af",
+    "hash": "ca16552446bb5f0782d2970b61dc7859",
     "packages": [
         {
             "name": "camspiers/json-pretty",
@@ -500,17 +500,17 @@
         },
         {
             "name": "symfony/process",
-            "version": "dev-master",
+            "version": "v2.4.1",
             "target-dir": "Symfony/Component/Process",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Process.git",
-                "reference": "a7fdd976ddea87a0354674eebf45251b4a8ce905"
+                "reference": "58fdccb311e44f28866f976c2d7b3227e9f713db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Process/zipball/a7fdd976ddea87a0354674eebf45251b4a8ce905",
-                "reference": "a7fdd976ddea87a0354674eebf45251b4a8ce905",
+                "url": "https://api.github.com/repos/symfony/Process/zipball/58fdccb311e44f28866f976c2d7b3227e9f713db",
+                "reference": "58fdccb311e44f28866f976c2d7b3227e9f713db",
                 "shasum": ""
             },
             "require": {
@@ -519,7 +519,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.5-dev"
+                    "dev-master": "2.4-dev"
                 }
             },
             "autoload": {
@@ -543,7 +543,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "http://symfony.com",
-            "time": "2013-12-29 14:45:01"
+            "time": "2014-01-05 02:10:50"
         }
     ],
     "packages-dev": [
@@ -1020,7 +1020,6 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "symfony/process": 20,
         "camspiers/json-pretty": 20
     },
     "platform": {

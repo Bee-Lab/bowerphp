@@ -3,6 +3,7 @@
 namespace Bowerphp\Installer;
 
 use Bowerphp\Config\ConfigInterface;
+use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Package\Package;
 use Bowerphp\Package\PackageInterface;
 use Bowerphp\Repository\RepositoryInterface;
@@ -10,7 +11,6 @@ use Bowerphp\Util\ZipArchive;
 use Gaufrette\Filesystem;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Exception\RequestException;
-use Symfony\Component\Console\Output\OutputInterface;
 use RuntimeException;
 
 /**
@@ -31,14 +31,14 @@ class Installer implements InstallerInterface
     /**
      * Initializes library installer.
      *
-     * @param Filesystem          $filesystem
-     * @param ClientInterface     $httpClient
-     * @param RepositoryInterface $repository
-     * @param ZipArchive          $zipArchive
-     * @param ConfigInterface     $config
-     * @param OutputInterface     $output
+     * @param Filesystem            $filesystem
+     * @param ClientInterface       $httpClient
+     * @param RepositoryInterface   $repository
+     * @param ZipArchive            $zipArchive
+     * @param ConfigInterface       $config
+     * @param BowerphpConsoleOutput $output
      */
-    public function __construct(Filesystem $filesystem, ClientInterface $httpClient, RepositoryInterface $repository, ZipArchive $zipArchive, ConfigInterface $config, OutputInterface $output)
+    public function __construct(Filesystem $filesystem, ClientInterface $httpClient, RepositoryInterface $repository, ZipArchive $zipArchive, ConfigInterface $config, BowerphpConsoleOutput $output)
     {
         $this->filesystem = $filesystem;
         $this->httpClient = $httpClient;
