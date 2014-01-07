@@ -10,8 +10,9 @@ use Guzzle\Http\ClientInterface;
  */
 interface RepositoryInterface
 {
-    const SEARCH_FULLTEXT = 0;
-    const SEARCH_NAME = 1;
+    const SEARCH_FULLTEXT   = 0;
+    const SEARCH_NAME       = 1;
+    const VERSION_NOT_FOUND = 3;
 
     /**
      * @param string $url

@@ -250,14 +250,18 @@ class Installer implements InstallerInterface
         if (!is_array($decode) || empty($decode['url'])) {
             throw new \RuntimeException(sprintf('Package %s has malformed json or is missing "url".', $package->getName()));
         }
-        $this->repository->setUrl($decode['url'], false)->setHttpClient($this->httpClient);
-        $tag = $this->repository->findPackage($package->getVersion());
+        $this->repository->setHttpClient($this->httpClient);
 
         if ($info == 'url') {
+            $this->repository->setUrl($decode['url'], false);
+
             return $this->repository->getUrl();
         }
 
         if ($info == 'bower') {
+            $this->repository->setUrl($decode['url'], false);
+            $tag = $this->repository->findPackage($package->getVersion());
+
             return $this->repository->getBower($tag, true, $decode['url']);
         }
 

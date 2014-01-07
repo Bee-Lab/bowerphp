@@ -51,10 +51,12 @@ class GithubRepository implements RepositoryInterface
      */
     public function getBower($version = 'master', $includeHomepage = false, $url = '')
     {
-        // we need to save current $this->url
-        $oldUrl = $this->url;
-        // then, we call setUrl(), to get the http url
-        $this->setUrl($url, true);
+        if (!empty($url)) {
+            // we need to save current $this->url
+            $oldUrl = $this->url;
+            // then, we call setUrl(), to get the http url
+            $this->setUrl($url, true);
+        }
         $depBowerJsonURL = $this->url . '/' . $version . '/bower.json';
         try {
             $request = $this->httpClient->get($depBowerJsonURL);
@@ -68,8 +70,10 @@ class GithubRepository implements RepositoryInterface
         $json = $response->getBody(true);
         if ($includeHomepage) {
             $array = json_decode($json, true);
-            // here, we set again original $this->url. to pass it in bower.json
-            $this->setUrl($oldUrl, true);
+            if (!empty($url)) {
+                // here, we set again original $this->url. to pass it in bower.json
+                $this->setUrl($oldUrl, true);
+            }
             $array['homepage'] = $this->url;
             $json = $this->json_readable_encode($array);
         }
@@ -93,18 +97,15 @@ class GithubRepository implements RepositoryInterface
         }
         $version = $this->fixVersion($version);
 
-        $tagsString = '';
         foreach ($tags as $tag) {
             if (fnmatch($version, $tag['name'])) {
                 $this->setTag($tag);
 
                 return $tag['name'];
             }
-            $tagsString .= $tag['name'] . ', ';
         }
-        $tagsString = substr($tagsString, 0, -2);
 
-        throw new RuntimeException(sprintf('Version %s not found. Available versions: %s', $version, $tagsString));
+        throw new RuntimeException(sprintf('Version %s not found.', $version), self::VERSION_NOT_FOUND);
     }
 
     /**

@@ -110,6 +110,9 @@ EOT
             }
         } catch (\RuntimeException $e) {
             $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
+            if ($e->getCode() == GithubRepository::VERSION_NOT_FOUND) {
+                $output->writeln(sprintf('Available versions: %s', implode(', ' , $installer->getPackageInfo($package, 'versions'))));
+            }
 
             return $e->getCode();
         }

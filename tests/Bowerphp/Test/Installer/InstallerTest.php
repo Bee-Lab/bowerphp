@@ -651,9 +651,9 @@ class InstallerTest extends TestCase
         ;
 
         $this->repository
-            ->shouldReceive('setUrl->setHttpClient');
-        $this->repository
+            ->shouldReceive('setHttpClient')->with($this->httpClient)
             ->shouldReceive('getUrl')->andReturn('https://github.com/jackmoore/colorbox')
+            ->shouldReceive('setUrl')->with('git://github.com/jackmoore/colorbox.git', false)
             ->shouldReceive('findPackage')->with('1.1')->andReturn('1.1.0')
             ->shouldReceive('setUrl')->with('https://github.com/jackmoore/colorbox', true)
             ->shouldReceive('getBower')->with('1.1.0', true, "git://github.com/jackmoore/colorbox.git")->andReturn('a json...')
@@ -690,8 +690,7 @@ class InstallerTest extends TestCase
         ;
 
         $this->repository
-            ->shouldReceive('setUrl->setHttpClient');
-        $this->repository
+            ->shouldReceive('setHttpClient')->with($this->httpClient)
             ->shouldReceive('getUrl')->andReturn('https://github.com/jackmoore/colorbox')
             ->shouldReceive('findPackage')->with('1.1')->andReturn('1.1.0')
             ->shouldReceive('setUrl')->with('https://github.com/jackmoore/colorbox', true)
