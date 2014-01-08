@@ -235,7 +235,7 @@ class Installer implements InstallerInterface
     /**
      * @param  PackageInterface $package
      * @param  string           $info"git://github.com/jackmoore/colorbox.git"
-     * @return mixed            string if $info = 'url' or 'bower', array if $info = 'versions'
+     * @return mixed            string if $info = 'url' or 'bower' , array if $info = 'versions' or info = 'original_url'
      */
     public function getPackageInfo(PackageInterface $package, $info = 'url')
     {
@@ -254,8 +254,12 @@ class Installer implements InstallerInterface
 
         if ($info == 'url') {
             $this->repository->setUrl($decode['url'], false);
-
             return $this->repository->getUrl();
+        }
+        
+        if ($info == 'original_url') {
+            $this->repository->setUrl($decode['url'], false);
+            return Array('name' => $decode['name'], 'url' =>$this->repository->getOriginalUrl());
         }
 
         if ($info == 'bower') {

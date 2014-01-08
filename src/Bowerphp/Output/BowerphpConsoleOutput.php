@@ -84,4 +84,18 @@ class BowerphpConsoleOutput
     {
         $this->output->writeln(sprintf('<fg=cyan>%s</fg=cyan>', Json::encode($jsonPart)));
     }
+
+    /**
+     * writelnSearchOrLookup
+     *
+     * @param string $name
+     * @param string $homepage
+     */
+    public function writelnSearchOrLookup($name, $homepage, $pad = 0)
+    {
+        $this->output->writeln(sprintf('<fg=cyan>%s</fg=cyan> %s', str_pad($name, $pad,' ', STR_PAD_LEFT), $homepage));
+    }
+
+
+
 }

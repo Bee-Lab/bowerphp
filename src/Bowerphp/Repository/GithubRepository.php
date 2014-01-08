@@ -13,7 +13,7 @@ use RuntimeException;
  */
 class GithubRepository implements RepositoryInterface
 {
-    protected $url, $tag = array(), $httpClient;
+    protected $url, $originalUrl,  $tag = array(), $httpClient;
 
     /**
      * @param  string           $url
@@ -22,7 +22,8 @@ class GithubRepository implements RepositoryInterface
      */
     public function setUrl($url, $raw = true)
     {
-        $this->url = preg_replace('/\.git$/', '', str_replace('git://', 'https://' . ($raw ? 'raw.' : ''), $url));
+        $this->originalUrl  = $url;
+        $this->url          = preg_replace('/\.git$/', '', str_replace('git://', 'https://' . ($raw ? 'raw.' : ''), $this->originalUrl));
 
         return $this;
     }
@@ -34,7 +35,14 @@ class GithubRepository implements RepositoryInterface
     {
         return $this->url;
     }
-
+    
+    /**
+     * @return string
+     */
+    public function getOriginalUrl()
+    {
+        return $this->originalUrl;
+    }
     /**
      * @param  ClientInterface  $httpClient
      * @return GithubRepository

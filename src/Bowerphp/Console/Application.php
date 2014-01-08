@@ -90,6 +90,8 @@ class Application extends BaseApplication
         $commands[] = new Command\InfoCommand();
         $commands[] = new Command\InitCommand();
         $commands[] = new Command\InstallCommand();
+        $commands[] = new Command\LookupCommand();
+        $commands[] = new Command\SearchCommand();
         $commands[] = new Command\UpdateCommand();
 
         return $commands;
