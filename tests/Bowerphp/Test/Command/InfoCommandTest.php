@@ -5,6 +5,9 @@ namespace Bowerphp\Test\Command;
 use Bowerphp\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
+/**
+ * @group functional
+ */
 class InfoCommandTest extends \PHPUnit_Framework_TestCase
 {
     public function testExecute()

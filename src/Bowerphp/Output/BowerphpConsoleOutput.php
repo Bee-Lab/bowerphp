@@ -96,6 +96,4 @@ class BowerphpConsoleOutput
         $this->output->writeln(sprintf('<fg=cyan>%s</fg=cyan> %s', str_pad($name, $pad,' ', STR_PAD_LEFT), $homepage));
     }
 
-
-
 }

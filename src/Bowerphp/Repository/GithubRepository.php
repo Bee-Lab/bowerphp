@@ -35,7 +35,7 @@ class GithubRepository implements RepositoryInterface
     {
         return $this->url;
     }
-    
+
     /**
      * @return string
      */

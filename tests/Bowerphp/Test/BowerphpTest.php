@@ -6,9 +6,6 @@ use Bowerphp\Bowerphp;
 use Bowerphp\Test\TestCase;
 use Mockery;
 
-/**
- * @group pippo
- */
 class BowerphpTest extends TestCase
 {
     protected $bowerphp;

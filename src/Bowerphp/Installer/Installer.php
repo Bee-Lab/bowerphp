@@ -53,6 +53,9 @@ class Installer implements InstallerInterface
      */
     public function isInstalled(PackageInterface $package)
     {
+        $package->setTargetDir($this->config->getInstallDir());
+
+        return $this->filesystem->has($package->getTargetDir() . '/' . $package->getName() . '/.bower.json');
     }
 
     /**
@@ -117,6 +120,11 @@ class Installer implements InstallerInterface
         }
 
         $this->zipArchive->close();
+
+        // create .bower.json metadata file
+        // XXX for now, we just copy from bower.json
+        $this->filesystem->write($package->getTargetDir() . '/' . $package->getName() . '/.bower.json', $bowerJson, true);
+
         // check for dependencies
         if (!empty($bower['dependencies'])) {
             foreach ($bower['dependencies'] as $name => $version) {
@@ -132,6 +140,10 @@ class Installer implements InstallerInterface
     public function update(PackageInterface $package)
     {
         // look for installed package
+        if (!$this->isInstalled($package)) {
+            throw new \RuntimeException(sprintf('Package %s is not installed.', $package->getName()));
+        }
+        // look for bower.json or package.json (old, and deprecated, version)
         $bowerFile = $this->config->getInstallDir() . '/' . $package->getName() . '/bower.json';
         if (!$this->filesystem->has($bowerFile)) {
             $bowerFile = $this->config->getInstallDir() . '/' . $package->getName() . '/package.json';
@@ -234,8 +246,8 @@ class Installer implements InstallerInterface
 
     /**
      * @param  PackageInterface $package
-     * @param  string           $info"git://github.com/jackmoore/colorbox.git"
-     * @return mixed            string if $info = 'url' or 'bower' , array if $info = 'versions' or info = 'original_url'
+     * @param  string           $info    one of 'url', 'bower', 'versions', 'original_url'
+     * @return mixed            string if $info = 'url' or 'bower', array if $info = 'versions' or info = 'original_url'
      */
     public function getPackageInfo(PackageInterface $package, $info = 'url')
     {
@@ -254,11 +266,13 @@ class Installer implements InstallerInterface
 
         if ($info == 'url') {
             $this->repository->setUrl($decode['url'], false);
+
             return $this->repository->getUrl();
         }
-        
+
         if ($info == 'original_url') {
             $this->repository->setUrl($decode['url'], false);
+
             return Array('name' => $decode['name'], 'url' =>$this->repository->getOriginalUrl());
         }
 
@@ -278,7 +292,6 @@ class Installer implements InstallerInterface
 
     /**
      * Filter archive files based on an "ignore" list.
-     * Note: bower.json and package.json are never ignored
      *
      * @param  ZipArchive $archive
      * @param  array      $ignore
@@ -286,7 +299,6 @@ class Installer implements InstallerInterface
      */
     protected function filterZipFiles(ZipArchive $archive, array $ignore = array())
     {
-        $keep = array('bower.json', 'package.json');
         $return = array();
         $numFiles = $archive->getNumFiles();
         for ($i = 0; $i < $numFiles; $i++) {
@@ -295,9 +307,9 @@ class Installer implements InstallerInterface
                 $return[] = $stat['name'];
             }
         }
-        $filter = array_filter($return, function ($var) use ($ignore, $keep) {
+        $filter = array_filter($return, function ($var) use ($ignore) {
             foreach ($ignore as $pattern) {
-                if (fnmatch($pattern, $var) && !in_array(basename($var), $keep)) {
+                if (fnmatch($pattern, $var)) {
                     return false;
                 }
             }

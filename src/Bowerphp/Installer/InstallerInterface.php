@@ -13,25 +13,23 @@ interface InstallerInterface
     /**
      * Checks that provided package is installed.
      *
-     * @param PackageInterface $package package instance
-     *
-     * @return bool
+     * @param  PackageInterface $package package instance
+     * @return boolean
      */
     public function isInstalled(PackageInterface $package);
 
     /**
      * Installs specific package.
      *
-     * @param PackageInterface $package   package instance
-     * @param Boolean          $isDepency
+     * @param PackageInterface $package      package instance
+     * @param boolean          $isDependency
      */
     public function install(PackageInterface $package, $isDependency = false);
 
     /**
      * Updates specific package.
      *
-     * @param PackageInterface $package
-     *
+     * @param  PackageInterface         $package
      * @throws InvalidArgumentException if package is not installed
      */
     public function update(PackageInterface $package);
@@ -47,7 +45,7 @@ interface InstallerInterface
      * Returns the installation path of a package
      *
      * @param  PackageInterface $package
-     * @return string           path
+     * @return string
      */
     public function getInstallPath(PackageInterface $package);
 }

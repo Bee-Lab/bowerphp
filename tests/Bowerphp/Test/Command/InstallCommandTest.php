@@ -8,6 +8,9 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Console\Tester\CommandTester;
 
+/**
+ * @group functional
+ */
 class InstallCommandTest extends \PHPUnit_Framework_TestCase
 {
     public function testExecute()
