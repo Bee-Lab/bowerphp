@@ -223,12 +223,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Bee-Lab/Gaufrette.git",
-                "reference": "f69b4cc8eb3cdabe9b6f043931f86f9e188337c7"
+                "reference": "a79332ccb2719b1ded058d39ac079e93de17bb6c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Bee-Lab/Gaufrette/zipball/f69b4cc8eb3cdabe9b6f043931f86f9e188337c7",
-                "reference": "f69b4cc8eb3cdabe9b6f043931f86f9e188337c7",
+                "url": "https://api.github.com/repos/Bee-Lab/Gaufrette/zipball/a79332ccb2719b1ded058d39ac079e93de17bb6c",
+                "reference": "a79332ccb2719b1ded058d39ac079e93de17bb6c",
                 "shasum": ""
             },
             "require": {
@@ -298,9 +298,9 @@
                 "media"
             ],
             "support": {
-                "source": "https://github.com/Bee-Lab/Gaufrette/tree/master"
+                "source": "https://github.com/Bee-Lab/Gaufrette/tree/localkeys"
             },
-            "time": "2013-12-20 13:59:27"
+            "time": "2014-01-09 10:22:00"
         },
         {
             "name": "pimple/pimple",
