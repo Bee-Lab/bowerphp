@@ -71,7 +71,7 @@ class InstallerTest extends TestCase
 
         $this->filesystem
             ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', $bowerJson, true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}', true)
         ;
 
         $this->zipArchive
@@ -129,7 +129,7 @@ class InstallerTest extends TestCase
 
         $this->filesystem
             ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', $bowerJson, true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}', true)
         ;
 
         $this->zipArchive
@@ -193,8 +193,8 @@ class InstallerTest extends TestCase
         $this->filesystem
             ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...', true)
             ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', $bowerJsonUI, true)
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', $bowerJsonJQ, true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"*"}', true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"*"}', true)
         ;
 
         $this->zipArchive
@@ -411,7 +411,7 @@ class InstallerTest extends TestCase
         $this->filesystem
             ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
             ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn(true)
-            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn('{"name": "jquery", "version": "1.10.2"}')
+            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn('{"name": "jquery", "version": "1.10.2"}')
         ;
 
         $package
@@ -435,8 +435,8 @@ class InstallerTest extends TestCase
 
         $this->filesystem
             ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn(true)
-            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn('{"name": "jquery", "version": "1.4"}')
+            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn('{"name": "jquery", "version": "1.4"}')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"1.5.2"}', true)->andReturn(123)
             ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)->andReturn(123)
         ;
 
@@ -487,9 +487,9 @@ class InstallerTest extends TestCase
 
         $this->filesystem
             ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn(true)
-            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn('{"name": "jquery", "version": "1.4.1"}')
+            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn('{"name": "jquery", "version": "1.4.1"}')
             ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)->andReturn(123)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"1.5.3"}', true)->andReturn(11)
         ;
 
         $package
@@ -539,8 +539,7 @@ class InstallerTest extends TestCase
 
         $this->filesystem
             ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn(true)
-            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn('{"name": "jquery", "version": "1.4.1"}')
+            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn('{"name": "jquery", "version": "1.4.1"}')
         ;
 
         $package
@@ -594,12 +593,12 @@ class InstallerTest extends TestCase
         $this->filesystem
             ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
             ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn(true)
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery-ui/bower.json')->andReturn(true)
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn(true)
-            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery-ui/bower.json')->andReturn('{"name": "jquery-ui", "version": "1.0.0", "dependencies": {"jquery": "1.*"}}')
-            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn('{"name": "jquery", "version": "1.4"}')
+            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn('{"name": "jquery", "version": "1.4"}')
+            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn('{"name": "jquery-ui", "version": "1.10.1"}')
             ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...', true)->andReturn(123)
             ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)->andReturn(123)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}', true)->andReturn(11)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"2.0.0"}', true)->andReturn(22)
         ;
 
         $this->httpClient

@@ -6,6 +6,7 @@ use Bowerphp\Console\Application;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
@@ -20,6 +21,19 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery'), array('decorated' => false));
 
         $this->assertRegExp('/jquery#2/', $commandTester->getDisplay());
+        $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
+        $this->assertFileExists(getcwd() . '/bower_components/jquery/jquery.js');
+    }
+
+    public function testExecuteVerbose()
+    {
+        $application = new Application();
+        $commandTester = new CommandTester($command = $application->get('install'));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery'), array('decorated' => false, 'verbosity' => OutputInterface::VERBOSITY_DEBUG));
+
+        $this->assertRegExp('/jquery#2/', $commandTester->getDisplay());
+        $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
+        $this->assertFileExists(getcwd() . '/bower_components/jquery/jquery.js');
     }
 
     public function tearDown()
