@@ -122,8 +122,9 @@ class Installer implements InstallerInterface
         $this->zipArchive->close();
 
         // create .bower.json metadata file
-        // XXX for now, we just copy from bower.json
-        $this->filesystem->write($package->getTargetDir() . '/' . $package->getName() . '/.bower.json', $bowerJson, true);
+        // XXX for now, we just save some basic info
+        $dotBowerJson = json_encode(array('name' => $package->getName(), 'version' => $packageVersion));
+        $this->filesystem->write($package->getTargetDir() . '/' . $package->getName() . '/.bower.json', $dotBowerJson, true);
 
         // check for dependencies
         if (!empty($bower['dependencies'])) {
@@ -143,18 +144,10 @@ class Installer implements InstallerInterface
         if (!$this->isInstalled($package)) {
             throw new \RuntimeException(sprintf('Package %s is not installed.', $package->getName()));
         }
-        // look for bower.json or package.json (old, and deprecated, version)
-        $bowerFile = $this->config->getInstallDir() . '/' . $package->getName() . '/bower.json';
-        if (!$this->filesystem->has($bowerFile)) {
-            $bowerFile = $this->config->getInstallDir() . '/' . $package->getName() . '/package.json';
-            if (!$this->filesystem->has($bowerFile)) {
-                throw new \RuntimeException(sprintf('Could not find bower.json nor package.json for package %s.', $package->getName()));
-            }
-        }
-        $bowerJson = $this->filesystem->read($bowerFile);
+        $bowerJson = $this->filesystem->read($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json');
         $bower = json_decode($bowerJson, true);
         if (is_null($bower)) {
-            throw new \RuntimeException(sprintf('Could not find bower.json for package %s.', $package->getName()));
+            throw new \RuntimeException(sprintf('Invalid content in .bower.json for package %s.', $package->getName()));
         }
         $version = $bower['version'];
 
@@ -216,12 +209,16 @@ class Installer implements InstallerInterface
         }
         $this->zipArchive->close();
 
+        // update .bower.json metadata file
+        // XXX for now, we just save some basic info
+        $dotBowerJson = json_encode(array('name' => $package->getName(), 'version' => $packageVersion));
+        $this->filesystem->write($package->getTargetDir() . '/' . $package->getName() . '/.bower.json', $dotBowerJson, true);
+
         // check for dependencies
         if (!empty($bower['dependencies'])) {
             foreach ($bower['dependencies'] as $name => $version) {
                 $depPackage = new Package($name, $version);
-                $bowerFile = $this->config->getInstallDir() . '/' . $depPackage->getName() . '/bower.json';
-                if (!$this->filesystem->has($bowerFile)) {
+                if (!$this->isInstalled($depPackage)) {
                     $this->install($depPackage);
                 } else {
                     $this->update($depPackage);
