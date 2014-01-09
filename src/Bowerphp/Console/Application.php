@@ -93,6 +93,7 @@ class Application extends BaseApplication
         $commands[] = new Command\LookupCommand();
         $commands[] = new Command\SearchCommand();
         $commands[] = new Command\UpdateCommand();
+        $commands[] = new Command\UninstallCommand();
 
         return $commands;
     }

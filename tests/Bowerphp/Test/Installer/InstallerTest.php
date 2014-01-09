@@ -643,6 +643,27 @@ class InstallerTest extends TestCase
         $this->installer->update($package);
     }
 
+    /**
+     * @expectedException        RuntimeException
+     * @expectedExceptionMessage Package jquery is not installed.
+     */
+    public function testUpdateUninstalledPackage()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+
+        $package
+            ->shouldReceive('getName')->andReturn('jquery')
+            ->shouldReceive('setTargetDir')->with(getcwd() . '/bower_components')
+            ->shouldReceive('getTargetDir')->andReturn(getcwd() . '/bower_components')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
+        ;
+
+        $this->installer->update($package);
+    }
+
     public function testUpdateWithNewDependenciesToInstall()
     {
         $this->markTestIncomplete();
@@ -802,6 +823,43 @@ class InstallerTest extends TestCase
 
     public function testUninstall()
     {
-        $this->markTestIncomplete();
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+
+        $package
+            ->shouldReceive('getName')->andReturn('jquery')
+            ->shouldReceive('setTargetDir')->with(getcwd() . '/bower_components')
+            ->shouldReceive('getTargetDir')->andReturn(getcwd() . '/bower_components')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
+            ->shouldReceive('listKeys')->with(getcwd() . '/bower_components/jquery/')->andReturn(array('file1', 'file2'))
+            ->shouldReceive('delete')->with(getcwd() . '/bower_components/jquery/file1')->andReturn(true)
+            ->shouldReceive('delete')->with(getcwd() . '/bower_components/jquery/file2')->andReturn(true)
+            ->shouldReceive('delete')->with(getcwd() . '/bower_components/jquery/')->andReturn(true)
+        ;
+
+        $this->installer->uninstall($package);
+    }
+
+    /**
+     * @expectedException        RuntimeException
+     * @expectedExceptionMessage Package jquery is not installed.
+     */
+    public function testUninstallUninstalledPackage()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+
+        $package
+            ->shouldReceive('getName')->andReturn('jquery')
+            ->shouldReceive('setTargetDir')->with(getcwd() . '/bower_components')
+            ->shouldReceive('getTargetDir')->andReturn(getcwd() . '/bower_components')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
+        ;
+
+        $this->installer->uninstall($package);
     }
 }

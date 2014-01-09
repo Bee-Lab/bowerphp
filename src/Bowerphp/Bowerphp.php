@@ -122,6 +122,17 @@ class Bowerphp
     }
 
     /**
+     * Uninstall a single package
+     *
+     * @param PackageInterface   $package
+     * @param InstallerInterface $installer
+     */
+    public function uninstallPackage(PackageInterface $package, InstallerInterface $installer)
+    {
+        $installer->uninstall($package);
+    }
+
+    /**
      * @param  array $params
      * @return array
      */

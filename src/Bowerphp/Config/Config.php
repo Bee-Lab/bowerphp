@@ -25,10 +25,10 @@ class Config implements ConfigInterface
         $cacheDir,
         $installDir,
         $filesystem,
-        $basePackagesUrl        = 'http://bower.herokuapp.com/packages/',
-        $saveToBowerJsonFile    = false,
-        $bowerFileName          = array('bower.json', 'package.json'),
-        $standardBowerFileName  = 'bower.json'
+        $basePackagesUrl       = 'http://bower.herokuapp.com/packages/',
+        $saveToBowerJsonFile   = false,
+        $bowerFileName         = array('bower.json', 'package.json'),
+        $standardBowerFileName = 'bower.json'
     ;
 
     /**
@@ -36,10 +36,10 @@ class Config implements ConfigInterface
      */
     public function __construct(Filesystem $filesystem)
     {
-        $this->filesystem   = $filesystem;
-        $this->cacheDir     = getenv('HOME') . '/.cache/bowerphp';
-        $this->installDir   = getcwd() . '/bower_components';
-        $rc                 = getcwd() . '/.bowerrc';
+        $this->filesystem = $filesystem;
+        $this->cacheDir   = getenv('HOME') . '/.cache/bowerphp';
+        $this->installDir = getcwd() . '/bower_components';
+        $rc               = getcwd() . '/.bowerrc';
 
         if ($this->filesystem->has($rc)) {
             $json = json_decode($this->filesystem->read($rc), true);

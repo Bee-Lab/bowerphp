@@ -235,6 +235,11 @@ class Installer implements InstallerInterface
      */
     public function uninstall(PackageInterface $package)
     {
+        // look for installed package
+        if (!$this->isInstalled($package)) {
+            throw new \RuntimeException(sprintf('Package %s is not installed.', $package->getName()));
+        }
+        $this->removeDir($package->getTargetDir() . '/' . $package->getName());
     }
 
     /**
@@ -318,5 +323,24 @@ class Installer implements InstallerInterface
         });
 
         return array_values($filter);
+    }
+
+    protected function removeDir($dir)
+    {
+        $dir = substr($dir, -1) == '/' ? $dir : $dir . '/';
+        $keys = $this->filesystem->listKeys($dir);
+
+        if (!empty($keys['dirs'])) {
+            foreach ($keys['dirs'] as $d) {
+                $this->removeDir($d);
+            }
+        }
+        if (!empty($keys['keys'])) {
+            foreach ($keys['keys'] as $k) {
+                $this->filesystem->delete($k);
+            }
+        }
+
+        $this->filesystem->delete($dir);
     }
 }

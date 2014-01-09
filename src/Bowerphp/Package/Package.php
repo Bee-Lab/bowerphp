@@ -15,7 +15,8 @@ class Package implements PackageInterface
     /**
      * All descendants' constructors should call this parent constructor
      *
-     * @param string $name The package's name
+     * @param string $name    The package's name
+     * @param string $version
      */
     public function __construct($name, $version = null)
     {
@@ -79,7 +80,7 @@ class Package implements PackageInterface
     }
 
     /**
-     * @param string $targetDir
+     * {@inheritDoc}
      */
     public function setTargetDir($targetDir)
     {
