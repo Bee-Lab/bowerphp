@@ -22,10 +22,10 @@
         "symfony/console": "~2.3",
         "symfony/finder": "~2.2",
         "symfony/process": "~2.1",
-        "knplabs/gaufrette": "0.2.*@dev",
+        "knplabs/gaufrette": "0.1.*",
         "doctrine/cache": "~1.3",
         "guzzle/guzzle": "3.8.*",
-        "camspiers/json-pretty": "0.1.*@dev"
+        "camspiers/json-pretty": "0.1.*"
     },
     "require-dev":{
         "phpunit/phpunit": "3.7.*",

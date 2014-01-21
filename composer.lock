@@ -3,20 +3,20 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "0365b94ee948313a17d9203aab77783d",
+    "hash": "8c763151c0e88d361e999ba9a017b828",
     "packages": [
         {
             "name": "camspiers/json-pretty",
-            "version": "dev-master",
+            "version": "0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Bee-Lab/json-pretty.git",
-                "reference": "3adacd73528a169711f5be93f3968b48ce3b4351"
+                "reference": "eeef37b30d78b2f310ba85a55219bb2e0e09f540"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Bee-Lab/json-pretty/zipball/3adacd73528a169711f5be93f3968b48ce3b4351",
-                "reference": "3adacd73528a169711f5be93f3968b48ce3b4351",
+                "url": "https://api.github.com/repos/Bee-Lab/json-pretty/zipball/eeef37b30d78b2f310ba85a55219bb2e0e09f540",
+                "reference": "eeef37b30d78b2f310ba85a55219bb2e0e09f540",
                 "shasum": ""
             },
             "require": {
@@ -47,9 +47,9 @@
             ],
             "description": "Provides support for json pretty printing in php 5.3",
             "support": {
-                "source": "https://github.com/Bee-Lab/json-pretty/tree/master"
+                "source": "https://github.com/Bee-Lab/json-pretty/tree/0.1.1"
             },
-            "time": "2014-01-07 08:29:44"
+            "time": "2014-01-21 09:08:07"
         },
         {
             "name": "doctrine/cache",
@@ -219,16 +219,16 @@
         },
         {
             "name": "knplabs/gaufrette",
-            "version": "dev-master",
+            "version": "v0.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Bee-Lab/Gaufrette.git",
-                "reference": "a79332ccb2719b1ded058d39ac079e93de17bb6c"
+                "reference": "c9bf947792d5d42b007ad13e816c93318ca225cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Bee-Lab/Gaufrette/zipball/a79332ccb2719b1ded058d39ac079e93de17bb6c",
-                "reference": "a79332ccb2719b1ded058d39ac079e93de17bb6c",
+                "url": "https://api.github.com/repos/Bee-Lab/Gaufrette/zipball/c9bf947792d5d42b007ad13e816c93318ca225cc",
+                "reference": "c9bf947792d5d42b007ad13e816c93318ca225cc",
                 "shasum": ""
             },
             "require": {
@@ -298,9 +298,9 @@
                 "media"
             ],
             "support": {
-                "source": "https://github.com/Bee-Lab/Gaufrette/tree/localkeys"
+                "source": "https://github.com/Bee-Lab/Gaufrette/tree/v0.1.7"
             },
-            "time": "2014-01-09 10:22:00"
+            "time": "2014-01-21 09:14:09"
         },
         {
             "name": "pimple/pimple",
@@ -850,16 +850,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "3.7.28",
+            "version": "3.7.29",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "3b97c8492bcafbabe6b6fbd2ab35f2f04d932a8d"
+                "reference": "faeb2d9f15dc83830d2db5e4c67acf1d68c9b5ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/3b97c8492bcafbabe6b6fbd2ab35f2f04d932a8d",
-                "reference": "3b97c8492bcafbabe6b6fbd2ab35f2f04d932a8d",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/faeb2d9f15dc83830d2db5e4c67acf1d68c9b5ac",
+                "reference": "faeb2d9f15dc83830d2db5e4c67acf1d68c9b5ac",
                 "shasum": ""
             },
             "require": {
@@ -920,7 +920,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2013-10-17 07:27:40"
+            "time": "2014-01-15 06:46:38"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -1023,10 +1023,9 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "knplabs/gaufrette": 20,
-        "camspiers/json-pretty": 20
-    },
+    "stability-flags": [
+
+    ],
     "platform": {
         "php": ">=5.3.2"
     },
