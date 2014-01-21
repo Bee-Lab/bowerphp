@@ -1,5 +1,5 @@
 {
-    "name": "bee-lab/bowerphp",
+    "name": "beelab/bowerphp",
     "description": "An implementation of bower in PHP",
     "keywords": ["package", "dependency", "frontend"],
     "type": "library",
