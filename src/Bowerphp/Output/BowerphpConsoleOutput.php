@@ -19,6 +19,9 @@ class BowerphpConsoleOutput
 {
     protected $output;
 
+    /**
+     * @param OutputInterface $output
+     */
     public function __construct(OutputInterface $output)
     {
         $this->output = $output;
@@ -93,7 +96,7 @@ class BowerphpConsoleOutput
      */
     public function writelnSearchOrLookup($name, $homepage, $pad = 0)
     {
-        $this->output->writeln(sprintf('<fg=cyan>%s</fg=cyan> %s', str_pad($name, $pad,' ', STR_PAD_LEFT), $homepage));
+        $this->output->writeln(sprintf('%s<fg=cyan>%s</fg=cyan> %s', str_repeat(' ', $pad), $name, $homepage));
     }
 
 }

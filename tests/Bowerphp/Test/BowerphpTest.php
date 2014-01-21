@@ -4,6 +4,7 @@ namespace Bowerphp\Test;
 
 use Bowerphp\Bowerphp;
 use Bowerphp\Test\TestCase;
+use Guzzle\Http\Exception\RequestException;
 use Mockery;
 
 class BowerphpTest extends TestCase
@@ -230,5 +231,46 @@ EOT;
         $expected = array('name' => '', 'authors' => array('Beelab <info@bee-lab.net>', ''), 'private' => true, 'dependencies' => new \StdClass());
         $createAClearBowerFile = $this->getMethod('Bowerphp\Bowerphp', 'createAClearBowerFile');
         $this->assertEquals($expected, $createAClearBowerFile->invokeArgs($bowerphp, array(array('name' => '', 'author' => ''))));
+    }
+
+    public function testSearchPackages()
+    {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+        $packagesJson = '[{"name":"jquery"},{"name":"jquery-ui"},{"name":"less"}]';
+
+        $this->config
+            ->shouldReceive('getAllPackagesUrl')->andReturn('http://example.com')
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://example.com')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn($packagesJson)
+        ;
+
+        $bowerphp = new Bowerphp($this->config);
+        $this->assertEquals(array('jquery', 'jquery-ui'), $bowerphp->searchPackages($this->httpClient, 'jquery'));
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testSearchPackagesException()
+    {
+        $this->config
+            ->shouldReceive('getAllPackagesUrl')->andReturn('http://example.com')
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://example.com')->andThrow(new RequestException)
+        ;
+
+        $bowerphp = new Bowerphp($this->config);
+        $bowerphp->searchPackages($this->httpClient, 'jquery');
     }
 }

@@ -41,10 +41,10 @@ class SearchCommand extends Command
     {
         $this
             ->setName('search')
-            ->setDescription('Search for a package by name.')
-            ->addArgument('package', InputArgument::REQUIRED, 'Choose a package.')
+            ->setDescription('Search for a package by name')
+            ->addArgument('name', InputArgument::REQUIRED, 'Name to search for.')
             ->setHelp(<<<EOT
-The <info>search</info> command is used for search a package ;)
+The <info>search</info> command searches for a package by name.
 EOT
             )
         ;
@@ -72,21 +72,24 @@ EOT
         ));
         $httpClient->addSubscriber($cachePlugin);
 
-        $packageName = $input->getArgument('package');
+        $name = $input->getArgument('name');
 
-        $v = explode("#", $packageName);
-        $packageName    = isset($v[0]) ? $v[0] : $packageName;
-        $version        = isset($v[1]) ? $v[1] : "*";
+        $bowerphp      = new Bowerphp($config);
+        $consoleOutput = new BowerphpConsoleOutput($output);
+        $installer     = new Installer($filesystem, $httpClient, new GithubRepository(), new ZipArchive(), $config, $consoleOutput);
+        $packageNames  =  $bowerphp->searchPackages($httpClient, $name);
 
-        $package        = new Package($packageName, $version);
-        $bowerphp       = new Bowerphp($config);
-        $consoleOutput  = new BowerphpConsoleOutput($output);
-        $installer      = new Installer($filesystem, $httpClient, new GithubRepository(), new ZipArchive(), $config, $consoleOutput);
+        if (count($packageNames) === 0) {
+            $output->writeln('No results.');
+        } else {
+            $output->writeln('Search results:');
+            $output->writeln('');
+            foreach ($packageNames as $packageName) {
+                $package = new Package($packageName);
+                $bower = $bowerphp->getPackageInfo($package, $installer, 'original_url');
 
-        $bower          = json_decode($bowerphp->getPackageInfo($package, $installer, 'bower'));
-
-        $consoleOutput->writelnSearchOrLookup($bower->name, $bower->homepage, 10);
-
+                $consoleOutput->writelnSearchOrLookup($bower['name'], $bower['url'], 4);
+            }
+        }
     }
-
 }

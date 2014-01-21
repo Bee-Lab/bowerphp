@@ -15,6 +15,8 @@ use Bowerphp\Config\ConfigInterface;
 use Bowerphp\Installer\InstallerInterface;
 use Bowerphp\Package\Package;
 use Bowerphp\Package\PackageInterface;
+use Guzzle\Http\ClientInterface;
+use RequestException;
 
 /**
  * Main class
@@ -130,6 +132,33 @@ class Bowerphp
     public function uninstallPackage(PackageInterface $package, InstallerInterface $installer)
     {
         $installer->uninstall($package);
+    }
+
+    /**
+     * Search packages by name
+     *
+     * @param  ClientInterface $httpClient
+     * @param  string          $name
+     * @return array
+     */
+    public function searchPackages(ClientInterface $httpClient, $name)
+    {
+        try {
+            $url = $this->config->getAllPackagesUrl();
+            $request = $httpClient->get($url);
+            $response = $request->send();
+        } catch (RequestException $e) {
+            throw new \RuntimeException(sprintf('Cannot get package list from %s.', $url));
+        }
+        $decode = json_decode($response->getBody(true), true);
+        $return = array();
+        foreach ($decode as $pkg) {
+            if (false !== strpos($pkg['name'], $name)) {
+                $return[] = $pkg['name'];
+            }
+        }
+
+        return $return;
     }
 
     /**

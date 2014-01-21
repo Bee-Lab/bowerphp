@@ -41,7 +41,7 @@ class LookupCommand extends Command
     {
         $this
             ->setName('lookup')
-            ->setDescription('Look up a package URL by name.')
+            ->setDescription('Look up a package URL by name')
             ->addArgument('package', InputArgument::REQUIRED, 'Choose a package.')
             ->setHelp(<<<EOT
 The <info>lookup</info> command is used for search with exact match the repository URL package

@@ -42,7 +42,7 @@ class InstallCommand extends Command
     {
         $this
             ->setName('install')
-            ->setDescription('Installs the project dependencies from the bower.json file or a single specified package.')
+            ->setDescription('Installs the project dependencies from the bower.json file or a single specified package')
             ->setDefinition(array(
                 new InputOption('verbose', 'v|vv|vvv', InputOption::VALUE_NONE, 'Shows more details including new commits pulled in when updating packages.'),
                 new InputOption('save', 'S', InputOption::VALUE_NONE, 'If flag -S or --save is passed to install, package will be added to bower.json file (only if bower.json file already exists)'),

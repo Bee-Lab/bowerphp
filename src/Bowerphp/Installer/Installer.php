@@ -255,7 +255,7 @@ class Installer implements InstallerInterface
     {
         // look for package in bower
         try {
-            $request = $this->httpClient->get($this->config->getBasePackagesUrl() . $package->getName());
+            $request = $this->httpClient->get($this->config->getBasePackagesUrl() . urlencode($package->getName()));
             $response = $request->send();
         } catch (RequestException $e) {
             throw new \RuntimeException(sprintf('Cannot download package %s (%s).', $package->getName(), $e->getMessage()));
@@ -275,7 +275,7 @@ class Installer implements InstallerInterface
         if ($info == 'original_url') {
             $this->repository->setUrl($decode['url'], false);
 
-            return Array('name' => $decode['name'], 'url' =>$this->repository->getOriginalUrl());
+            return array('name' => $decode['name'], 'url' =>$this->repository->getOriginalUrl());
         }
 
         if ($info == 'bower') {

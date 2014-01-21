@@ -26,6 +26,7 @@ class Config implements ConfigInterface
         $installDir,
         $filesystem,
         $basePackagesUrl       = 'http://bower.herokuapp.com/packages/',
+        $allPackagesUrl        = 'https://bower-component-list.herokuapp.com/',
         $saveToBowerJsonFile   = false,
         $bowerFileName         = array('bower.json', 'package.json'),
         $standardBowerFileName = 'bower.json'
@@ -61,6 +62,14 @@ class Config implements ConfigInterface
     public function getBasePackagesUrl()
     {
         return $this->basePackagesUrl;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAllPackagesUrl()
+    {
+        return $this->allPackagesUrl;
     }
 
     /**

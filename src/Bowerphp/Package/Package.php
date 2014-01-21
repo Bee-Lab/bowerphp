@@ -20,7 +20,7 @@ class Package implements PackageInterface
      */
     public function __construct($name, $version = null)
     {
-        $this->name = strtolower($name);
+        $this->name = $name;
         if (!is_null($version)) {
             $this->version = $version;
         }

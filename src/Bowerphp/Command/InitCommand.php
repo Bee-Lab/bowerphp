@@ -31,7 +31,7 @@ class InitCommand extends Command
     {
         $this
             ->setName('init')
-            ->setDescription('Initializes a bower.json file.')
+            ->setDescription('Initializes a bower.json file')
             ->setDefinition(array(
                 new InputOption('verbose', 'v|vv|vvv', InputOption::VALUE_NONE, 'Shows more details including new commits pulled in when updating packages.'),
             ))

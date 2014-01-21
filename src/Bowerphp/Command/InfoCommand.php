@@ -41,7 +41,7 @@ class InfoCommand extends Command
     {
         $this
             ->setName('info')
-            ->setDescription('Displays overall information of a package or of a particular version.')
+            ->setDescription('Displays overall information of a package or of a particular version')
             ->addArgument('package', InputArgument::REQUIRED, 'Choose a package.')
             ->addArgument('property', InputArgument::OPTIONAL, 'A property present in bower.json.')
             ->setHelp(<<<EOT

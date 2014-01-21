@@ -42,7 +42,7 @@ class UninstallCommand extends Command
     {
         $this
             ->setName('uninstall')
-            ->setDescription('Uninstalls a single specified package.')
+            ->setDescription('Uninstalls a single specified package')
             ->setDefinition(array(
                 new InputOption('verbose', 'v|vv|vvv', InputOption::VALUE_NONE, 'Shows more details including new commits pulled in when updating packages.'),
             ))

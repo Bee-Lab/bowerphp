@@ -42,7 +42,7 @@ class HomeCommand extends Command
     {
         $this
             ->setName('home')
-            ->setDescription('Opens a package homepage into your favorite browser.')
+            ->setDescription('Opens a package homepage into your favorite browser')
             ->addArgument('package', InputArgument::REQUIRED, 'Choose a package.')
             ->setHelp(<<<EOT
 The <info>home</info> command opens a package homepage into your favorite browser.

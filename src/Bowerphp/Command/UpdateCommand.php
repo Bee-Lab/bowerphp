@@ -42,7 +42,7 @@ class UpdateCommand extends Command
     {
         $this
             ->setName('update')
-            ->setDescription('Update the project dependencies from the bower.json file or a single specified package.')
+            ->setDescription('Update the project dependencies from the bower.json file or a single specified package')
             ->setDefinition(array(
                 new InputOption('verbose', 'v|vv|vvv', InputOption::VALUE_NONE, 'Shows more details including new commits pulled in when updating packages.'),
             ))
