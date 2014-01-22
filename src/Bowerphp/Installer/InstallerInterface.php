@@ -64,4 +64,12 @@ interface InstallerInterface
      * @return array
      */
     public function getInstalled();
+
+    /**
+     * Find packages that depend on given package.
+     *
+     * @param  PackageInterface $package
+     * @return array
+     */
+    public function findDependentPackages(PackageInterface $package);
 }

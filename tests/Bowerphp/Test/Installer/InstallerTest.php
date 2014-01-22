@@ -938,4 +938,27 @@ class InstallerTest extends TestCase
 
         $this->assertFalse($this->installer->isExtraneous($package, true));
     }
+
+    public function testFindDependentPackages()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+
+        $package
+            ->shouldReceive('getName')->andReturn('jquery')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('listKeys')->with(getcwd() . '/bower_components')->andReturn(array('dirs' => array('package1', 'package2')))
+            ->shouldReceive('has')->with('package1/.bower.json')->andReturn(true)
+            ->shouldReceive('has')->with('package2/.bower.json')->andReturn(true)
+            ->shouldReceive('read')->with('package1/.bower.json')->andReturn('{"name":"package1","version":"1.0.0","dependencies":{"jquery": ">=1.3.2"}}')
+            ->shouldReceive('read')->with('package2/.bower.json')->andReturn('{"name":"package2","version":"1.2.3","dependencies":{"jquery": ">=1.6"}}')
+        ;
+
+        $packages = $this->installer->findDependentPackages($package);
+
+        $this->assertCount(2, $packages);
+        $this->assertArrayHasKey('>=1.3.2', $packages);
+        $this->assertArrayHasKey('>=1.6', $packages);
+    }
 }

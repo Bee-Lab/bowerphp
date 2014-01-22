@@ -15,14 +15,18 @@ class Package implements PackageInterface
     /**
      * All descendants' constructors should call this parent constructor
      *
-     * @param string $name    The package's name
+     * @param string $name     The package's name
      * @param string $version
+     * @param array  $requires The packages' dependencies
      */
-    public function __construct($name, $version = null)
+    public function __construct($name, $version = null, $requires = array())
     {
         $this->name = $name;
         if (!is_null($version)) {
             $this->version = $version;
+        }
+        if (!empty($requires)) {
+            $this->requires = $requires;
         }
     }
 

@@ -86,6 +86,10 @@ class Installer implements InstallerInterface
     {
         $this->output->writelnInfoPackage($package);
 
+        // check if package is already installed
+        #if ($this->isInstalled($package)) {
+        #}
+
         $package->setTargetDir($this->config->getInstallDir());
         // look for package in bower
         try {
@@ -328,11 +332,28 @@ class Installer implements InstallerInterface
                 if (is_null($bower)) {
                     throw new \RuntimeException(sprintf('Invalid content in .bower.json for package %s.', $packageDirectory));
                 }
-                $packages[] = new Package($bower['name'], $bower['version']);
+                $packages[] = new Package($bower['name'], $bower['version'], isset($bower['dependencies']) ? $bower['dependencies'] : null);
             }
         }
 
         return $packages;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findDependentPackages(PackageInterface $package)
+    {
+        $return = array();
+        $packages = $this->getInstalled();
+        foreach ($packages as $installedPackage) {
+            $requires = $installedPackage->getRequires();
+            if (isset($requires[$package->getName()])) {
+                $return[$requires[$package->getName()]] = $installedPackage;
+            }
+        }
+
+        return $return;
     }
 
     /**
