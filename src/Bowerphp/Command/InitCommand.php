@@ -16,7 +16,6 @@ use Bowerphp\Config\Config;
 use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\Filesystem;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -32,15 +31,11 @@ class InitCommand extends Command
         $this
             ->setName('init')
             ->setDescription('Initializes a bower.json file')
-            ->setDefinition(array(
-                new InputOption('verbose', 'v|vv|vvv', InputOption::VALUE_NONE, 'Shows more details including new commits pulled in when updating packages.'),
-            ))
             ->setHelp(<<<EOT
-The <info>init</info> command initializes a bower.json file in
+The <info>%command.name%</info> command initializes a bower.json file in
 the current directory.
 
-<info>php bowerphp.phar init</info>
-
+  <info>php %command.full_name%</info>
 EOT
             )
         ;

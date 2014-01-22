@@ -19,6 +19,15 @@ interface InstallerInterface
     public function isInstalled(PackageInterface $package);
 
     /**
+     * Checks if provided package is extraneous (i.e. included in bower.json) or not.
+     *
+     * @param  PackageInterface $package      package instance
+     * @param  boolean          $checkInstall if true, pre-check if package is installed
+     * @return boolean
+     */
+    public function isExtraneous(PackageInterface $package, $checkInstall = false);
+
+    /**
      * Installs specific package.
      *
      * @param PackageInterface $package      package instance
@@ -48,4 +57,11 @@ interface InstallerInterface
      * @return string
      */
     public function getInstallPath(PackageInterface $package);
+
+    /**
+     * Get installed packages.
+     *
+     * @return array
+     */
+    public function getInstalled();
 }

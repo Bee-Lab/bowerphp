@@ -87,4 +87,29 @@ class ConsoleOutputTest extends \PHPUnit_Framework_TestCase
         $BConsoleOutput = new BowerphpConsoleOutput($output);
         $BConsoleOutput->writelnJsonText("name");
     }
+
+    public function testWritelnListPackage()
+    {
+        $output = Mockery::mock('Symfony\Component\Console\Output\OutputInterface');
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+
+        $package
+            ->shouldReceive('getName')->andReturn('jquery', 'fonts.css')
+            ->shouldReceive('getVersion')->andReturn('1.2', '1.0.0')
+        ;
+
+        $installer
+            ->shouldReceive('isExtraneous')->with($package)->andReturn(true, false)
+        ;
+
+        $output
+            ->shouldReceive('writeln')->with('jquery#1.2<info> extraneous</info>')
+            ->shouldReceive('writeln')->with('fonts.css#1.0.0<info></info>')
+        ;
+
+        $BConsoleOutput = new BowerphpConsoleOutput($output);
+        $BConsoleOutput->writelnListPackage($package, $installer);
+        $BConsoleOutput->writelnListPackage($package, $installer);
+    }
 }

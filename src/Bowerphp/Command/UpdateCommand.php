@@ -27,7 +27,6 @@ use Guzzle\Plugin\Cache\CachePlugin;
 use Guzzle\Plugin\Cache\DefaultCacheStorage;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -43,24 +42,17 @@ class UpdateCommand extends Command
         $this
             ->setName('update')
             ->setDescription('Update the project dependencies from the bower.json file or a single specified package')
-            ->setDefinition(array(
-                new InputOption('verbose', 'v|vv|vvv', InputOption::VALUE_NONE, 'Shows more details including new commits pulled in when updating packages.'),
-            ))
-            ->addArgument(
-                'package',
-                InputArgument::OPTIONAL,
-                'Choose a package.'
-            )
+            ->addArgument('package', InputArgument::OPTIONAL, 'Choose a package.')
             ->setHelp(<<<EOT
-The <info>install</info> command reads the bower.json file from
+The <info>%command.name%</info> command reads the bower.json file from
 the current directory, processes it, and downloads and installs all the
 libraries and dependencies outlined in that file.
 
-<info>php bowerphp.phar update</info>
+  <info>php %command.full_name%</info>
 
-If an optional package name is passed, that package is updated.
+If an optional package name is passed, only that package is updated.
 
-<info>php bowerphp.phar update packageName</info>
+  <info>php %command.full_name% packageName</info>
 
 EOT
             )

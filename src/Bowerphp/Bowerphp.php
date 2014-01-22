@@ -16,7 +16,7 @@ use Bowerphp\Installer\InstallerInterface;
 use Bowerphp\Package\Package;
 use Bowerphp\Package\PackageInterface;
 use Guzzle\Http\ClientInterface;
-use RequestException;
+use Guzzle\Http\Exception\RequestException;
 
 /**
  * Main class
@@ -159,6 +159,17 @@ class Bowerphp
         }
 
         return $return;
+    }
+
+    /**
+     * Get a list of installed packages
+     *
+     * @param  InstallerInterface $installer
+     * @return array
+     */
+    public function getInstalledPackages(InstallerInterface $installer)
+    {
+        return $installer->getInstalled();
     }
 
     /**

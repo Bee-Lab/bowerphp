@@ -27,7 +27,6 @@ use Guzzle\Plugin\Cache\CachePlugin;
 use Guzzle\Plugin\Cache\DefaultCacheStorage;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -43,14 +42,11 @@ class UninstallCommand extends Command
         $this
             ->setName('uninstall')
             ->setDescription('Uninstalls a single specified package')
-            ->setDefinition(array(
-                new InputOption('verbose', 'v|vv|vvv', InputOption::VALUE_NONE, 'Shows more details including new commits pulled in when updating packages.'),
-            ))
             ->addArgument('package', InputArgument::REQUIRED, 'Choose a package.')
             ->setHelp(<<<EOT
-The <info>uninstall</info> command uninstall a package.
+The <info>%command.name%</info> command uninstall a package.
 
-<info>php bowerphp.phar uninstall</info>
+  <info>php %command.full_name% packageName</info>
 EOT
             )
         ;

@@ -6,6 +6,7 @@ use Bowerphp\Installer\Installer;
 use Bowerphp\Test\TestCase;
 use Guzzle\Http\Exception\RequestException;
 use Mockery;
+use RuntimeException;
 
 class InstallerTest extends TestCase
 {
@@ -860,5 +861,81 @@ class InstallerTest extends TestCase
         ;
 
         $this->installer->uninstall($package);
+    }
+
+    public function testGetInstalled()
+    {
+        $this->filesystem
+            ->shouldReceive('listKeys')->with(getcwd() . '/bower_components')->andReturn(array('dirs' => array('package1', 'package2')))
+            ->shouldReceive('has')->with('package1/.bower.json')->andReturn(true)
+            ->shouldReceive('has')->with('package2/.bower.json')->andReturn(true)
+            ->shouldReceive('read')->with('package1/.bower.json')->andReturn('{"name":"package1","version":"1.0.0"}')
+            ->shouldReceive('read')->with('package2/.bower.json')->andReturn('{"name":"package2","version":"1.2.3"}')
+        ;
+
+        $this->assertCount(2, $this->installer->getInstalled());
+    }
+
+    /**
+     * @expectedException        RuntimeException
+     * @expectedExceptionMessage Invalid content in .bower.json for package package1.
+     */
+    public function testGetInstalledWithoutBowerJsonFile()
+    {
+        $this->filesystem
+            ->shouldReceive('listKeys')->with(getcwd() . '/bower_components')->andReturn(array('dirs' => array('package1')))
+            ->shouldReceive('has')->with('package1/.bower.json')->andReturn(true)
+            ->shouldReceive('read')->with('package1/.bower.json')->andReturn(null)
+        ;
+
+        $this->installer->getInstalled();
+    }
+
+    public function testIsExtraneous()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+
+        $package
+            ->shouldReceive('getName')->andReturn('jquery')
+        ;
+
+        $this->config
+            ->shouldReceive('getBowerFileContent')->andReturn(array(), array('dependencies' => array('jquery' => '*')))
+        ;
+
+        $this->assertTrue($this->installer->isExtraneous($package));
+        $this->assertFalse($this->installer->isExtraneous($package));
+    }
+
+    public function testIsExtraneousWithoutBowerJsonFile()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+
+        $package
+            ->shouldReceive('getName')->andReturn('jquery')
+        ;
+
+        $this->config
+            ->shouldReceive('getBowerFileContent')->andThrow(new RuntimeException)
+        ;
+
+        $this->assertTrue($this->installer->isExtraneous($package));
+    }
+
+    public function testIsExtraneousWithCheck()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+
+        $package
+            ->shouldReceive('setTargetDir')->with(getcwd() . '/bower_components')
+            ->shouldReceive('getTargetDir')->andReturn(getcwd() . '/bower_components')
+            ->shouldReceive('getName')->andReturn('colorbox')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/colorbox/.bower.json')->andReturn(false)
+        ;
+
+        $this->assertFalse($this->installer->isExtraneous($package, true));
     }
 }

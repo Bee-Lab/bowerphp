@@ -45,7 +45,9 @@ class HomeCommand extends Command
             ->setDescription('Opens a package homepage into your favorite browser')
             ->addArgument('package', InputArgument::REQUIRED, 'Choose a package.')
             ->setHelp(<<<EOT
-The <info>home</info> command opens a package homepage into your favorite browser.
+The <info>%command.name%</info> command opens a package homepage into your favorite browser.
+
+  <info>php %command.full_name%</info>
 EOT
             )
         ;

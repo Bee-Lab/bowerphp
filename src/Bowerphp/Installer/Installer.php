@@ -61,6 +61,27 @@ class Installer implements InstallerInterface
     /**
      * {@inheritDoc}
      */
+    public function isExtraneous(PackageInterface $package, $checkInstall = false)
+    {
+        if ($checkInstall && !$this->isInstalled($package)) {
+            return false;
+        }
+        try {
+            $bower = $this->config->getBowerFileContent();
+        } catch (RuntimeException $e) { // no bower.json file, package is extraneous
+
+            return true;
+        }
+        if (!isset($bower['dependencies'])) {
+            return true;
+        }
+
+        return !isset($bower['dependencies'][$package->getName()]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function install(PackageInterface $package, $isDependency = false)
     {
         $this->output->writelnInfoPackage($package);
@@ -293,6 +314,28 @@ class Installer implements InstallerInterface
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function getInstalled()
+    {
+        $packages = array();
+
+        $keys = $this->filesystem->listKeys($this->config->getInstallDir());
+        foreach ($keys['dirs'] as $packageDirectory) {
+            if ($this->filesystem->has($packageDirectory . '/.bower.json')) {
+                $bowerJson = $this->filesystem->read($packageDirectory . '/.bower.json');
+                $bower = json_decode($bowerJson, true);
+                if (is_null($bower)) {
+                    throw new \RuntimeException(sprintf('Invalid content in .bower.json for package %s.', $packageDirectory));
+                }
+                $packages[] = new Package($bower['name'], $bower['version']);
+            }
+        }
+
+        return $packages;
+    }
+
+    /**
      * Filter archive files based on an "ignore" list.
      *
      * @param  ZipArchive $archive
@@ -322,6 +365,9 @@ class Installer implements InstallerInterface
         return array_values($filter);
     }
 
+    /**
+     * @param string $dir
+     */
     protected function removeDir($dir)
     {
         $dir = substr($dir, -1) == '/' ? $dir : $dir . '/';

@@ -45,8 +45,10 @@ class InfoCommand extends Command
             ->addArgument('package', InputArgument::REQUIRED, 'Choose a package.')
             ->addArgument('property', InputArgument::OPTIONAL, 'A property present in bower.json.')
             ->setHelp(<<<EOT
-The <info>info</info> command displays overall information of a package or of a particular version.
+The <info>%command.name%</info> command displays overall information of a package or of a particular version.
 If you pass a property present in bower.json, you can get the correspondent value.
+
+  <info>php %command.full_name%</info>
 EOT
             )
         ;

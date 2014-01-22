@@ -44,7 +44,9 @@ class LookupCommand extends Command
             ->setDescription('Look up a package URL by name')
             ->addArgument('package', InputArgument::REQUIRED, 'Choose a package.')
             ->setHelp(<<<EOT
-The <info>lookup</info> command is used for search with exact match the repository URL package
+The <info>%command.name%</info> command is used for search with exact match the repository URL package
+
+  <info>php %command.full_name% packageName</info>
 EOT
             )
         ;

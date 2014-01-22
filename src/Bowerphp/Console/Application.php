@@ -15,6 +15,8 @@ use Bowerphp\Command;
 use Bowerphp\Command\Helper\DialogHelper;
 use Bowerphp\Util\ErrorHandler;
 use Symfony\Component\Console\Application as BaseApplication;
+use Symfony\Component\Console\Command\HelpCommand;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -38,6 +40,9 @@ class Application extends BaseApplication
                              /_/         /_/
 ';
 
+    /**
+     * Constructor
+     */
     public function __construct()
     {
         ErrorHandler::register();
@@ -62,7 +67,7 @@ class Application extends BaseApplication
             chdir($newWorkDir);
         }
 
-        $result = parent::doRun($input, $output);
+        $result = $this->SymfonyDoRun($input, $output);
 
         if (isset($oldWorkingDir)) {
             chdir($oldWorkingDir);
@@ -75,27 +80,32 @@ class Application extends BaseApplication
         return $result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getHelp()
     {
         return self::$logo . parent::getHelp();
     }
 
     /**
-     * Initializes all the bowerphp commands
+     * {@inheritDoc}
      */
     protected function getDefaultCommands()
     {
-        $commands = parent::getDefaultCommands();
-        $commands[] = new Command\HomeCommand();
-        $commands[] = new Command\InfoCommand();
-        $commands[] = new Command\InitCommand();
-        $commands[] = new Command\InstallCommand();
-        $commands[] = new Command\LookupCommand();
-        $commands[] = new Command\SearchCommand();
-        $commands[] = new Command\UpdateCommand();
-        $commands[] = new Command\UninstallCommand();
-
-        return $commands;
+        return array(
+            new HelpCommand(),
+            new Command\CommandListCommand(),
+            new Command\HomeCommand(),
+            new Command\InfoCommand(),
+            new Command\InitCommand(),
+            new Command\InstallCommand(),
+            new Command\ListCommand(),
+            new Command\LookupCommand(),
+            new Command\SearchCommand(),
+            new Command\UpdateCommand(),
+            new Command\UninstallCommand(),
+        );
     }
 
     /**
@@ -134,5 +144,48 @@ class Application extends BaseApplication
         }
 
         return $workingDir;
+    }
+
+    /**
+     * Copy of original Symfony doRun, to allow a default command
+     *
+     * @param InputInterface  $input   An Input instance
+     * @param OutputInterface $output  An Output instance
+     * @param string          $default Default command to execute
+     *
+     * @return integer 0 if everything went fine, or an error code
+     */
+    private function SymfonyDoRun(InputInterface $input, OutputInterface $output, $default = 'list-commands')
+    {
+        if (true === $input->hasParameterOption(array('--version', '-V'))) {
+            $output->writeln($this->getLongVersion());
+
+            return 0;
+        }
+
+        $name = $this->getCommandName($input);
+
+        if (true === $input->hasParameterOption(array('--help', '-h'))) {
+            if (!$name) {
+                $name = 'help';
+                $input = new ArrayInput(array('command' => 'help'));
+            } else {
+                $this->wantHelps = true;
+            }
+        }
+
+        if (!$name) {
+            $name = $default;
+            $input = new ArrayInput(array('command' => $default));
+        }
+
+        // the command name MUST be the first element of the input
+        $command = $this->find($name);
+
+        $this->runningCommand = $command;
+        $exitCode = $this->doRunCommand($command, $input, $output);
+        $this->runningCommand = null;
+
+        return $exitCode;
     }
 }

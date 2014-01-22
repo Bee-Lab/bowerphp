@@ -44,24 +44,22 @@ class InstallCommand extends Command
             ->setName('install')
             ->setDescription('Installs the project dependencies from the bower.json file or a single specified package')
             ->setDefinition(array(
-                new InputOption('verbose', 'v|vv|vvv', InputOption::VALUE_NONE, 'Shows more details including new commits pulled in when updating packages.'),
-                new InputOption('save', 'S', InputOption::VALUE_NONE, 'If flag -S or --save is passed to install, package will be added to bower.json file (only if bower.json file already exists)'),
+                new InputOption('save', 'S', InputOption::VALUE_NONE, 'Add installed package to bower.json file.'),
             ))
-            ->addArgument(
-                'package',
-                InputArgument::OPTIONAL,
-                'Choose a package.'
-            )
+            ->addArgument('package', InputArgument::OPTIONAL, 'Choose a package.')
             ->setHelp(<<<EOT
-The <info>install</info> command reads the bower.json file from
+The <info>%command.name%</info> command reads the bower.json file from
 the current directory, processes it, and downloads and installs all the
 libraries and dependencies outlined in that file.
 
-<info>php bowerphp.phar install</info>
+  <info>php %command.full_name%</info>
 
 If an optional package name is passed, that package is installed.
 
-<info>php bowerphp.phar install packageName[#version]</info>
+  <info>php %command.full_name% packageName[#version]</info>
+
+If an optional flag <comment>-S</comment> is passed, installed package is added
+to bower.json file (only if bower.json file already exists).
 
 EOT
             )

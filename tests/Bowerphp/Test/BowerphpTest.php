@@ -14,7 +14,7 @@ class BowerphpTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->config     = Mockery::mock('Bowerphp\Config\ConfigInterface');
+        $this->config = Mockery::mock('Bowerphp\Config\ConfigInterface');
     }
 
     public function testInit()
@@ -258,7 +258,8 @@ EOT;
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException        RuntimeException
+     * @expectedExceptionMessage Cannot get package list from http://example.com.
      */
     public function testSearchPackagesException()
     {
@@ -272,5 +273,18 @@ EOT;
 
         $bowerphp = new Bowerphp($this->config);
         $bowerphp->searchPackages($this->httpClient, 'jquery');
+    }
+
+    public function testGetInstalledPackages()
+    {
+        $packages = array('a', 'b', 'c');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+
+        $installer
+            ->shouldReceive('getInstalled')->andReturn($packages)
+        ;
+
+        $bowerphp = new Bowerphp($this->config);
+        $this->assertEquals($packages, $bowerphp->getInstalledPackages($installer));
     }
 }
