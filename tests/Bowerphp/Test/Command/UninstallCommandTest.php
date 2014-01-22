@@ -3,9 +3,6 @@
 namespace Bowerphp\Test\Command;
 
 use Bowerphp\Console\Application;
-use FilesystemIterator;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**

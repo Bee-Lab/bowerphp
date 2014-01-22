@@ -30,7 +30,7 @@ class BowerphpConsoleOutput
     /**
      * writelnInfoPackage
      *
-     * @params PackageInterface $package
+     * @param PackageInterface $package
      */
     public function writelnInfoPackage(PackageInterface $package)
     {
@@ -42,8 +42,8 @@ class BowerphpConsoleOutput
     /**
      * writelnInstalledPackage
      *
-     * @params PackageInterface $package
-     * @params string           $packageVersion
+     * @param PackageInterface $package
+     * @param string           $packageVersion
      */
     public function writelnInstalledPackage(PackageInterface $package, $packageVersion)
     {

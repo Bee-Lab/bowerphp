@@ -46,12 +46,12 @@ interface ConfigInterface
     /**
      * Set true|false for decide if add package reference on bower.json file during install procedure
      *
-     * @params boolean $flag default true
+     * @param boolean $flag default true
      */
     public function setSaveToBowerJsonFile($flag = true);
 
     /**
-     * @params array   $params
+     * @param  array   $params
      * @return integer
      */
     public function initBowerJsonFile(array $params);
@@ -59,8 +59,8 @@ interface ConfigInterface
     /**
      * Update bower.json with a new added package
      *
-     * @params Package $package
-     * @params string  $packageVersion
+     * @param  Package $package
+     * @param  string  $packageVersion
      * @return integer
      */
     public function updateBowerJsonFile(PackageInterface $package, $packageVersion);
@@ -68,8 +68,8 @@ interface ConfigInterface
     /**
      * Update bower.json from a previous existing one
      *
-     * @params array   $old values of previous bower.json
-     * @params array   $new new values
+     * @param  array   $old values of previous bower.json
+     * @param  array   $new new values
      * @return integer
      */
     public function updateBowerJsonFile2(array $old, array $new);
