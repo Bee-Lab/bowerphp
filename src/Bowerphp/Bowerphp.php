@@ -178,12 +178,13 @@ class Bowerphp
      */
     protected function createAClearBowerFile(array $params)
     {
+        $authors = array('Beelab <info@bee-lab.net>');
+        if (!empty($params['author'])) {
+            $authors[] = $params['author'];
+        }
         $structure =  array(
             'name' => $params['name'],
-            'authors' => array (
-                0 => 'Beelab <info@bee-lab.net>',
-                1 => $params['author']
-            ),
+            'authors' => $authors,
             'private' => true,
             'dependencies' => new \StdClass(),
         );

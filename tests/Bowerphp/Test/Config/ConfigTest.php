@@ -68,7 +68,8 @@ class ConfigTest extends TestCase
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException        RuntimeException
+     * @expectedExceptionMessage Malformed JSON {invalid.
      */
     public function testGetBowerFileContentWithExceptionOnInvalidJson()
     {
@@ -77,7 +78,7 @@ class ConfigTest extends TestCase
         $filesystem = Mockery::mock('Gaufrette\Filesystem');
 
         $filesystem
-            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(true)
+            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
             ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
             ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
         ;
@@ -87,18 +88,16 @@ class ConfigTest extends TestCase
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException        RuntimeException
+     * @expectedExceptionMessage No bower.json found. You can run "init" command to create it.
      */
     public function testGetBowerFileContentWithExceptionOnBowerJsonDoesNotExist()
     {
-        $jsonPackage = '{"name": "jquery-ui", "version": "1.10.4", "main": ["ui/jquery-ui.js"], "dependencies": {"jquery": ">=1.6"}}';
-
         $filesystem = Mockery::mock('Gaufrette\Filesystem');
 
         $filesystem
             ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
             ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(false)
-            ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($jsonPackage)
         ;
 
         $config = new Config($filesystem);

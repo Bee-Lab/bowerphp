@@ -50,27 +50,45 @@ EOT
         $filesystem = new Filesystem($adapter);
         $config     = new Config($filesystem);
 
-        $params = array('name' => null, 'author' => null);
+        $author = sprintf('%s <%s>', $this->getGitInfo('user.name'), $this->getGitInfo('user.email'));
+
+        $params = array('name' => get_current_user(), 'author' => $author);
 
         if ($input->isInteractive()) {
             $dialog = $this->getHelperSet()->get('dialog');
 
             $params['name'] = $dialog->ask(
                 $output,
-                '<question>Please specify a name for project:</question> ',
-                'A name'
+                $dialog->getQuestion('Please specify a name for project', $params['name']),
+                $params['name']
             );
 
             $params['author'] = $dialog->ask(
                 $output,
-                '<question>Please specify an author (Ex. Adam Smith \<noreply@example.org>):</question> ',
-                'An author'
+                $dialog->getQuestion('Please sspecify an author', $params['author']),
+                $params['author']
             );
         }
-
         $bowerphp = new Bowerphp($config);
         $bowerphp->init($params);
 
         $output->writeln('');
+    }
+
+    /**
+     * Get some info from local git
+     *
+     * @param  string $info info type
+     * @return string
+     */
+    private function getGitInfo($info = 'user.name')
+    {
+        $output = array();
+        $return = 0;
+        $info = exec("git config --get $info", $output, $return);
+
+        if ($return === 0) {
+            return $info;
+        }
     }
 }
