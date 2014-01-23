@@ -56,10 +56,10 @@ EOT
         $adapter = new LocalAdapter('/');
         $filesystem = new Filesystem($adapter);
         $config = new Config($filesystem);
+        $httpClient = new Client();
         $consoleOutput = new BowerphpConsoleOutput($output);
-        $installer = new Installer($filesystem, new Client(), new GithubRepository(), new ZipArchive(), $config, $consoleOutput);
-
-        $bowerphp = new Bowerphp($config);
+        $installer = new Installer($filesystem, new ZipArchive(), $config);
+        $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), $consoleOutput);
         $packages = $bowerphp->getInstalledPackages($installer);
 
         foreach ($packages as $package) {

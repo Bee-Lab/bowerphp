@@ -116,6 +116,7 @@ class ConfigTest extends TestCase
 
         $package
             ->shouldReceive('getName')->andReturn('foobar')
+            ->shouldReceive('getRequiredVersion')->andReturn('*')
         ;
 
         $this->filesystem

@@ -14,7 +14,7 @@ namespace Bowerphp\Tests\Output;
 use Bowerphp\Output\BowerphpConsoleOutput;
 use Mockery;
 
-class ConsoleOutputTest extends \PHPUnit_Framework_TestCase
+class BowerphpConsoleOutputTest extends \PHPUnit_Framework_TestCase
 {
     public function testWritelnInfoPackage()
     {
@@ -24,6 +24,7 @@ class ConsoleOutputTest extends \PHPUnit_Framework_TestCase
         $package
             ->shouldReceive('getVersion')->andReturn('2.1')
             ->shouldReceive('getName')->andReturn('jquery')
+            ->shouldReceive('getRequiredVersion')->andReturn('2.1')
         ;
 
         $output
@@ -45,11 +46,11 @@ class ConsoleOutputTest extends \PHPUnit_Framework_TestCase
         ;
 
         $output
-            ->shouldReceive('writeln')->with('bower <info>jquery#3.0           </info> <fg=cyan>   install</fg=cyan>')
+            ->shouldReceive('writeln')->with('bower <info>jquery#2.1           </info> <fg=cyan>   install</fg=cyan>')
         ;
 
         $BConsoleOutput = new BowerphpConsoleOutput($output);
-        $BConsoleOutput->writelnInstalledPackage($package, '3.0');
+        $BConsoleOutput->writelnInstalledPackage($package);
     }
 
     public function testWritelnNoBowerJsonFile()

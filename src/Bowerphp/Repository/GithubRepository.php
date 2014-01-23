@@ -13,7 +13,7 @@ use RuntimeException;
  */
 class GithubRepository implements RepositoryInterface
 {
-    protected $url, $originalUrl,  $tag = array(), $httpClient;
+    protected $url, $originalUrl, $tag = array(), $httpClient;
 
     /**
      * @param  string           $url
@@ -107,7 +107,7 @@ class GithubRepository implements RepositoryInterface
 
         foreach ($tags as $tag) {
             if (fnmatch($version, $tag['name'])) {
-                $this->setTag($tag);
+                $this->tag = $tag;
 
                 return $tag['name'];
             }
@@ -121,8 +121,7 @@ class GithubRepository implements RepositoryInterface
      */
     public function getRelease($type = 'zip')
     {
-        $tag = $this->getTag();
-        $file = $tag[$type . 'ball_url'];
+        $file = $this->tag[$type . 'ball_url'];
         try {
             $request = $this->httpClient->get($file);
             $response = $request->send();
@@ -131,22 +130,6 @@ class GithubRepository implements RepositoryInterface
         } catch (RequestException $e) {
             throw new RuntimeException(sprintf('Cannot open file %s (%s).', $file, $e->getMessage()));
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getTag()
-    {
-        return $this->tag;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setTag(array $tag)
-    {
-        $this->tag = $tag;
     }
 
     /**
@@ -175,6 +158,9 @@ class GithubRepository implements RepositoryInterface
      */
     private function fixVersion($version)
     {
+        if (is_null($version)) {
+            return '*';
+        }
         $bits = explode('.', $version);
         if (substr($version, 0, 2) == '>=') {
             if (count($bits) == 3) {

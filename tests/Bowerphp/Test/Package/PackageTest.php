@@ -10,7 +10,7 @@ class PackageTest extends TestCase
 {
     public function testSetVersion()
     {
-        $package = new Package('foo', '1.0.0');
+        $package = new Package('foo', null, '1.0.0');
         $package->setVersion('1.1.0');
 
         $this->assertEquals('1.1.0', $package->getVersion());
@@ -18,7 +18,7 @@ class PackageTest extends TestCase
 
     public function testGetRepository()
     {
-        $package = new Package('foo', '1.0.0');
+        $package = new Package('foo', null, '1.0.0');
 
         $this->assertEquals('', $package->getRepository());
     }
@@ -26,7 +26,7 @@ class PackageTest extends TestCase
     public function testSetRepository()
     {
         $repository = Mockery::mock('Bowerphp\Repository\RepositoryInterface');
-        $package = new Package('foo', '1.0.0');
+        $package = new Package('foo', null, '1.0.0');
 
         $package->setRepository($repository);
     }
@@ -38,7 +38,7 @@ class PackageTest extends TestCase
     {
         $repository = Mockery::mock('Bowerphp\Repository\RepositoryInterface');
         $repository2 = Mockery::mock('Bowerphp\Repository\RepositoryInterface');
-        $package = new Package('foo', '1.0.0');
+        $package = new Package('foo', null, '1.0.0');
 
         $package->setRepository($repository);
         $package->setRepository($repository2);
@@ -46,25 +46,15 @@ class PackageTest extends TestCase
 
     public function testGetUniqueName()
     {
-        $package = new Package('foo', '1.0.0');
+        $package = new Package('foo', null, '1.0.0');
 
         $this->assertEquals('foo-1.0.0', $package->getUniqueName());
         $this->assertEquals('foo-1.0.0', $package->__toString());
     }
 
-    public function testGetTargetDir()
-    {
-        $package = new Package('foo', '1.0.0');
-
-        $this->assertNull($package->getTargetDir());
-
-        $package->setTargetDir('bar');
-        $this->assertEquals('bar', $package->getTargetDir());
-    }
-
     public function testRequires()
     {
-        $package = new Package('foo', '1.0.0');
+        $package = new Package('foo', null, '1.0.0');
 
         $this->assertEquals(array(), $package->getRequires());
 
@@ -72,9 +62,19 @@ class PackageTest extends TestCase
         $this->assertEquals(array('baz'), $package->getRequires());
     }
 
+    public function testGetInfo()
+    {
+        $package = new Package('foo', null, '1.0.0', null, array('url' => 'bar'));
+
+        $this->assertEquals(array('url' => 'bar'), $package->getInfo());
+
+        $package->setInfo(array('url' => 'baz'));
+        $this->assertEquals(array('url' => 'baz'), $package->getInfo());
+    }
+
     public function testClone()
     {
-        $package = new Package('foo', '1.0.0');
+        $package = new Package('foo', null, '1.0.0');
 
         $p2 = clone $package;
         $this->assertNull($p2->getRepository());

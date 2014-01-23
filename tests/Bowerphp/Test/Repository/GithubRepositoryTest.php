@@ -6,6 +6,7 @@ use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Test\TestCase;
 use Guzzle\Http\Exception\RequestException;
 use Mockery;
+use ReflectionClass;
 
 class GithubRepositoryTest extends TestCase
 {
@@ -118,7 +119,7 @@ class GithubRepositoryTest extends TestCase
         $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
         $response = Mockery::mock('Guzzle\Http\Message\Response');
 
-        $this->repository->setTag(array('zipball_url' => 'foo'));
+        $this->setTag($this->repository, (array('zipball_url' => 'foo')));
 
         $this->httpClient
             ->shouldReceive('get')->with('foo')->andReturn($request)
@@ -140,7 +141,7 @@ class GithubRepositoryTest extends TestCase
     {
         $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
 
-        $this->repository->setTag(array('zipball_url' => 'foo'));
+        $this->setTag($this->repository, (array('zipball_url' => 'foo')));
 
         $this->httpClient
             ->shouldReceive('get')->with('foo')->andThrow(new RequestException())
@@ -173,6 +174,7 @@ class GithubRepositoryTest extends TestCase
         $this->assertEquals('1.*.*', $fixVersion->invokeArgs($this->repository, array('1.*')));
         $this->assertEquals('1.5.*', $fixVersion->invokeArgs($this->repository, array('1.5')));
         $this->assertEquals('1.5.*', $fixVersion->invokeArgs($this->repository, array('1.5.*')));
+        $this->assertEquals('*', $fixVersion->invokeArgs($this->repository, array(null)));
     }
 
     public function testGetTags()
@@ -206,5 +208,19 @@ class GithubRepositoryTest extends TestCase
         ;
 
         $this->repository->getTags();
+    }
+
+    /**
+     * Set value for protected property $tag
+     *
+     * @param GithubRepository $repository
+     * @param array            $value
+     */
+    protected function setTag(GithubRepository $repository, array $value)
+    {
+        $class = new ReflectionClass('Bowerphp\Repository\GithubRepository');
+        $tag = $class->getProperty('tag');
+        $tag->setAccessible(true);
+        $tag->setValue($repository, $value);
     }
 }

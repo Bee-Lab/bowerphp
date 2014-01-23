@@ -118,14 +118,14 @@ class Config implements ConfigInterface
     /**
      * {@inheritDoc}
      */
-    public function updateBowerJsonFile(PackageInterface $package, $packageVersion)
+    public function updateBowerJsonFile(PackageInterface $package)
     {
         if (!$this->getSaveToBowerJsonFile()) {
             return false;
         }
 
         $decode = $this->getBowerFileContent();
-        $decode['dependencies'][$package->getName()] = $packageVersion;
+        $decode['dependencies'][$package->getName()] = $package->getRequiredVersion();
         $file = getcwd() . '/' . $this->getBowerFileName();
         $json = Json::encode($decode);
 
@@ -165,7 +165,6 @@ class Config implements ConfigInterface
         }
 
         return $decode;
-
     }
 
     /**

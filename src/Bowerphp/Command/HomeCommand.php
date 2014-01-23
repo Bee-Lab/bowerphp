@@ -13,11 +13,9 @@ namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
 use Bowerphp\Config\Config;
-use Bowerphp\Installer\Installer;
 use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Package\Package;
 use Bowerphp\Repository\GithubRepository;
-use Bowerphp\Util\ZipArchive;
 use Doctrine\Common\Cache\FilesystemCache;
 use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\Filesystem;
@@ -82,10 +80,10 @@ EOT
         $version = isset($v[1]) ? $v[1] : "*";
 
         $package = new Package($packageName, $version);
-        $bowerphp = new Bowerphp($config);
-        $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new ZipArchive(), $config, new BowerphpConsoleOutput($output));
+        $consoleOutput = new BowerphpConsoleOutput($output);
+        $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), $consoleOutput);
 
-        $url = $bowerphp->getPackageInfo($package, $installer);
+        $url = $bowerphp->getPackageInfo($package);
 
         $default = $this->getDefaulBrowser();
 

@@ -10,8 +10,6 @@ use Guzzle\Http\ClientInterface;
  */
 interface RepositoryInterface
 {
-    const SEARCH_FULLTEXT   = 0;
-    const SEARCH_NAME       = 1;
     const VERSION_NOT_FOUND = 3;
 
     /**
@@ -37,8 +35,8 @@ interface RepositoryInterface
     /**
      * Searches for the first match of a package version.
      *
-     * @param  string      $version package version
-     * @return string|null
+     * @param  string $version package version
+     * @return string
      */
     public function findPackage($version = '*');
 
@@ -46,19 +44,9 @@ interface RepositoryInterface
      * Get a release
      *
      * @param  string $type "zip" or "tar"
-     * @return string file content
+     * @return string        file content
      */
     public function getRelease($type = 'zip');
-
-    /**
-     * @param array $tag
-     */
-    public function setTag(array $tag);
-
-    /**
-     * @return array
-     */
-    public function getTag();
 
     /**
      * @return array

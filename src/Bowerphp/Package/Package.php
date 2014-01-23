@@ -10,23 +10,27 @@ use Bowerphp\Repository\RepositoryInterface;
  */
 class Package implements PackageInterface
 {
-    protected $name, $repository, $version, $targetDir, $requires = array();
+    protected $name, $repository, $requiredVersion, $version, $requires = array(), $info = array();
 
     /**
      * All descendants' constructors should call this parent constructor
      *
-     * @param string $name     The package's name
-     * @param string $version
-     * @param array  $requires The packages' dependencies
+     * @param string $name            The package's name
+     * @param string $requiredVersion E.g. 1.*
+     * @param string $version         E.g. 1.2.3
+     * @param array  $requires        The package's dependencies
+     * @param array  $info            Package info (e.g. info from bower.json)
      */
-    public function __construct($name, $version = null, $requires = array())
+    public function __construct($name, $requiredVersion = null, $version = null, $requires = array(), $info = array())
     {
         $this->name = $name;
-        if (!is_null($version)) {
-            $this->version = $version;
-        }
+        $this->requiredVersion = $requiredVersion;
+        $this->version = $version;
         if (!empty($requires)) {
             $this->requires = $requires;
+        }
+        if (!empty($info)) {
+            $this->info = $info;
         }
     }
 
@@ -52,6 +56,22 @@ class Package implements PackageInterface
     public function setVersion($version)
     {
         return $this->version = $version;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getRequiredVersion()
+    {
+        return $this->requiredVersion;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setRequiredVersion($version)
+    {
+        return $this->requiredVersion = $version;
     }
 
     /**
@@ -84,31 +104,11 @@ class Package implements PackageInterface
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public function setTargetDir($targetDir)
-    {
-        $this->targetDir = $targetDir;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getTargetDir()
-    {
-        if (null === $this->targetDir) {
-            return;
-        }
-
-        return $this->targetDir;
-    }
-
-    /**
      * Set the required packages
      *
      * @param array $requires A set of package links
      */
-    public function setRequires(array $requires)
+    public function setRequires(array $requires = null)
     {
         $this->requires = $requires;
     }
@@ -119,6 +119,24 @@ class Package implements PackageInterface
     public function getRequires()
     {
         return $this->requires;
+    }
+
+    /**
+     * Set the info
+     *
+     * @param array $info
+     */
+    public function setInfo(array $info)
+    {
+        $this->info = $info;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getInfo()
+    {
+        return $this->info;
     }
 
     /**

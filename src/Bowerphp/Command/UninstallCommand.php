@@ -76,10 +76,11 @@ EOT
 
         $packageName = $input->getArgument('package');
 
-        $bowerphp = new Bowerphp($config);
+        $consoleOutput = new BowerphpConsoleOutput($output);
+        $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), $consoleOutput);
 
         try {
-            $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new ZipArchive(), $config, new BowerphpConsoleOutput($output));
+            $installer = new Installer($filesystem, new ZipArchive(), $config);
 
             $v = explode("#", $packageName);
             $packageName = isset($v[0]) ? $v[0] : $packageName;

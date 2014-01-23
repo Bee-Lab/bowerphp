@@ -13,11 +13,9 @@ namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
 use Bowerphp\Config\Config;
-use Bowerphp\Installer\Installer;
 use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Package\Package;
 use Bowerphp\Repository\GithubRepository;
-use Bowerphp\Util\ZipArchive;
 use Doctrine\Common\Cache\FilesystemCache;
 use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\Filesystem;
@@ -76,10 +74,9 @@ EOT
 
         $name = $input->getArgument('name');
 
-        $bowerphp      = new Bowerphp($config);
         $consoleOutput = new BowerphpConsoleOutput($output);
-        $installer     = new Installer($filesystem, $httpClient, new GithubRepository(), new ZipArchive(), $config, $consoleOutput);
-        $packageNames  =  $bowerphp->searchPackages($httpClient, $name);
+        $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), $consoleOutput);
+        $packageNames  =  $bowerphp->searchPackages($name);
 
         if (count($packageNames) === 0) {
             $output->writeln('No results.');
@@ -88,7 +85,7 @@ EOT
             $output->writeln('');
             foreach ($packageNames as $packageName) {
                 $package = new Package($packageName);
-                $bower = $bowerphp->getPackageInfo($package, $installer, 'original_url');
+                $bower = $bowerphp->getPackageInfo($package, 'original_url');
 
                 $consoleOutput->writelnSearchOrLookup($bower['name'], $bower['url'], 4);
             }

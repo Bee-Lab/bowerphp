@@ -13,11 +13,9 @@ namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
 use Bowerphp\Config\Config;
-use Bowerphp\Installer\Installer;
 use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Package\Package;
 use Bowerphp\Repository\GithubRepository;
-use Bowerphp\Util\ZipArchive;
 use Doctrine\Common\Cache\FilesystemCache;
 use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\Filesystem;
@@ -79,18 +77,17 @@ EOT
         $packageName = $input->getArgument('package');
         $property = $input->getArgument('property');
 
-        $v = explode("#", $packageName);
+        $v = explode('#', $packageName);
         $packageName = isset($v[0]) ? $v[0] : $packageName;
-        $version = isset($v[1]) ? $v[1] : "*";
+        $version = isset($v[1]) ? $v[1] : '*';
 
         $package = new Package($packageName, $version);
-        $bowerphp = new Bowerphp($config);
         $consoleOutput = new BowerphpConsoleOutput($output);
-        $installer = new Installer($filesystem, $httpClient, new GithubRepository(), new ZipArchive(), $config, $consoleOutput);
+        $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), $consoleOutput);
 
-        $bower = $bowerphp->getPackageInfo($package, $installer, 'bower');
+        $bower = $bowerphp->getPackageInfo($package, 'bower');
         if ($version == '*') {
-            $versions = $bowerphp->getPackageInfo($package, $installer, 'versions');
+            $versions = $bowerphp->getPackageInfo($package, 'versions');
         }
 
         if (!is_null($property)) {

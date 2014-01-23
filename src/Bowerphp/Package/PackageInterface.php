@@ -18,20 +18,6 @@ interface PackageInterface
     public function getName();
 
     /**
-     * Returns the package targetDir property
-     *
-     * @return string The package targetDir
-     */
-    public function getTargetDir();
-
-    /**
-     * Set the package targetDir property
-     *
-     * @param string $targetDir
-     */
-    public function setTargetDir($targetDir);
-
-    /**
      * Returns the version of this package
      *
      * @return string version
@@ -46,12 +32,33 @@ interface PackageInterface
     public function setVersion($version);
 
     /**
+     * Returns the required version of this package
+     *
+     * @return string version
+     */
+    public function getRequiredVersion();
+
+    /**
+     * Set the required version of this package
+     *
+     * @param string version
+     */
+    public function setRequiredVersion($version);
+
+    /**
      * Returns a set of links to packages which need to be installed before
      * this package can be installed
      *
      * @return array An array of package links defining required packages
      */
     public function getRequires();
+
+    /**
+     * Returns all package info (e.g. info from package's bower.json)
+     *
+     * @return array
+     */
+    public function getInfo();
 
     /**
      * Stores a reference to the repository that owns the package

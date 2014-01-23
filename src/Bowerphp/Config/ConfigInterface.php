@@ -60,10 +60,9 @@ interface ConfigInterface
      * Update bower.json with a new added package
      *
      * @param  Package $package
-     * @param  string  $packageVersion
      * @return integer
      */
-    public function updateBowerJsonFile(PackageInterface $package, $packageVersion);
+    public function updateBowerJsonFile(PackageInterface $package);
 
     /**
      * Update bower.json from a previous existing one

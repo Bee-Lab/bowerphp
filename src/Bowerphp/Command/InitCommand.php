@@ -13,8 +13,15 @@ namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
 use Bowerphp\Config\Config;
+use Bowerphp\Output\BowerphpConsoleOutput;
+use Bowerphp\Repository\GithubRepository;
+use Doctrine\Common\Cache\FilesystemCache;
 use Gaufrette\Adapter\Local as LocalAdapter;
 use Gaufrette\Filesystem;
+use Guzzle\Cache\DoctrineCacheAdapter;
+use Guzzle\Http\Client;
+use Guzzle\Plugin\Cache\CachePlugin;
+use Guzzle\Plugin\Cache\DefaultCacheStorage;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -50,6 +57,23 @@ EOT
         $filesystem = new Filesystem($adapter);
         $config     = new Config($filesystem);
 
+        $adapter = new LocalAdapter('/');
+        $filesystem = new Filesystem($adapter);
+        $httpClient = new Client();
+        $config = new Config($filesystem);
+
+        $this->logHttp($httpClient, $output);
+
+        // http cache
+        $cachePlugin = new CachePlugin(array(
+            'storage' => new DefaultCacheStorage(
+                new DoctrineCacheAdapter(
+                    new FilesystemCache($config->getCacheDir())
+                )
+            )
+        ));
+        $httpClient->addSubscriber($cachePlugin);
+
         $author = sprintf('%s <%s>', $this->getGitInfo('user.name'), $this->getGitInfo('user.email'));
 
         $params = array('name' => get_current_user(), 'author' => $author);
@@ -69,7 +93,8 @@ EOT
                 $params['author']
             );
         }
-        $bowerphp = new Bowerphp($config);
+        $consoleOutput = new BowerphpConsoleOutput($output);
+        $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), $consoleOutput);
         $bowerphp->init($params);
 
         $output->writeln('');
