@@ -14,7 +14,7 @@ This project is in alpha status.
 
 Currently working features:
 
-* init, install, update, uninstall, info, home
+* init, install, update, uninstall, info, home, search
 * custom options from ``.bowerrc``
 
 
@@ -22,7 +22,6 @@ Still to do
 -----------
 
 * decent output
-* search
 
 See [issues](https://github.com/Bee-Lab/bowerphp/issues) for more details ;)
 
