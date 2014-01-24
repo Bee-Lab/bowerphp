@@ -38,6 +38,17 @@ class UpdateCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('1.10.2', $dotBower['version']);
     }
 
+    public function testExecuteWithoutPackage()
+    {
+        $application = new Application();
+        $commandTester = new CommandTester($command = $application->get('update'));
+        $commandTester->execute(array('command' => $command->getName()), array('decorated' => false));
+
+        $this->assertFileExists(getcwd() . '/bower_components/jquery/jquery.js');
+        $dotBower = json_decode(file_get_contents(getcwd() . '/bower_components/jquery/.bower.json'), true);
+        $this->assertEquals('1.10.2', $dotBower['version']);
+    }
+
     public function tearDown()
     {
         $dir = getcwd() . '/bower_components/';

@@ -10,7 +10,7 @@ use Mockery\MockInterface;
 use RuntimeException;
 
 /**
- * @group todo
+ * @group bowerphp
  */
 class BowerphpTest extends TestCase
 {
@@ -71,10 +71,44 @@ EOT;
         $bowerphp->installPackage($package, $installer);
     }
 
+    public function testInstallPackageAndSaveBowerJson()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+
+        $this->config
+            ->shouldReceive('getSaveToBowerJsonFile')->andReturn(true)
+            ->shouldReceive('updateBowerJsonFile')->with($package)
+        ;
+
+        $this->installPackage($package, $installer, array('jquery'), array('2.0.3'));
+
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->installPackage($package, $installer);
+    }
+
+    public function testInstallPackageAndSaveBowerJsonException()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+
+        $this->config
+            ->shouldReceive('getSaveToBowerJsonFile')->andReturn(true)
+            ->shouldReceive('updateBowerJsonFile')->with($package)->andThrow(new RuntimeException)
+        ;
+
+        $this->output
+            ->shouldReceive('writelnNoBowerJsonFile');
+        ;
+
+        $this->installPackage($package, $installer, array('jquery'), array('2.0.3'));
+
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->installPackage($package, $installer);
+    }
+
     public function testInstallDependencies()
     {
-        $this->markTestIncomplete('TODO....');
-
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
@@ -154,16 +188,100 @@ EOT;
 
     }
 
+    public function testUpdateDependenciesWithNewPackageToInstall()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $this->config
+            ->shouldReceive('getBowerFileContent')->andReturn(array('dependencies' => array('jquery-ui' => '*')))
+        ;
+
+        $packageJsonJqueryUI = '{"name":"jquery-ui","url":"git://github.com/components/jquery-ui.git"}';
+        $bowerJsonJqueryUI = '{"name":"jquery-ui","version":"1.10.1", "main":"jquery-ui.js","dependencies":{"jquery":"*"}}';
+        $packageJsonJquery = '{"name":"jquery","url":"git://github.com/components/jquery.git"}';
+        $bowerJsonJquery = '{"name":"jquery","version":"2.0.3", "main":"jquery.js"}';
+
+        $package
+            ->shouldReceive('getName')->andReturn('jquery-ui', 'jquery')
+            ->shouldReceive('getRequiredVersion')->andReturn('*', '*')
+            ->shouldReceive('setRepository')->with($this->repository)
+            ->shouldReceive('setInfo')
+            ->shouldReceive('setVersion')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...', true)
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"1.10.1"}', true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}', true)
+        ;
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery-ui')->andReturn($request)
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andReturn($request)
+        ;
+        $this->repository
+            ->shouldReceive('findPackage')->with('*')->andReturn('1.10.1', '2.0.3')
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn($packageJsonJqueryUI, $packageJsonJquery)
+        ;
+        $this->repository
+            ->shouldReceive('setUrl->setHttpClient');
+        $this->repository
+            ->shouldReceive('getBower')->andReturn($bowerJsonJqueryUI, $bowerJsonJquery)
+            ->shouldReceive('getRelease')->andReturn('fileAsString...')
+        ;
+
+        $this->output
+            ->shouldReceive('writelnInfoPackage')
+            ->shouldReceive('writelnInstalledPackage')
+        ;
+        $this->config
+            ->shouldReceive('getSaveToBowerJsonFile')->andReturn(false)
+            ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery-ui', 'version' => '1.10.0'))
+        ;
+
+        $installer
+            ->shouldReceive('update')
+            ->shouldReceive('install')
+        ;
+
+        $package
+            ->shouldReceive('setRequiredVersion')
+            ->shouldReceive('setRequires')
+            ->shouldReceive('getVersion')->andReturn('1.10.0')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn(true)
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
+            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn('{"name":"jquery-ui","version":"1.10.0"}')
+            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...', true)
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"1.10.1"}', true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}', true)
+        ;
+
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->updateDependencies($installer);
+    }
+
     public function testUpdateDependencies()
     {
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
         $this->config
-            ->shouldReceive('getBowerFileContent')->andReturn(array('dependencies' => array('jquery' => '>=1.6')))
+            ->shouldReceive('getBowerFileContent')->andReturn(array('dependencies' => array('jquery' => '*')))
         ;
 
-        $this->installPackage($package, $installer, array('jquery'), array('2.0.1'), array('>=1.6'), true, array('2.0.1'));
+        $this->installPackage($package, $installer, array('jquery'), array('2.0.1'), array('*'), true, array('2.0.3'));
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
         $bowerphp->updateDependencies($installer);
@@ -344,6 +462,70 @@ EOT;
 
     public function testInstallPackageWithDependencies()
     {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $packageJsonJqueryUI = '{"name":"jquery-ui","url":"git://github.com/components/jquery-ui.git"}';
+        $bowerJsonJqueryUI = '{"name":"jquery-ui","version":"1.10.1", "main":"jquery-ui.js","dependencies":{"jquery":"*"}}';
+        $packageJsonJquery = '{"name":"jquery","url":"git://github.com/components/jquery.git"}';
+        $bowerJsonJquery = '{"name":"jquery","version":"2.0.3", "main":"jquery.js"}';
+
+        $package
+            ->shouldReceive('getName')->andReturn('jquery-ui', 'jquery')
+            ->shouldReceive('getRequiredVersion')->andReturn('*', '*')
+            ->shouldReceive('setRepository')->with($this->repository)
+            ->shouldReceive('setInfo')
+            ->shouldReceive('setVersion')
+            ->shouldReceive('setRequiredVersion')
+            ->shouldReceive('setRequires')
+            ->shouldReceive('getVersion')->andReturn('1.10.0')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn(false)
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
+            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...', true)
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"1.10.1"}', true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}', true)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery-ui')->andReturn($request)
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andReturn($request)
+        ;
+        $this->repository
+            ->shouldReceive('findPackage')->with('*')->andReturn('1.10.1', '2.0.3')
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn($packageJsonJqueryUI, $packageJsonJquery)
+        ;
+        $this->repository
+            ->shouldReceive('setUrl->setHttpClient');
+        $this->repository
+            ->shouldReceive('getBower')->andReturn($bowerJsonJqueryUI, $bowerJsonJquery)
+            ->shouldReceive('getRelease')->andReturn('fileAsString...')
+        ;
+
+        $this->output
+            ->shouldReceive('writelnInfoPackage')
+            ->shouldReceive('writelnInstalledPackage')
+        ;
+        $this->config
+            ->shouldReceive('getSaveToBowerJsonFile')->andReturn(false)
+        ;
+
+        $installer
+            ->shouldReceive('install')
+        ;
+
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->installPackage($package, $installer);
     }
 
     /**
@@ -692,13 +874,13 @@ EOT;
      * Set expectations for installation of packages
      * Note: all array parameters must match counts
      *
-     * @param MockInterface $package          mock of Package
-     * @param MockInterface $installer        mock of Installer
-     * @param array         $names            names of packages
-     * @param array         $versions         versions of packages
-     * @param array         $requires         required versions of packages
-     * @param boolean       $update           if this is an update (instead of an install)
-     * @param array         $updateVersions   updated versions of packages (after update)
+     * @param MockInterface $package        mock of Package
+     * @param MockInterface $installer      mock of Installer
+     * @param array         $names          names of packages
+     * @param array         $versions       versions of packages
+     * @param array         $requires       required versions of packages
+     * @param boolean       $update         if this is an update (instead of an install)
+     * @param array         $updateVersions updated versions of packages (after update)
      */
     protected function installPackage(MockInterface $package, MockInterface $installer, array $names, array $versions, array $requires = array('*'), $update = false, array $updateVersions = array())
     {
@@ -746,7 +928,6 @@ EOT;
         $this->repository
             ->shouldReceive('getBower')->andReturnValues($bowerJsons)
             ->shouldReceive('getRelease')->andReturn('fileAsString...')
-            ->shouldReceive('getTags')->andReturn(array())  // XXX unuseful
         ;
 
         $this->output
@@ -758,7 +939,7 @@ EOT;
         ;
 
         $installer
-            ->shouldReceive('install')->with($package)
+            ->shouldReceive('install')
         ;
 
         if ($update) {
@@ -769,16 +950,15 @@ EOT;
             ;
 
             foreach ($names as $k => $v) {
-                $dotBowerJson = '{"name":"' . $names[$k] . '","version":"' . $versions[$k] . '"}';
-
+                $this->config
+                    ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => $names[$k], 'version' => $versions[$k]))
+                ;
                 $this->filesystem
                     ->shouldReceive('has')->with(getcwd() . '/bower_components/' . $names[$k] . '/.bower.json')->andReturn(true)
-                    ->shouldReceive('read')->with(getcwd() . '/bower_components/' . $names[$k] . '/.bower.json')->andReturn($dotBowerJson)
                     ->shouldReceive('write')->with('./tmp/' . $names[$k], 'fileAsString...', true)
                     ->shouldReceive('write')->with(getcwd() . '/bower_components/' . $names[$k] . '/.bower.json', '{"name":"' . $names[$k] . '","version":"' . $updateVersions[$k] . '"}', true)
                 ;
             }
         }
-
     }
 }

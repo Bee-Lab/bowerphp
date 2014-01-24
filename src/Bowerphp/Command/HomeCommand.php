@@ -45,7 +45,7 @@ class HomeCommand extends Command
             ->setHelp(<<<EOT
 The <info>%command.name%</info> command opens a package homepage into your favorite browser.
 
-  <info>php %command.full_name%</info>
+  <info>php %command.full_name% name</info>
 EOT
             )
         ;
@@ -85,7 +85,7 @@ EOT
 
         $url = $bowerphp->getPackageInfo($package);
 
-        $default = $this->getDefaulBrowser();
+        $default = $this->getDefaultBrowser();
 
         $arg = "$default \"$url\"";
 
@@ -94,18 +94,22 @@ EOT
         } else {
             $output->writeln('');
         }
-
-        $browser = new Process($arg);
-        $browser->start();
-        while ($browser->isRunning()) {
-            // do nothing...
+        // @codeCoverageIgnoreStart
+        if (!defined('PHPUNIT_BOWER_TESTSUITE')) {
+            $browser = new Process($arg);
+            $browser->start();
+            while ($browser->isRunning()) {
+                // do nothing...
+            }
         }
+        // @codeCoverageIgnoreEnd
     }
 
     /**
      * @return string
+     * @codeCoverageIgnore
      */
-    private function getDefaulBrowser()
+    private function getDefaultBrowser()
     {
         $xdgOpen = new Process('which xdg-open');
         $xdgOpen->run();

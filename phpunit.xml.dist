@@ -11,6 +11,14 @@
     <filter>
         <whitelist>
             <directory>./src/Bowerphp/</directory>
+            <exclude>
+                <file>./src/Bowerphp/Compiler.php</file>
+            </exclude>
         </whitelist>
     </filter>
+
+    <php>
+        <const name="PHPUNIT_BOWER_TESTSUITE" value="true"/>
+    </php>
+
 </phpunit>

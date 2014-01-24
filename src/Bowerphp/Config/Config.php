@@ -172,13 +172,17 @@ class Config implements ConfigInterface
      */
     public function getPackageBowerFileContent(PackageInterface $package)
     {
-    }
+        $file = $this->getInstallDir() . '/' . $package->getName() . '/.bower.json';
+        if (!$this->filesystem->has($file)) {
+            throw new RuntimeException(sprintf('Could not find .bower.json file for package %s.', $package->getName()));
+        }
+        $bowerJson = $this->filesystem->read($file);
+        $bower = json_decode($bowerJson, true);
+        if (is_null($bower)) {
+            throw new RuntimeException(sprintf('Invalid content in .bower.json for package %s.', $package->getName()));
+        }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function writeBowerFile()
-    {
+        return $bower;
     }
 
     /**

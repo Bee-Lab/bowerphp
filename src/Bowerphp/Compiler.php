@@ -90,7 +90,6 @@ class Compiler
             ->exclude('Tests')
             ->in(__DIR__.'/../../vendor/symfony/')
             ->in(__DIR__.'/../../vendor/guzzle/guzzle/src/')
-            ->in(__DIR__.'/../../vendor/pimple/pimple/lib/')
             ->in(__DIR__.'/../../vendor/camspiers/json-pretty/src/')
             ->in(__DIR__.'/../../vendor/knplabs/gaufrette/src/')
             ->in(__DIR__.'/../../vendor/doctrine/cache/lib/')

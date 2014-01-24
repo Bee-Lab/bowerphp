@@ -93,10 +93,5 @@ interface ConfigInterface
     /**
      * @return boolean
      */
-    public function writeBowerFile();
-
-    /**
-     * @return boolean
-     */
     public function bowerFileExists();
 }

@@ -44,7 +44,7 @@ interface RepositoryInterface
      * Get a release
      *
      * @param  string $type "zip" or "tar"
-     * @return string        file content
+     * @return string file content
      */
     public function getRelease($type = 'zip');
 

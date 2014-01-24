@@ -3,53 +3,47 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "8c763151c0e88d361e999ba9a017b828",
+    "hash": "8398860eb601ce4694c28f98cc4ded40",
     "packages": [
         {
             "name": "camspiers/json-pretty",
-            "version": "0.1.1",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Bee-Lab/json-pretty.git",
-                "reference": "eeef37b30d78b2f310ba85a55219bb2e0e09f540"
+                "url": "https://github.com/camspiers/json-pretty.git",
+                "reference": "2378ac3e8e798e9c55bd3c194238cde35af93817"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Bee-Lab/json-pretty/zipball/eeef37b30d78b2f310ba85a55219bb2e0e09f540",
-                "reference": "eeef37b30d78b2f310ba85a55219bb2e0e09f540",
+                "url": "https://api.github.com/repos/camspiers/json-pretty/zipball/2378ac3e8e798e9c55bd3c194238cde35af93817",
+                "reference": "2378ac3e8e798e9c55bd3c194238cde35af93817",
                 "shasum": ""
-            },
-            "require": {
-                "pimple/pimple": "~1.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "3.7.*"
             },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.1.x-dev"
-                }
+            "suggest": {
+                "pimple/pimple": "Useful for dependency injection"
             },
+            "type": "library",
             "autoload": {
                 "psr-0": {
                     "Camspiers": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "authors": [
                 {
                     "name": "Cam Spiers",
-                    "email": "cameron@heyday.co.nz"
+                    "email": "cameron@heyday.co.nz",
+                    "role": "Developer"
                 }
             ],
             "description": "Provides support for json pretty printing in php 5.3",
-            "support": {
-                "source": "https://github.com/Bee-Lab/json-pretty/tree/0.1.1"
-            },
-            "time": "2014-01-21 09:08:07"
+            "time": "2014-01-24 12:31:00"
         },
         {
             "name": "doctrine/cache",
@@ -301,52 +295,6 @@
                 "source": "https://github.com/Bee-Lab/Gaufrette/tree/v0.1.7"
             },
             "time": "2014-01-21 09:14:09"
-        },
-        {
-            "name": "pimple/pimple",
-            "version": "v1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/fabpot/Pimple.git",
-                "reference": "471c7d7c52ad6594e17b8ec33efdd1be592b5d83"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Pimple/zipball/471c7d7c52ad6594e17b8ec33efdd1be592b5d83",
-                "reference": "471c7d7c52ad6594e17b8ec33efdd1be592b5d83",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Pimple": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                }
-            ],
-            "description": "Pimple is a simple Dependency Injection Container for PHP 5.3",
-            "homepage": "http://pimple.sensiolabs.org",
-            "keywords": [
-                "container",
-                "dependency injection"
-            ],
-            "time": "2013-09-19 04:53:08"
         },
         {
             "name": "symfony/console",

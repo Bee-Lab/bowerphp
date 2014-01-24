@@ -118,7 +118,7 @@ class Bowerphp
         if (!empty($bower['dependencies'])) {
             foreach ($bower['dependencies'] as $name => $version) {
                 $depPackage = new Package($name, $version);
-                if ($this->isPackageInstalled($depPackage)) {
+                if (!$this->isPackageInstalled($depPackage)) {
                     $this->installPackage($depPackage, $installer, true);
                 } else {
                     $this->updatePackage($depPackage, $installer);
@@ -163,11 +163,7 @@ class Bowerphp
 
         $package->setRequiredVersion($decode['dependencies'][$package->getName()]);
 
-        $bowerJson = $this->filesystem->read($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json');
-        $bower = json_decode($bowerJson, true);
-        if (is_null($bower)) {
-            throw new RuntimeException(sprintf('Invalid content in .bower.json for package %s.', $package->getName()));
-        }
+        $bower = $this->config->getPackageBowerFileContent($package);
         $package->setInfo($bower);
         $package->setVersion($bower['version']);
         $package->setRequires(isset($bower['dependencies']) ? $bower['dependencies'] : null);

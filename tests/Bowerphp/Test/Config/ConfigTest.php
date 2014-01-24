@@ -36,15 +36,14 @@ class ConfigTest extends TestCase
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException        RuntimeException
+     * @expectedExceptionMessage Invalid .bowerrc file.
      */
     public function testMalformedJson()
     {
-        $json = '{invalid';
-
         $this->filesystem
             ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(true)
-            ->shouldReceive('read')->with(getcwd() . '/.bowerrc')->andReturn($json)
+            ->shouldReceive('read')->with(getcwd() . '/.bowerrc')->andReturn('{invalid')
         ;
 
         $config = new Config($this->filesystem);
@@ -151,12 +150,63 @@ class ConfigTest extends TestCase
 
     public function testGetPackageBowerFileContent()
     {
-        $this->markTestIncomplete();
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+
+        $package
+            ->shouldReceive('getName')->andReturn('foobar')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/foobar/.bower.json')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/bower_components/foobar/.bower.json')->andReturn('{"name":"foobar","version":"1.2.3"}')
+        ;
+
+        $config = new Config($this->filesystem);
+        $this->assertEquals(array('name' => 'foobar', 'version' => '1.2.3'), $config->getPackageBowerFileContent($package));
     }
 
-    public function testWriteBowerFile()
+    /**
+     * @expectedException        RuntimeException
+     * @expectedExceptionMessage Could not find .bower.json file for package foobar.
+     */
+    public function testGetPackageBowerFileContentFileNotFound()
     {
-        $this->markTestIncomplete();
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+
+        $package
+            ->shouldReceive('getName')->andReturn('foobar')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/foobar/.bower.json')->andReturn(false)
+        ;
+
+        $config = new Config($this->filesystem);
+        $config->getPackageBowerFileContent($package);
+    }
+
+    /**
+     * @expectedException        RuntimeException
+     * @expectedExceptionMessage Invalid content in .bower.json for package foobar.
+     */
+    public function testGetPackageBowerFileInvalidContent()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+
+        $package
+            ->shouldReceive('getName')->andReturn('foobar')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/foobar/.bower.json')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/bower_components/foobar/.bower.json')->andReturn('{invalid')
+        ;
+
+        $config = new Config($this->filesystem);
+        $config->getPackageBowerFileContent($package);
     }
 
     public function testSetSaveToBowerJsonFile()

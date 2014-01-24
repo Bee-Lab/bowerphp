@@ -22,6 +22,7 @@
             <directory>../src/Bowerphp/</directory>
             <exclude>
                 <file>../src/Bowerphp/Autoload/ClassLoader.php</file>
+                <file>../src/Bowerphp/Compiler.php</file>
             </exclude>
         </whitelist>
     </filter>

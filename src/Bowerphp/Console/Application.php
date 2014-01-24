@@ -154,6 +154,7 @@ class Application extends BaseApplication
      * @param string          $default Default command to execute
      *
      * @return integer 0 if everything went fine, or an error code
+     * @codeCoverageIgnore
      */
     private function SymfonyDoRun(InputInterface $input, OutputInterface $output, $default = 'list-commands')
     {

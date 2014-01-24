@@ -78,6 +78,7 @@ EOT
 
         $params = array('name' => get_current_user(), 'author' => $author);
 
+        // @codeCoverageIgnoreStart
         if ($input->isInteractive()) {
             $dialog = $this->getHelperSet()->get('dialog');
 
@@ -93,6 +94,7 @@ EOT
                 $params['author']
             );
         }
+        // @codeCoverageIgnoreEnd
         $consoleOutput = new BowerphpConsoleOutput($output);
         $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), $consoleOutput);
         $bowerphp->init($params);
