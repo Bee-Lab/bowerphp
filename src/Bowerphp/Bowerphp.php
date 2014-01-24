@@ -215,7 +215,8 @@ class Bowerphp
         $installer->update($package);
 
         // check for dependencies
-        if (!empty($dependencies = $package->getRequires())) {
+        $dependencies = $package->getRequires();
+        if (!empty($dependencies)) {
             foreach ($dependencies as $name => $requiredVersion) {
                 $depPackage = new Package($name, $requiredVersion);
                 if (!$this->isPackageInstalled($depPackage)) {
