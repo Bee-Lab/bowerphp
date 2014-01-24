@@ -71,6 +71,56 @@ EOT;
         $bowerphp->installPackage($package, $installer);
     }
 
+    public function testDoNotInstallAlreadyInstalledPackage()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $packageJson = '{"name":"jquery","url":"git://github.com/components/jquery.git"}';
+        $bowerJson = '{"name":"jquery","version":"2.0.3", "main":"jquery.js"}';
+
+        $package
+            ->shouldReceive('getName')->andReturn('jquery')
+            ->shouldReceive('getRequiredVersion')->andReturn('*')
+        ;
+
+        $this->config
+            ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery', 'version' => '2.0.3'))
+        ;
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andReturn($request)
+        ;
+        $this->repository
+            ->shouldReceive('findPackage')->with('*')->andReturn('2.0.3')
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn($packageJson)
+        ;
+        $this->repository
+            ->shouldReceive('setUrl->setHttpClient');
+        $this->repository
+            ->shouldReceive('getBower')->andReturn($bowerJson)
+        ;
+
+        $installer
+            ->shouldReceive('install')->never()
+        ;
+
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->installPackage($package, $installer);
+
+    }
+
     public function testInstallPackageAndSaveBowerJson()
     {
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
@@ -905,6 +955,7 @@ EOT;
 
         foreach ($names as $k => $v) {
             $this->filesystem
+                ->shouldReceive('has')->with(getcwd() . '/bower_components/' . $names[$k] . '/.bower.json')->andReturn($update)
                 ->shouldReceive('write')->with('./tmp/' . $names[$k], 'fileAsString...', true)
                 ->shouldReceive('write')->with(getcwd() . '/bower_components/' . $names[$k] . '/.bower.json', '{"name":"' . $names[$k] . '","version":"' . $versions[$k] . '"}', true)
             ;
@@ -954,7 +1005,6 @@ EOT;
                     ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => $names[$k], 'version' => $versions[$k]))
                 ;
                 $this->filesystem
-                    ->shouldReceive('has')->with(getcwd() . '/bower_components/' . $names[$k] . '/.bower.json')->andReturn(true)
                     ->shouldReceive('write')->with('./tmp/' . $names[$k], 'fileAsString...', true)
                     ->shouldReceive('write')->with(getcwd() . '/bower_components/' . $names[$k] . '/.bower.json', '{"name":"' . $names[$k] . '","version":"' . $updateVersions[$k] . '"}', true)
                 ;

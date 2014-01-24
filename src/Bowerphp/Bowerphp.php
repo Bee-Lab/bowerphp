@@ -92,6 +92,16 @@ class Bowerphp
         if (is_null($packageTag)) {
             throw new RuntimeException(sprintf('Cannot find package %s version %s.', $package->getName(), $package->getRequiredVersion()));
         }
+
+        // if package is already installed, match current version with latest available version
+        if ($this->isPackageInstalled($package)) {
+            $packageBower = $this->config->getPackageBowerFileContent($package);
+            if ($packageTag == $packageBower['version']) {
+                // if version is fully matching, there's no need to install
+                return;
+            }
+        }
+
         $package->setRepository($this->repository);
         $package->setInfo($bower);
         $package->setVersion($packageTag);
@@ -194,15 +204,15 @@ class Bowerphp
         }
         $package->setRepository($this->repository);
 
-        // get release archive from repository
-        $file = $this->repository->getRelease();
-
         // match installed package version with lastest available version
         if ($packageTag == $package->getVersion()) {
             // if version is fully matching, there's no need to update
             return;
         }
         $package->setVersion($packageTag);
+
+        // get release archive from repository
+        $file = $this->repository->getRelease();
 
         // save temporary file
         $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();
