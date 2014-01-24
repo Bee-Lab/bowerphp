@@ -4,6 +4,7 @@ namespace Bowerphp\Repository;
 
 use Bowerphp\Util\Json;
 use Guzzle\Http\ClientInterface;
+use Guzzle\Http\Exception\BadResponseException;
 use Guzzle\Http\Exception\RequestException;
 use RuntimeException;
 
@@ -71,8 +72,20 @@ class GithubRepository implements RepositoryInterface
             $response = $request->send();
             // we need this in case of redirect (e.g. 'less/less' becomes 'less/less.js')
             $this->setUrl($response->getEffectiveUrl());
-        } catch (RequestException $e) {
-            throw new RuntimeException(sprintf('Cannot open package git URL %s (%s).', $depBowerJsonURL, $e->getMessage()), 5);
+        } catch (BadResponseException $e) {
+            if ($e->getResponse()->getStatusCode() == 404) {
+                // fallback on package.json
+                $depPackageJsonURL = $this->url . '/' . $version . '/package.json';
+                try {
+                    $request = $this->httpClient->get($depPackageJsonURL);
+                    $response = $request->send();
+                    $this->setUrl($response->getEffectiveUrl());
+                } catch (RequestException $e) {
+                    throw new RuntimeException(sprintf('Cannot open package git URL %s nor %s (%s).', $depBowerJsonURL, $depPackageJsonURL, $e->getMessage()));
+                }
+            } else {
+                throw new RuntimeException(sprintf('Cannot open package git URL %s (%s).', $depBowerJsonURL, $e->getMessage()));
+            }
         }
 
         $json = $response->getBody(true);
@@ -107,6 +120,14 @@ class GithubRepository implements RepositoryInterface
 
         foreach ($tags as $tag) {
             if (fnmatch($version, $tag['name'])) {
+                $this->tag = $tag;
+
+                return $tag['name'];
+            }
+        }
+        // try again with "v" (e.g. 1.4.2 --> v1.4.2)
+        foreach ($tags as $tag) {
+            if (fnmatch('v' . $version, $tag['name'])) {
                 $this->tag = $tag;
 
                 return $tag['name'];

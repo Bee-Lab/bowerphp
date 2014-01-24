@@ -74,11 +74,6 @@ interface ConfigInterface
     public function updateBowerJsonFile2(array $old, array $new);
 
     /**
-     * @return string
-     */
-    public function getBowerFileName();
-
-    /**
      * @return array
      * @throws Exception if bower.json does not exist
      */

@@ -48,7 +48,6 @@ EOT;
         $params = array('name' => 'Foo', 'author' => 'Mallo');
 
         $this->config
-            ->shouldReceive('getBowerFileName')->andReturn('bower.json')
             ->shouldReceive('initBowerJsonFile')->with($params)->andReturn(123)
             ->shouldReceive('bowerFileExists')->andReturn(false, true)
             ->shouldReceive('getBowerFileContent')->andReturn(array('name' => 'Bar'))
