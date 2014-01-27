@@ -63,7 +63,7 @@ EOT
         $packages = $bowerphp->getInstalledPackages($installer);
 
         foreach ($packages as $package) {
-            $consoleOutput->writelnListPackage($package, $installer);
+            $consoleOutput->writelnListPackage($package, $bowerphp);
         }
     }
 }

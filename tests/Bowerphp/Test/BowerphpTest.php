@@ -198,7 +198,7 @@ EOT;
 
         $bowerJson = '{"name": "Foo", "dependencies": {"less": "*"}}';
 
-        $this->installPackage($package, $installer, array('less'), array('1.2.1'), array('*'), true, array('1.2.3'));
+        $this->installPackage($package, $installer, array('less'), array('1.2.1'), array(null), true, array('1.2.3'));
 
         $this->config
             ->shouldReceive('getBowerFileContent')->andReturn(json_decode($bowerJson, true))
@@ -212,7 +212,7 @@ EOT;
      * @expectedException        InvalidArgumentException
      * @expectedExceptionMessage Package notinbowerjson not found in bower.json.
      */
-    public function testUpdatePackageNotFound()
+    public function testUpdatePackageNotFoundInBowerJson()
     {
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
@@ -222,6 +222,7 @@ EOT;
 
         $package
             ->shouldReceive('getName')->andReturn('notinbowerjson')
+            ->shouldReceive('getRequiredVersion')->andReturn(null)
         ;
 
         $this->filesystem
@@ -234,7 +235,127 @@ EOT;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
         $bowerphp->updatePackage($package, $installer);
+    }
 
+    /**
+     * @expectedException        RuntimeException
+     * @expectedExceptionMessage Cannot download package jquery (error).
+     */
+    public function testUpdatePackageNotFoundInRepository()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+
+        $package
+            ->shouldReceive('getName')->andReturn('jquery')
+            ->shouldReceive('getRequiredVersion')->andReturn('*')
+            ->shouldReceive('setInfo')->with(array('name' => 'jquery', 'version' => '1.0.0'))
+            ->shouldReceive('setVersion')->with('1.0.0')
+            ->shouldReceive('setRequires')->with(null)
+        ;
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
+        ;
+
+        $this->config
+            ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery', 'version' => '1.0.0'))
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andThrow(new RequestException('error'))
+        ;
+
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->updatePackage($package, $installer);
+    }
+
+    /**
+     * @expectedException        RuntimeException
+     * @expectedExceptionMessage Package colorbox has malformed json or is missing "url".
+     */
+    public function testUpdatePackageJsonException()
+    {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/colorbox/.bower.json')->andReturn(true)
+        ;
+
+        $this->config
+            ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'colorbox', 'version' => '1.0.0'))
+        ;
+
+        $package
+            ->shouldReceive('getName')->andReturn('colorbox')
+            ->shouldReceive('getRequiredVersion')->andReturn('*')
+            ->shouldReceive('setInfo')->with(array('name' => 'colorbox', 'version' => '1.0.0'))
+            ->shouldReceive('setVersion')->with('1.0.0')
+            ->shouldReceive('setRequires')->with(null)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/colorbox')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn('{invalid')
+        ;
+
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->updatePackage($package, $installer);
+    }
+
+    /**
+     * @expectedException        RuntimeException
+     * @expectedExceptionMessage Invalid bower.json found in package colorbox: {invalid.
+     */
+    public function testUpdatePackageWithInvalidBowerJson()
+    {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/colorbox/.bower.json')->andReturn(true)
+        ;
+
+        $this->config
+            ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'colorbox', 'version' => '1.0.0'))
+        ;
+
+        $package
+            ->shouldReceive('getName')->andReturn('colorbox')
+            ->shouldReceive('getRequiredVersion')->andReturn('*')
+            ->shouldReceive('setInfo')->with(array('name' => 'colorbox', 'version' => '1.0.0'))
+            ->shouldReceive('setVersion')->with('1.0.0')
+            ->shouldReceive('setRequires')->with(null)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/colorbox')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn('{"name":"colorbox","url":"git://github.com/jackmoore/colorbox.git"}')
+        ;
+
+        $this->repository
+            ->shouldReceive('setUrl->setHttpClient');
+        $this->repository
+            ->shouldReceive('getBower')->andReturn('{invalid')
+        ;
+
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->updatePackage($package, $installer);
     }
 
     public function testUpdateDependenciesWithNewPackageToInstall()
@@ -337,27 +458,10 @@ EOT;
     }
 
     /**
-     * @expectedException RuntimeException
-     */
-    public function testUpdateDependenciesException()
-    {
-        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
-
-        $json = '{"invalid json';
-
-        $this->config
-            ->shouldReceive('getBowerFileContent')->andThrow(new RuntimeException());
-        ;
-
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updateDependencies($installer);
-    }
-
-    /**
      * @expectedException        RuntimeException
      * @expectedExceptionMessage Malformed JSON
      */
-    public function testUpdatePackageMalformedJsonException()
+    public function testUpdatePackageWithMalformedBowerJsonContent()
     {
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
@@ -367,7 +471,7 @@ EOT;
 
         $package
             ->shouldReceive('getName')->andReturn('less')
-            ->shouldReceive('getRequiredVersion')->andReturn('*')
+            ->shouldReceive('getRequiredVersion')->andReturn(null, '*')
             ->shouldReceive('getVersion')->andReturn('1.2.1')
             ->shouldReceive('setInfo')
             ->shouldReceive('setRequires')->with(null)
@@ -389,18 +493,51 @@ EOT;
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException        RuntimeException
+     * @expectedExceptionMessage Cannot find package colorbox version 2.*.
      */
-    public function testUpdateWithoutBowerJsonException()
+    public function testUpdatePackageVersionNotFound()
     {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/colorbox/.bower.json')->andReturn(true)
+        ;
+
         $this->config
-            ->shouldReceive('getBowerFileContent')->andThrow(new RuntimeException(sprintf('Malformed JSON')))
+            ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'colorbox', 'version' => '1.0.0'))
+        ;
+
+        $package
+            ->shouldReceive('getName')->andReturn('colorbox')
+            ->shouldReceive('getRequiredVersion')->andReturn('2.*')
+            ->shouldReceive('setInfo')->with(array('name' => 'colorbox', 'version' => '1.0.0'))
+            ->shouldReceive('setVersion')->with('1.0.0')
+            ->shouldReceive('setRequires')->with(null)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/colorbox')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn('{"name":"colorbox","url":"git://github.com/jackmoore/colorbox.git"}')
+        ;
+
+        $this->repository
+            ->shouldReceive('setUrl->setHttpClient');
+        $this->repository
+            ->shouldReceive('getBower')->andReturn('{"name":"colorbox"}')
+            ->shouldReceive('findPackage')->andReturn(null)
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updateDependencies($installer);
+        $bowerphp->updatePackage($package, $installer);
     }
 
     public function testGetPackageInfo()
@@ -427,6 +564,7 @@ EOT;
         $this->repository
             ->shouldReceive('setHttpClient')->with($this->httpClient)
             ->shouldReceive('getUrl')->andReturn('https://github.com/jackmoore/colorbox')
+            ->shouldReceive('getOriginalUrl')->andReturn('git://github.com/jackmoore/colorbox.git')
             ->shouldReceive('setUrl')->with('git://github.com/jackmoore/colorbox.git', false)
             ->shouldReceive('findPackage')->with('1.1')->andReturn('1.1.0')
             ->shouldReceive('setUrl')->with('https://github.com/jackmoore/colorbox', true)
@@ -439,6 +577,7 @@ EOT;
         $this->assertEquals('https://github.com/jackmoore/colorbox', $bowerphp->getPackageInfo($package));
         $this->assertEquals('a json...', $bowerphp->getPackageInfo($package, 'bower'));
         $this->assertEquals(array('1.1.0', '1.0.0'), $bowerphp->getPackageInfo($package, 'versions'));
+        $this->assertEquals(array('name' => 'colorbox', 'url' => 'git://github.com/jackmoore/colorbox.git'), $bowerphp->getPackageInfo($package, 'original_url'));
     }
 
     public function testCreateAClearBowerFile()
@@ -504,12 +643,7 @@ EOT;
         $this->assertEquals($packages, $bowerphp->getInstalledPackages($installer));
     }
 
-    public function testInstallWithUpdatingBowerJsonFile()
-    {
-        $this->markTestIncomplete('testInstallWithUpdatingBowerJsonFile');
-    }
-
-    public function testInstallPackageWithDependencies()
+    public function testInstallPackageWithDependenciesToInstall()
     {
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
@@ -577,11 +711,84 @@ EOT;
         $bowerphp->installPackage($package, $installer);
     }
 
+    public function testInstallPackageWithDependenciesToUpdate()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $packageJsonJqueryUI = '{"name":"jquery-ui","url":"git://github.com/components/jquery-ui.git"}';
+        $bowerJsonJqueryUI = '{"name":"jquery-ui","version":"1.10.1", "main":"jquery-ui.js","dependencies":{"jquery":"2.*"}}';
+        $packageJsonJquery = '{"name":"jquery","url":"git://github.com/components/jquery.git"}';
+        $bowerJsonJquery = '{"name":"jquery","version":"2.0.3", "main":"jquery.js"}';
+
+        $package
+            ->shouldReceive('getName')->andReturn('jquery-ui', 'jquery')
+            ->shouldReceive('getRequiredVersion')->andReturn('*', '2.*')
+            ->shouldReceive('setRepository')->with($this->repository)
+            ->shouldReceive('setInfo')
+            ->shouldReceive('setVersion')
+            ->shouldReceive('setRequiredVersion')
+            ->shouldReceive('setRequires')
+            ->shouldReceive('getVersion')->andReturn('1.10.0', '1.0.0')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn(false)
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
+            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...', true)
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"1.10.1"}', true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}', true)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery-ui')->andReturn($request)
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andReturn($request)
+        ;
+        $this->repository
+            ->shouldReceive('findPackage')->with('*')->andReturn('1.10.1')
+            ->shouldReceive('findPackage')->with('2.*')->andReturn('2.0.3')
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn($packageJsonJqueryUI, $packageJsonJquery)
+        ;
+        $this->repository
+            ->shouldReceive('setUrl->setHttpClient');
+        $this->repository
+            ->shouldReceive('getBower')->andReturn($bowerJsonJqueryUI, $bowerJsonJquery)
+            ->shouldReceive('getRelease')->andReturn('fileAsString...')
+        ;
+
+        $this->output
+            ->shouldReceive('writelnInfoPackage')
+            ->shouldReceive('writelnInstalledPackage')
+        ;
+
+        $this->config
+            ->shouldReceive('getSaveToBowerJsonFile')->andReturn(false)
+            ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery', 'version' => '1.0.0'))
+            ->shouldReceive('getBowerFileContent')->andReturn(array())
+        ;
+
+        $installer
+            ->shouldReceive('install')
+            ->shouldReceive('update')
+        ;
+
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->installPackage($package, $installer);
+    }
+
     /**
      * @expectedException        RuntimeException
      * @expectedExceptionMessage Cannot download package colorbox (error).
      */
-    public function testInstallRequestException()
+    public function testInstallPackageRequestException()
     {
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
@@ -602,7 +809,7 @@ EOT;
      * @expectedException        RuntimeException
      * @expectedExceptionMessage Package colorbox has malformed json or is missing "url".
      */
-    public function testInstallJsonException()
+    public function testInstallPackageJsonException()
     {
         $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
         $response = Mockery::mock('Guzzle\Http\Message\Response');
@@ -666,7 +873,7 @@ EOT;
      * @expectedException        RuntimeException
      * @expectedExceptionMessage Cannot find package colorbox version *.
      */
-    public function testInstallVersionNotFoundException()
+    public function testInstallPackageVersionNotFound()
     {
         $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
         $response = Mockery::mock('Guzzle\Http\Message\Response');
@@ -700,29 +907,74 @@ EOT;
 
     }
 
-    public function testUpdateToSpecificVersionPackageAlreadyAtThatVersion()
+    public function testUpdateWithDependenciesToUpdate()
     {
-        $this->markTestIncomplete();
-    }
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
 
-    public function testUpdateToSpecificVersionPackageAtOlderVersion()
-    {
-        $this->markTestIncomplete();
-    }
+        $packageJsonJqueryUI = '{"name":"jquery-ui","url":"git://github.com/components/jquery-ui.git"}';
+        $bowerJsonJqueryUI = '{"name":"jquery-ui","version":"1.10.1", "main":"jquery-ui.js","dependencies":{"jquery":"*"}}';
+        $packageJsonJquery = '{"name":"jquery","url":"git://github.com/components/jquery.git"}';
+        $bowerJsonJquery = '{"name":"jquery","version":"2.0.3", "main":"jquery.js"}';
 
-    public function testUpdateToLatestVersionPackageNeeded()
-    {
-        $this->markTestIncomplete();
-    }
+        $package
+            ->shouldReceive('getName')->andReturn('jquery-ui', 'jquery')
+            ->shouldReceive('getRequiredVersion')->andReturn('*', '*')
+            ->shouldReceive('setRepository')->with($this->repository)
+            ->shouldReceive('setInfo')
+            ->shouldReceive('setVersion')
+            ->shouldReceive('setRequiredVersion')
+            ->shouldReceive('setRequires')
+            ->shouldReceive('getRequires')->andReturn(array('jquery' => '*'))
+            ->shouldReceive('getVersion')->andReturn('1.10.0'. '2.0.1')
+        ;
 
-    public function testUpdateToLatestVersionPackageNotNeeded()
-    {
-        $this->markTestIncomplete();
-    }
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn(true)
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
+            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...', true)
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"1.10.1"}', true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}', true)
+        ;
 
-    public function testUpdateWithOldDependenciesToUpdate()
-    {
-        $this->markTestIncomplete();
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery-ui')->andReturn($request)
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andReturn($request)
+        ;
+        $this->repository
+            ->shouldReceive('findPackage')->with('*')->andReturn('1.10.1', '2.0.3')
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn($packageJsonJqueryUI, $packageJsonJquery)
+        ;
+        $this->repository
+            ->shouldReceive('setUrl->setHttpClient');
+        $this->repository
+            ->shouldReceive('getBower')->andReturn($bowerJsonJqueryUI, $bowerJsonJquery)
+            ->shouldReceive('getRelease')->andReturn('fileAsString...')
+        ;
+
+        $this->output
+            ->shouldReceive('writelnInfoPackage')
+            ->shouldReceive('writelnInstalledPackage')
+        ;
+        $this->config
+            ->shouldReceive('getSaveToBowerJsonFile')->andReturn(false)
+            ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery-ui', 'version' => '1.10.0'), array('name' => 'jquery', 'version' => '2.0.1'))
+        ;
+
+        $installer
+            ->shouldReceive('update')
+        ;
+
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->updatePackage($package, $installer);
     }
 
     /**
@@ -746,9 +998,75 @@ EOT;
         $bowerphp->updatePackage($package, $installer);
     }
 
-    public function testUpdateWithNewDependenciesToInstall()
+    public function testUpdateWithDependenciesToInstall()
     {
-        $this->markTestIncomplete();
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $packageJsonJqueryUI = '{"name":"jquery-ui","url":"git://github.com/components/jquery-ui.git"}';
+        $bowerJsonJqueryUI = '{"name":"jquery-ui","version":"1.10.1", "main":"jquery-ui.js","dependencies":{"jquery":"*"}}';
+        $packageJsonJquery = '{"name":"jquery","url":"git://github.com/components/jquery.git"}';
+        $bowerJsonJquery = '{"name":"jquery","version":"2.0.3", "main":"jquery.js"}';
+
+        $package
+            ->shouldReceive('getName')->andReturn('jquery-ui', 'jquery')
+            ->shouldReceive('getRequiredVersion')->andReturn('*', '*')
+            ->shouldReceive('setRepository')->with($this->repository)
+            ->shouldReceive('setInfo')
+            ->shouldReceive('setVersion')
+            ->shouldReceive('setRequiredVersion')
+            ->shouldReceive('setRequires')
+            ->shouldReceive('getRequires')->andReturn(array('jquery' => '*'))
+            ->shouldReceive('getVersion')->andReturn('1.10.0')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn(true)
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
+            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...', true)
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"1.10.1"}', true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}', true)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery-ui')->andReturn($request)
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andReturn($request)
+        ;
+        $this->repository
+            ->shouldReceive('findPackage')->with('*')->andReturn('1.10.1', '2.0.3')
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn($packageJsonJqueryUI, $packageJsonJquery)
+        ;
+        $this->repository
+            ->shouldReceive('setUrl->setHttpClient');
+        $this->repository
+            ->shouldReceive('getBower')->andReturn($bowerJsonJqueryUI, $bowerJsonJquery)
+            ->shouldReceive('getRelease')->andReturn('fileAsString...')
+        ;
+
+        $this->output
+            ->shouldReceive('writelnInfoPackage')
+            ->shouldReceive('writelnInstalledPackage')
+        ;
+        $this->config
+            ->shouldReceive('getSaveToBowerJsonFile')->andReturn(false)
+            ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery-ui', 'version' => '1.10.0'), array('name' => 'jquery', 'version' => '2.0.1'))
+        ;
+
+        $installer
+            ->shouldReceive('update')
+            ->shouldReceive('install')
+        ;
+
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->updatePackage($package, $installer);
     }
 
     /**
@@ -847,6 +1165,28 @@ EOT;
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
         $this->assertTrue($bowerphp->isPackageInstalled($package));
         $this->assertFalse($bowerphp->isPackageInstalled($package));
+    }
+
+    public function testUninstallPackage()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+
+        $installer
+            ->shouldReceive('uninstall')->with($package)
+        ;
+
+        $package
+            ->shouldReceive('getName')->andReturn('jquery')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
+        ;
+
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->uninstallPackage($package, $installer);
+
     }
 
     /**

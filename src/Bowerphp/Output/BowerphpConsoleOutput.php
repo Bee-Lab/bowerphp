@@ -11,7 +11,7 @@
 
 namespace Bowerphp\Output;
 
-use Bowerphp\Installer\InstallerInterface;
+use Bowerphp\Bowerphp;
 use Bowerphp\Package\PackageInterface;
 use Bowerphp\Util\Json;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -104,12 +104,12 @@ class BowerphpConsoleOutput
      *
      * @param PackageInterface $package
      */
-    public function writelnListPackage(PackageInterface $package, InstallerInterface $installer)
+    public function writelnListPackage(PackageInterface $package, Bowerphp $bowerphp)
     {
         $this->output->writeln(sprintf('%s#%s<info>%s</info>',
             $package->getName(),
             $package->getVersion(),
-            $installer->isExtraneous($package) ? ' extraneous' : ''
+            $bowerphp->isPackageExtraneous($package) ? ' extraneous' : ''
         ));
     }
 }

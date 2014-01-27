@@ -93,15 +93,15 @@ class BowerphpConsoleOutputTest extends \PHPUnit_Framework_TestCase
     {
         $output = Mockery::mock('Symfony\Component\Console\Output\OutputInterface');
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
-        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+        $bowerphp = Mockery::mock('Bowerphp\Bowerphp');
 
         $package
             ->shouldReceive('getName')->andReturn('jquery', 'fonts.css')
             ->shouldReceive('getVersion')->andReturn('1.2', '1.0.0')
         ;
 
-        $installer
-            ->shouldReceive('isExtraneous')->with($package)->andReturn(true, false)
+        $bowerphp
+            ->shouldReceive('isPackageExtraneous')->with($package)->andReturn(true, false)
         ;
 
         $output
@@ -110,8 +110,8 @@ class BowerphpConsoleOutputTest extends \PHPUnit_Framework_TestCase
         ;
 
         $BConsoleOutput = new BowerphpConsoleOutput($output);
-        $BConsoleOutput->writelnListPackage($package, $installer);
-        $BConsoleOutput->writelnListPackage($package, $installer);
+        $BConsoleOutput->writelnListPackage($package, $bowerphp);
+        $BConsoleOutput->writelnListPackage($package, $bowerphp);
     }
 
     public function testWritelnSearchOrLookup()

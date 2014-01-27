@@ -164,14 +164,13 @@ class Bowerphp
         if (!$this->isPackageInstalled($package)) {
             throw new RuntimeException(sprintf('Package %s is not installed.', $package->getName()));
         }
-
-        $decode = $this->config->getBowerFileContent();
-
-        if (empty($decode['dependencies']) || empty($decode['dependencies'][$package->getName()])) {
-            throw new InvalidArgumentException(sprintf('Package %s not found in bower.json.', $package->getName()));
+        if (is_null($package->getRequiredVersion())) {
+            $decode = $this->config->getBowerFileContent();
+            if (empty($decode['dependencies']) || empty($decode['dependencies'][$package->getName()])) {
+                throw new InvalidArgumentException(sprintf('Package %s not found in bower.json.', $package->getName()));
+            }
+            $package->setRequiredVersion($decode['dependencies'][$package->getName()]);
         }
-
-        $package->setRequiredVersion($decode['dependencies'][$package->getName()]);
 
         $bower = $this->config->getPackageBowerFileContent($package);
         $package->setInfo($bower);

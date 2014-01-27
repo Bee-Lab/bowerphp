@@ -51,13 +51,15 @@ interface ConfigInterface
     public function setSaveToBowerJsonFile($flag = true);
 
     /**
+     * Init project's bower.json file
+     *
      * @param  array   $params
      * @return integer
      */
     public function initBowerJsonFile(array $params);
 
     /**
-     * Update bower.json with a new added package
+     * Update project's bower.json with a new added package
      *
      * @param  Package $package
      * @return integer
@@ -65,7 +67,7 @@ interface ConfigInterface
     public function updateBowerJsonFile(PackageInterface $package);
 
     /**
-     * Update bower.json from a previous existing one
+     * Update project's bower.json from a previous existing one
      *
      * @param  array   $old values of previous bower.json
      * @param  array   $new new values
@@ -74,18 +76,24 @@ interface ConfigInterface
     public function updateBowerJsonFile2(array $old, array $new);
 
     /**
+     * Get content from project's bower.json file
+     *
      * @return array
      * @throws Exception if bower.json does not exist
      */
     public function getBowerFileContent();
 
     /**
+     * Get content from a packages' bower.json file
+     *
      * @return array
      * @throws Exception if bower.json or package.json does not exist in a dir of installed package
      */
     public function getPackageBowerFileContent(PackageInterface $package);
 
     /**
+     * Check if project's bower.json file exists
+     *
      * @return boolean
      */
     public function bowerFileExists();
