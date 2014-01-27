@@ -23,8 +23,8 @@ class GithubRepository implements RepositoryInterface
      */
     public function setUrl($url, $raw = true)
     {
-        $this->originalUrl  = $url;
-        $this->url          = preg_replace('/\.git$/', '', str_replace('git://', 'https://' . ($raw ? 'raw.' : ''), $this->originalUrl));
+        $this->originalUrl = $url;
+        $this->url         = preg_replace('/\.git$/', '', str_replace('git://', 'https://' . ($raw ? 'raw.' : ''), $this->originalUrl));
 
         return $this;
     }
@@ -44,6 +44,7 @@ class GithubRepository implements RepositoryInterface
     {
         return $this->originalUrl;
     }
+
     /**
      * @param  ClientInterface  $httpClient
      * @return GithubRepository
@@ -83,16 +84,16 @@ class GithubRepository implements RepositoryInterface
                 } catch (RequestException $e) {
                     throw new RuntimeException(sprintf('Cannot open package git URL %s nor %s (%s).', $depBowerJsonURL, $depPackageJsonURL, $e->getMessage()));
                 }
-            } else {
-                throw new RuntimeException(sprintf('Cannot open package git URL %s (%s).', $depBowerJsonURL, $e->getMessage()));
             }
+        } catch (RequestException $e) {
+            throw new RuntimeException(sprintf('Cannot open package git URL %s (%s).', $depBowerJsonURL, $e->getMessage()));
         }
 
         $json = $response->getBody(true);
         if ($includeHomepage) {
             $array = json_decode($json, true);
             if (!empty($url)) {
-                // here, we set again original $this->url. to pass it in bower.json
+                // here, we set again original $this->url, to pass it in bower.json
                 $this->setUrl($oldUrl, true);
             }
             $array['homepage'] = $this->url;
@@ -117,6 +118,14 @@ class GithubRepository implements RepositoryInterface
             throw new RuntimeException(sprintf('Cannot open repo %s/%s (%s).', $repoUser, $repoName, $e->getMessage()));
         }
         $version = $this->fixVersion($version);
+
+        // edge case: package has no tags
+        if (count($tags) === 0) {
+            $zipball_url = sprintf('https://api.github.com/repos/%s/%s/zipball/master', $repoUser, $repoName);
+            $this->tag = compact('zipball_url');
+
+            return 'master';
+        }
 
         foreach ($tags as $tag) {
             if (fnmatch($version, $tag['name'])) {
@@ -164,6 +173,10 @@ class GithubRepository implements RepositoryInterface
             $request = $this->httpClient->get($githubTagsURL);
             $response = $request->send();
             $tags = json_decode($response->getBody(true), true);
+            // edge case: no tags
+            if (count($tags) === 0) {
+                return array();
+            }
 
             return array_map(function ($var) {
                 return $var['name'];

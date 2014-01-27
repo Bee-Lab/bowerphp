@@ -24,6 +24,15 @@ class InfoCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('"jquery.colorbox.js"' . PHP_EOL, $commandTester->getDisplay());
     }
 
+    public function testExecuteNoVersionsFound()
+    {
+        $application = new Application();
+        $commandTester = new CommandTester($command = $application->get('info'));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => 'scrollup'), array('decorated' => false));
+
+        $this->assertRegExp('/No versions available/', $commandTester->getDisplay());
+    }
+
     /**
      * @expectedException        RuntimeException
      * @expectedExceptionMessage Not enough arguments.

@@ -267,4 +267,16 @@ class ConfigTest extends TestCase
         $this->assertFalse($config->bowerFileExists());
         $this->assertTrue($config->bowerFileExists());
     }
+
+    public function testGetAllPackagesUrl()
+    {
+        $this->filesystem
+            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(false, true)
+        ;
+
+        $config = new Config($this->filesystem);
+
+        $this->assertEquals('https://bower-component-list.herokuapp.com/', $config->getAllPackagesUrl());
+    }
 }

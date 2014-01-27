@@ -94,9 +94,13 @@ EOT
             $consoleOutput->writelnJson($bower);
             if ($version == '*') {
                 $output->writeln('');
-                $output->writeln('<fg=cyan>Available versions:</fg=cyan>');
-                foreach ($versions as $v) {
-                    $output->writeln("- $v");
+                if (empty($versions)) {
+                    $output->writeln('No versions available.');
+                } else {
+                    $output->writeln('<fg=cyan>Available versions:</fg=cyan>');
+                    foreach ($versions as $v) {
+                        $output->writeln("- $v");
+                    }
                 }
             }
         }

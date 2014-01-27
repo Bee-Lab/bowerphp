@@ -200,7 +200,7 @@ class Bowerphp
         }
         $packageTag = $this->repository->findPackage($package->getRequiredVersion());
         if (is_null($packageTag)) {
-            throw new RuntimeException(sprintf('Cannot find package %s version %s.', $package->getName(), $package->getVersion()));
+            throw new RuntimeException(sprintf('Cannot find package %s version %s.', $package->getName(), $package->getRequiredVersion()));
         }
         $package->setRepository($this->repository);
 
@@ -280,7 +280,7 @@ class Bowerphp
         if ($info == 'original_url') {
             $this->repository->setUrl($decode['url'], false);
 
-            return array('name' => $decode['name'], 'url' =>$this->repository->getOriginalUrl());
+            return array('name' => $decode['name'], 'url' => $this->repository->getOriginalUrl());
         }
 
         if ($info == 'bower') {

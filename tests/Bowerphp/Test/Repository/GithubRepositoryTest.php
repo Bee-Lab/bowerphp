@@ -39,23 +39,112 @@ class GithubRepositoryTest extends TestCase
             ->shouldReceive('getBody')->andReturn($bowerJson)
         ;
 
-        $bower = $this->repository->getBower();
+        $this->assertEquals($bowerJson, $this->repository->getBower());
+        $this->assertEquals($bowerJson, $this->repository->getBower('master', false, 'https://raw.github.com/components/jquery'));
+    }
 
-        $this->assertEquals($bower, $bowerJson);
+    public function testGetBowerWithoutBowerJsonButWithPackageJson()
+    {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+        $badResponseException = Mockery::mock('Guzzle\Http\Exception\BadResponseException');
+
+        $bowerJson = '{"name": "jquery", "version": "2.0.3", "main": "jquery.js"}';
+        $url1 = 'https://raw.github.com/components/jquery/master/bower.json';
+        $url2 = 'https://raw.github.com/components/jquery/master/package.json';
+
+        $badResponseException
+            ->shouldReceive('getResponse')->andReturn($response)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with($url1)->andThrow($badResponseException)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with($url2)->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getStatusCode')->andReturn(404)
+            ->shouldReceive('getEffectiveUrl')->andReturn($url2)
+            ->shouldReceive('getBody')->andReturn($bowerJson)
+        ;
+
+        $this->assertEquals($bowerJson, $this->repository->getBower());
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException        RuntimeException
+     * @expectedExceptionMessage Cannot open package git URL https://raw.github.com/components/jquery/master/bower.json nor https://raw.github.com/components/jquery/master/package.json (an error).
+     */
+    public function testGetBowerWithoutBowerJsonNorPackageJson()
+    {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+        $badResponseException = Mockery::mock('Guzzle\Http\Exception\BadResponseException');
+
+        $bowerJson = '{"name": "jquery", "version": "2.0.3", "main": "jquery.js"}';
+        $url1 = 'https://raw.github.com/components/jquery/master/bower.json';
+        $url2 = 'https://raw.github.com/components/jquery/master/package.json';
+
+        $badResponseException
+            ->shouldReceive('getResponse')->andReturn($response)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with($url1)->andThrow($badResponseException)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with($url2)->andThrow(new RequestException('an error'))
+        ;
+        $response
+            ->shouldReceive('getStatusCode')->andReturn(404)
+        ;
+
+        $this->assertEquals($bowerJson, $this->repository->getBower());
+    }
+
+    /**
+     * @expectedException        RuntimeException
+     * @expectedExceptionMessage Cannot open package git URL https://raw.github.com/components/jquery/master/bower.json (request error).
      */
     public function testGetBowerPackageNotFound()
     {
         $url = 'https://raw.github.com/components/jquery/master/bower.json';
 
         $this->httpClient
-            ->shouldReceive('get')->with($url)->andThrow(new RequestException())
+            ->shouldReceive('get')->with($url)->andThrow(new RequestException('request error'))
         ;
 
-        $bower = $this->repository->getBower();
+        $this->repository->getBower();
+    }
+
+    public function testGetBowerWithHomepage()
+    {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $bower1 = array('name' => 'jquery', 'version' => '2.0.3', 'main' => 'jquery.js');
+        $bower2 = array('name' => 'jquery', 'version' => '2.0.3', 'main' => 'jquery.js', 'homepage' => 'https://raw.github.com/components/jquery/master/bower.json');
+        $url = 'https://raw.github.com/components/jquery/master/bower.json';
+
+        $this->httpClient
+            ->shouldReceive('get')->with($url)->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getEffectiveUrl')->andReturn($url)
+            ->shouldReceive('getBody')->andReturn(json_encode($bower1))
+        ;
+
+        $this->assertEquals($bower2, json_decode($this->repository->getBower('master', true), true));
+        $this->assertEquals($bower2, json_decode($this->repository->getBower('master', true, 'https://raw.github.com/components/jquery'), true));
     }
 
     public function testFindPackage()
@@ -76,6 +165,48 @@ class GithubRepositoryTest extends TestCase
 
         $tag = $this->repository->findPackage();
         $this->assertEquals('2.0.3', $tag);
+    }
+
+    public function testFindPackageWithoutTags()
+    {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $this->httpClient
+            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->with(true)->andReturn('[ ]')
+        ;
+
+        $tag = $this->repository->findPackage();
+        $this->assertEquals('master', $tag);
+    }
+
+    /**
+     * "version with v" = something like "v1.2.3" instead of "1.2.3"
+     */
+    public function testFindPackageWithVersionWithV()
+    {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+        $tagsJson = '[{"name": "v2.0.3", "zipball_url": "", "tarball_url": ""}, {"name": "v2.0.2", "zipball_url": "", "tarball_url": ""}]';
+
+        $this->httpClient
+            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->with(true)->andReturn($tagsJson)
+        ;
+
+        $tag = $this->repository->findPackage('2.0.2');
+        $this->assertEquals('v2.0.2', $tag);
     }
 
     /**
@@ -198,6 +329,24 @@ class GithubRepositoryTest extends TestCase
         $this->assertEquals(array('2.0.3', '2.0.2'), $this->repository->getTags());
     }
 
+    public function testGetTagsWithoutTags()
+    {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $this->httpClient
+            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn('[ ]')
+        ;
+
+        $this->assertEquals(array(), $this->repository->getTags());
+    }
+
     /**
      * @expectedException RuntimeException
      */
@@ -208,6 +357,11 @@ class GithubRepositoryTest extends TestCase
         ;
 
         $this->repository->getTags();
+    }
+
+    public function testGetOriginalUrl()
+    {
+        $this->assertEquals('https://raw.github.com/components/jquery', $this->repository->getOriginalUrl());
     }
 
     /**

@@ -113,4 +113,18 @@ class BowerphpConsoleOutputTest extends \PHPUnit_Framework_TestCase
         $BConsoleOutput->writelnListPackage($package, $installer);
         $BConsoleOutput->writelnListPackage($package, $installer);
     }
+
+    public function testWritelnSearchOrLookup()
+    {
+        $output = Mockery::mock('Symfony\Component\Console\Output\OutputInterface');
+
+        $output
+            ->shouldReceive('writeln')->with('<fg=cyan>foo</fg=cyan> bar')
+            ->shouldReceive('writeln')->with('   <fg=cyan>foo</fg=cyan> bar')
+        ;
+
+        $BConsoleOutput = new BowerphpConsoleOutput($output);
+        $BConsoleOutput->writelnSearchOrLookup('foo', 'bar');
+        $BConsoleOutput->writelnSearchOrLookup('foo', 'bar', 3);
+    }
 }
