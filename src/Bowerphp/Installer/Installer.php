@@ -143,6 +143,7 @@ class Installer implements InstallerInterface
      */
     protected function filterZipFiles(ZipArchive $archive, array $ignore = array())
     {
+        $dirName = $archive->getNameIndex(0);
         $return = array();
         $numFiles = $archive->getNumFiles();
         for ($i = 0; $i < $numFiles; $i++) {
@@ -151,14 +152,8 @@ class Installer implements InstallerInterface
                 $return[] = $stat['name'];
             }
         }
-        $filter = array_filter($return, function ($var) use ($ignore) {
-            foreach ($ignore as $pattern) {
-                if (fnmatch($pattern, $var)) {
-                    return false;
-                }
-            }
-
-            return true;
+        $filter = array_filter($return, function ($var) use ($ignore, $dirName) {
+            return !$this->isIgnored($var, $ignore, $dirName);
         });
 
         return array_values($filter);
@@ -184,5 +179,57 @@ class Installer implements InstallerInterface
         }
 
         $this->filesystem->delete($dir);
+    }
+
+    /**
+     * Check if a file should be ignored
+     *
+     * @param  string  $name    file's name
+     * @param  array   $ignore  list of ignores
+     * @param  string  $dirName dir's name (to be removed from file's name)
+     * @return boolean
+     */
+    public function isIgnored($name, array $ignore, $dirName)
+    {
+        $v = substr($name, strlen($dirName));
+        foreach ($ignore as $pattern) {
+            if (strpos($pattern, '**') !== false) {
+                $pattern = str_replace('**', '*', $pattern);
+                if (substr($pattern, 0, 1) == '/') {
+                    $v = '/'. $v;
+                }
+                if (substr($v, 0, 1) == '.') {
+                    $v = '/'. $v;
+                }
+                if (fnmatch($pattern, $v, FNM_PATHNAME)) {
+                    return true;
+                }
+            } elseif (substr($pattern, -1) == '/') { // trailing slash
+                if (substr($pattern, 0, 1) == '/') {
+                    $pattern = substr($pattern, 1); // remove possible starting slash
+                }
+                $escPattern = str_replace(array('.', '*'), array('\.', '.*'), $pattern);
+                if (preg_match('#^' . $escPattern . '#', $v) > 0) {
+                    return true;
+                }
+            } elseif (strpos($pattern, '/') === false) { // no slash
+                $escPattern = str_replace(array('.', '*'), array('\.', '.*'), $pattern);
+                if (preg_match('#^' . $escPattern . '#', $v) > 0) {
+                    return true;
+                }
+            } elseif (substr($pattern, 0, 1) == '/') {    // starting slash
+                $escPattern = str_replace(array('.', '*'), array('\.', '.*'), $pattern);
+                if (preg_match('#^' . $escPattern . '#', '/' . $v) > 0) {
+                    return true;
+                }
+            } else {
+                $escPattern = str_replace(array('.', '*'), array('\.', '.*'), $pattern);
+                if (preg_match('#^' . $escPattern . '#', $v) > 0) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
