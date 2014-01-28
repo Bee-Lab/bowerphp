@@ -152,8 +152,9 @@ class Installer implements InstallerInterface
                 $return[] = $stat['name'];
             }
         }
-        $filter = array_filter($return, function ($var) use ($ignore, $dirName) {
-            return !$this->isIgnored($var, $ignore, $dirName);
+        $that = $this;
+        $filter = array_filter($return, function ($var) use ($ignore, $dirName, $that) {
+            return !$that->isIgnored($var, $ignore, $dirName);
         });
 
         return array_values($filter);
