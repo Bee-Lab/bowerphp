@@ -86,7 +86,7 @@ EOT
 
             $params['author'] = $dialog->ask(
                 $output,
-                $dialog->getQuestion('Please sspecify an author', $params['author']),
+                $dialog->getQuestion('Please specify an author', $params['author']),
                 $params['author']
             );
         }
