@@ -83,7 +83,7 @@ class Bowerphp
         }
         $repoUrl = $decode['url'];
         $this->repository->setUrl($repoUrl)->setHttpClient($this->httpClient);
-        $bowerJson = $this->repository->getBower();
+        $bowerJson = $this->repository->getBower($package->getRequiredVersion());
         $bower = json_decode($bowerJson, true);
         if (!is_array($bower)) {
             throw new RuntimeException(sprintf('Invalid bower.json found in package %s: %s.', $package->getName(), $bowerJson));
@@ -192,7 +192,7 @@ class Bowerphp
         // open package repository
         $repoUrl = $decode['url'];
         $this->repository->setUrl($repoUrl)->setHttpClient($this->httpClient);
-        $bowerJson = $this->repository->getBower();
+        $bowerJson = $this->repository->getBower($package->getRequiredVersion());
         $bower = json_decode($bowerJson, true);
         if (!is_array($bower)) {
             throw new RuntimeException(sprintf('Invalid bower.json found in package %s: %s.', $package->getName(), $bowerJson));

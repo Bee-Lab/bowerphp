@@ -61,6 +61,9 @@ class GithubRepository implements RepositoryInterface
      */
     public function getBower($version = 'master', $includeHomepage = false, $url = '')
     {
+        if ($version == '*') {
+            $version = 'master';
+        }
         if (!empty($url)) {
             // we need to save current $this->url
             $oldUrl = $this->url;
@@ -81,6 +84,18 @@ class GithubRepository implements RepositoryInterface
                     $request = $this->httpClient->get($depPackageJsonURL);
                     $response = $request->send();
                     $this->setUrl($response->getEffectiveUrl());
+                } catch (BadResponseException $e) {
+                    if ($version != 'master' && $e->getResponse()->getStatusCode() == 404) {
+                        // fallback on master (for invalid version)
+                        $depBowerJsonURL = $this->url . '/master/bower.json';
+                        try {
+                            $request = $this->httpClient->get($depBowerJsonURL);
+                            $response = $request->send();
+                            $this->setUrl($response->getEffectiveUrl());
+                        } catch (RequestException $e) {
+                            throw new RuntimeException(sprintf('Cannot open package git URL %s nor %s (%s).', $depBowerJsonURL, $depPackageJsonURL, $e->getMessage()));
+                        }
+                    }
                 } catch (RequestException $e) {
                     throw new RuntimeException(sprintf('Cannot open package git URL %s nor %s (%s).', $depBowerJsonURL, $depPackageJsonURL, $e->getMessage()));
                 }

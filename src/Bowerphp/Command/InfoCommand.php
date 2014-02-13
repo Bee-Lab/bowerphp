@@ -46,7 +46,7 @@ class InfoCommand extends Command
 The <info>%command.name%</info> command displays overall information of a package or of a particular version.
 If you pass a property present in bower.json, you can get the correspondent value.
 
-  <info>php %command.full_name%</info>
+  <info>php %command.full_name% package</info>
 EOT
             )
         ;

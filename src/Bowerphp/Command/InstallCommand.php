@@ -43,9 +43,7 @@ class InstallCommand extends Command
         $this
             ->setName('install')
             ->setDescription('Installs the project dependencies from the bower.json file or a single specified package')
-            ->setDefinition(array(
-                new InputOption('save', 'S', InputOption::VALUE_NONE, 'Add installed package to bower.json file.'),
-            ))
+            ->addOption('save', 'S', InputOption::VALUE_NONE, 'Add installed package to bower.json file.')
             ->addArgument('package', InputArgument::OPTIONAL, 'Choose a package.')
             ->setHelp(<<<EOT
 The <info>%command.name%</info> command reads the bower.json file from

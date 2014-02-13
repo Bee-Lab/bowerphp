@@ -847,6 +847,7 @@ EOT;
 
         $package
             ->shouldReceive('getName')->andReturn('colorbox')
+            ->shouldReceive('getRequiredVersion')->andReturn('1')
         ;
 
         $this->httpClient
