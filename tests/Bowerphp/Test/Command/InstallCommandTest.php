@@ -22,7 +22,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->assertRegExp('/jquery#2/', $commandTester->getDisplay());
         $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
-        $this->assertFileExists(getcwd() . '/bower_components/jquery/jquery.js');
+        $this->assertFileExists(getcwd() . '/bower_components/jquery/dist/jquery.js');
     }
 
     public function testExecuteVerbose()
@@ -33,7 +33,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->assertRegExp('/jquery#2/', $commandTester->getDisplay());
         $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
-        $this->assertFileExists(getcwd() . '/bower_components/jquery/jquery.js');
+        $this->assertFileExists(getcwd() . '/bower_components/jquery/dist/jquery.js');
     }
 
     public function testExecuteWithoutPackage()
