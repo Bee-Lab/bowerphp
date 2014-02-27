@@ -15,7 +15,6 @@ use Bowerphp\Bowerphp;
 use Bowerphp\Config\Config;
 use Bowerphp\Installer\Installer;
 use Bowerphp\Output\BowerphpConsoleOutput;
-use Bowerphp\Package\Package;
 use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Util\ZipArchive;
 use Gaufrette\Adapter\Local as LocalAdapter;

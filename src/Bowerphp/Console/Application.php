@@ -67,7 +67,7 @@ class Application extends BaseApplication
             chdir($newWorkDir);
         }
 
-        $result = $this->SymfonyDoRun($input, $output);
+        $result = $this->symfonyDoRun($input, $output);
 
         if (isset($oldWorkingDir)) {
             chdir($oldWorkingDir);
@@ -156,7 +156,7 @@ class Application extends BaseApplication
      * @return integer 0 if everything went fine, or an error code
      * @codeCoverageIgnore
      */
-    private function SymfonyDoRun(InputInterface $input, OutputInterface $output, $default = 'list-commands')
+    private function symfonyDoRun(InputInterface $input, OutputInterface $output, $default = 'list-commands')
     {
         if (true === $input->hasParameterOption(array('--version', '-V'))) {
             $output->writeln($this->getLongVersion());
