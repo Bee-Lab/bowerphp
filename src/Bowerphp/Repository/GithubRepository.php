@@ -70,41 +70,7 @@ class GithubRepository implements RepositoryInterface
             // then, we call setUrl(), to get the http url
             $this->setUrl($url, true);
         }
-        $depBowerJsonURL = $this->url . '/' . $version . '/bower.json';
-        try {
-            $request = $this->httpClient->get($depBowerJsonURL);
-            $response = $request->send();
-            // we need this in case of redirect (e.g. 'less/less' becomes 'less/less.js')
-            $this->setUrl($response->getEffectiveUrl());
-        } catch (BadResponseException $e) {
-            if ($e->getResponse()->getStatusCode() == 404) {
-                // fallback on package.json
-                $depPackageJsonURL = $this->url . '/' . $version . '/package.json';
-                try {
-                    $request = $this->httpClient->get($depPackageJsonURL);
-                    $response = $request->send();
-                    $this->setUrl($response->getEffectiveUrl());
-                } catch (BadResponseException $e) {
-                    if ($version != 'master' && $e->getResponse()->getStatusCode() == 404) {
-                        // fallback on master (for invalid version)
-                        $depBowerJsonURL = $this->url . '/master/bower.json';
-                        try {
-                            $request = $this->httpClient->get($depBowerJsonURL);
-                            $response = $request->send();
-                            $this->setUrl($response->getEffectiveUrl());
-                        } catch (RequestException $e) {
-                            throw new RuntimeException(sprintf('Cannot open package git URL %s nor %s (%s).', $depBowerJsonURL, $depPackageJsonURL, $e->getMessage()));
-                        }
-                    }
-                } catch (RequestException $e) {
-                    throw new RuntimeException(sprintf('Cannot open package git URL %s nor %s (%s).', $depBowerJsonURL, $depPackageJsonURL, $e->getMessage()));
-                }
-            }
-        } catch (RequestException $e) {
-            throw new RuntimeException(sprintf('Cannot open package git URL %s (%s).', $depBowerJsonURL, $e->getMessage()));
-        }
-
-        $json = $response->getBody(true);
+        $json = $this->getDepBowerJson($version);
         if ($includeHomepage) {
             $array = json_decode($json, true);
             if (!empty($url)) {
@@ -199,6 +165,54 @@ class GithubRepository implements RepositoryInterface
         } catch (RequestException $e) {
             throw new RuntimeException(sprintf('Cannot open repo %s/%s (%s).', $repoUser, $repoName, $e->getMessage()));
         }
+    }
+
+    /**
+     * Get remote bower.json file (or package.json file)
+     *
+     * @param  string $version
+     * @return string
+     */
+    private function getDepBowerJson($version)
+    {
+        $depBowerJsonURL = $this->url . '/' . $version . '/bower.json';
+        try {
+            $request = $this->httpClient->get($depBowerJsonURL);
+            $response = $request->send();
+            // we need this in case of redirect (e.g. 'less/less' becomes 'less/less.js')
+            $this->setUrl($response->getEffectiveUrl());
+        } catch (BadResponseException $e) {
+            if ($e->getResponse()->getStatusCode() == 404) {
+                // fallback on package.json
+                $depPackageJsonURL = $this->url . '/' . $version . '/package.json';
+                try {
+                    $request = $this->httpClient->get($depPackageJsonURL);
+                    $response = $request->send();
+                    $this->setUrl($response->getEffectiveUrl());
+                } catch (BadResponseException $e) {
+                    if ($version != 'master' && $e->getResponse()->getStatusCode() == 404) {
+                        // fallback on master
+                        return $this->getDepBowerJson('master');
+                    }
+                } catch (RequestException $e) {
+                    throw new RuntimeException(sprintf('Cannot open package git URL %s nor %s (%s).', $depBowerJsonURL, $depPackageJsonURL, $e->getMessage()));
+                }
+            }
+        } catch (RequestException $e) {
+            throw new RuntimeException(sprintf('Cannot open package git URL %s (%s).', $depBowerJsonURL, $e->getMessage()));
+        }
+        $json = $response->getBody(true);
+
+        // for package.json, remove dependencies (see the case of Modernizr)
+        if (isset($depPackageJsonURL)) {
+            $array = json_decode($json, true);
+            if (isset($array['dependencies'])) {
+                unset($array['dependencies']);
+            }
+            $json = Json::encode($array);
+        }
+
+        return $json;
     }
 
     /**

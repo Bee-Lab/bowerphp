@@ -50,6 +50,11 @@ class GithubRepositoryTest extends TestCase
         $badResponseException = Mockery::mock('Guzzle\Http\Exception\BadResponseException');
 
         $bowerJson = '{"name": "jquery", "version": "2.0.3", "main": "jquery.js"}';
+        $expectedJson = '{
+    "name": "jquery",
+    "version": "2.0.3",
+    "main": "jquery.js"
+}';
         $url1 = 'https://raw.github.com/components/jquery/master/bower.json';
         $url2 = 'https://raw.github.com/components/jquery/master/package.json';
 
@@ -73,7 +78,7 @@ class GithubRepositoryTest extends TestCase
             ->shouldReceive('getBody')->andReturn($bowerJson)
         ;
 
-        $this->assertEquals($bowerJson, $this->repository->getBower());
+        $this->assertEquals($expectedJson, $this->repository->getBower());
     }
 
     /**
@@ -121,6 +126,49 @@ class GithubRepositoryTest extends TestCase
         ;
 
         $this->repository->getBower();
+    }
+
+    /**
+     * See issue https://github.com/Bee-Lab/bowerphp/issues/33
+     * For some strange reason, Modernizr has package.json ONLY in master :-|
+     */
+    public function testGetBowerWithPackageJsonOnlyInMaster()
+    {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+        $badResponseException = Mockery::mock('Guzzle\Http\Exception\BadResponseException');
+        $originalJson = '{"name": "jquery", "version": "2.0.3", "main": "jquery.js", "dependencies": {"foo": "bar"}}';
+        $expectedJson = '{
+    "name": "jquery",
+    "version": "2.0.3",
+    "main": "jquery.js"
+}';
+
+        $url1 = 'https://raw.github.com/components/jquery/v2.7.2/bower.json';
+        $url2 = 'https://raw.github.com/components/jquery/v2.7.2/package.json';
+        $url3 = 'https://raw.github.com/components/jquery/master/bower.json';
+        $url4 = 'https://raw.github.com/components/jquery/master/package.json';
+
+        $badResponseException
+            ->shouldReceive('getResponse')->andReturn($response)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with($url1)->andThrow($badResponseException)
+            ->shouldReceive('get')->with($url2)->andThrow($badResponseException)
+            ->shouldReceive('get')->with($url3)->andThrow($badResponseException)
+            ->shouldReceive('get')->with($url4)->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getStatusCode')->andReturn(404)
+            ->shouldReceive('getEffectiveUrl')->andReturn($url1, $url2, $url3)
+            ->shouldReceive('getBody')->andReturn($originalJson)
+        ;
+
+        $this->assertEquals($expectedJson, $this->repository->getBower());
     }
 
     public function testGetBowerWithHomepage()
