@@ -5,9 +5,10 @@ namespace Bowerphp\Installer;
 use Bowerphp\Config\ConfigInterface;
 use Bowerphp\Package\Package;
 use Bowerphp\Package\PackageInterface;
+use Bowerphp\Util\Filesystem;
 use Bowerphp\Util\ZipArchive;
-use Gaufrette\Filesystem;
 use RuntimeException;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Package installation manager.
@@ -47,18 +48,29 @@ class Installer implements InstallerInterface
         $dirName = trim($this->zipArchive->getNameIndex(0), '/');
         $info = $package->getInfo();
         $files = $this->filterZipFiles($this->zipArchive, isset($info['ignore']) ? $info['ignore'] : array());
-        foreach ($files as $file) {
+        foreach ($files as $i => $file) {
+            $stat = $this->zipArchive->statIndex($i);
             $fileName = $this->config->getInstallDir() . '/' . str_replace($dirName, $package->getName(), $file);
-            $fileContent = $this->zipArchive->getStream($file);
-            $this->filesystem->write($fileName, $fileContent, true);
+            if (substr($fileName, -1) != '/') {
+                $fileContent = $this->zipArchive->getStream($file);
+                $this->filesystem->write($fileName, $fileContent);
+                $this->filesystem->touch($fileName, $stat['mtime']);
+            }
         }
-
+        // adjust timestamp for directories
+        foreach ($files as $i => $file) {
+            $stat = $this->zipArchive->statIndex($i);
+            $fileName = $this->config->getInstallDir() . '/' . str_replace($dirName, $package->getName(), $file);
+            if (substr($fileName, -1) == '/') {
+                $this->filesystem->touch($fileName, $stat['mtime']);
+            }
+        }
         $this->zipArchive->close();
 
         // create .bower.json metadata file
         // XXX for now, we just save some basic info
         $dotBowerJson = json_encode(array('name' => $package->getName(), 'version' => $package->getVersion()));
-        $this->filesystem->write($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json', $dotBowerJson, true);
+        $this->filesystem->write($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json', $dotBowerJson);
     }
 
     /**
@@ -74,17 +86,29 @@ class Installer implements InstallerInterface
         $dirName = trim($this->zipArchive->getNameIndex(0), '/');
         $info = $package->getInfo();
         $files = $this->filterZipFiles($this->zipArchive, isset($info['ignore']) ? $info['ignore'] : array());
-        foreach ($files as $file) {
+        foreach ($files as $i => $file) {
+            $stat = $this->zipArchive->statIndex($i);
             $fileName = $this->config->getInstallDir() . '/' . str_replace($dirName, $package->getName(), $file);
-            $fileContent = $this->zipArchive->getStream($file);
-            $this->filesystem->write($fileName, $fileContent, true);
+            if (substr($fileName, -1) != '/') {
+                $fileContent = $this->zipArchive->getStream($file);
+                $this->filesystem->write($fileName, $fileContent);
+                $this->filesystem->touch($fileName, $stat['mtime']);
+            }
+        }
+        // adjust timestamp for directories
+        foreach ($files as $i => $file) {
+            $stat = $this->zipArchive->statIndex($i);
+            $fileName = $this->config->getInstallDir() . '/' . str_replace($dirName, $package->getName(), $file);
+            if (substr($fileName, -1) == '/') {
+                $this->filesystem->touch($fileName, $stat['mtime']);
+            }
         }
         $this->zipArchive->close();
 
         // update .bower.json metadata file
         // XXX for now, we just save some basic info
         $dotBowerJson = json_encode(array('name' => $package->getName(), 'version' => $package->getVersion()));
-        $this->filesystem->write($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json', $dotBowerJson, true);
+        $this->filesystem->write($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json', $dotBowerJson);
     }
 
     /**
@@ -98,13 +122,17 @@ class Installer implements InstallerInterface
     /**
      * {@inheritDoc}
      */
-    public function getInstalled()
+    public function getInstalled(Finder $finder)
     {
         $packages = array();
+        if (!$this->filesystem->exists($this->config->getInstallDir())) {
+            return $packages;
+        }
 
-        $keys = $this->filesystem->listKeys($this->config->getInstallDir());
-        foreach ($keys['dirs'] as $packageDirectory) {
-            if ($this->filesystem->has($packageDirectory . '/.bower.json')) {
+        $directories = $finder->directories()->in($this->config->getInstallDir());
+
+        foreach ($directories as $packageDirectory) {
+            if ($this->filesystem->exists($packageDirectory . '/.bower.json')) {
                 $bowerJson = $this->filesystem->read($packageDirectory . '/.bower.json');
                 $bower = json_decode($bowerJson, true);
                 if (is_null($bower)) {
@@ -120,10 +148,10 @@ class Installer implements InstallerInterface
     /**
      * {@inheritDoc}
      */
-    public function findDependentPackages(PackageInterface $package)
+    public function findDependentPackages(PackageInterface $package, Finder $finder)
     {
         $return = array();
-        $packages = $this->getInstalled();
+        $packages = $this->getInstalled($finder);
         foreach ($packages as $installedPackage) {
             $requires = $installedPackage->getRequires();
             if (isset($requires[$package->getName()])) {
@@ -148,9 +176,9 @@ class Installer implements InstallerInterface
         $numFiles = $archive->getNumFiles();
         for ($i = 0; $i < $numFiles; $i++) {
             $stat = $archive->statIndex($i);
-            if ($stat['size'] > 0) {    // directories have sizes 0
+            #if ($stat['size'] > 0) {    // directories have sizes 0
                 $return[] = $stat['name'];
-            }
+            #}
         }
         $that = $this;
         $filter = array_filter($return, function ($var) use ($ignore, $dirName, $that) {
@@ -165,21 +193,7 @@ class Installer implements InstallerInterface
      */
     protected function removeDir($dir)
     {
-        $dir = substr($dir, -1) == '/' ? $dir : $dir . '/';
-        $keys = $this->filesystem->listKeys($dir);
-
-        if (!empty($keys['dirs'])) {
-            foreach ($keys['dirs'] as $d) {
-                $this->removeDir($d);
-            }
-        }
-        if (!empty($keys['keys'])) {
-            foreach ($keys['keys'] as $k) {
-                $this->filesystem->delete($k);
-            }
-        }
-
-        $this->filesystem->delete($dir);
+        $this->filesystem->remove($dir);
     }
 
     /**

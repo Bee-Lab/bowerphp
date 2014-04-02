@@ -17,11 +17,12 @@ use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Package\Package;
 use Bowerphp\Package\PackageInterface;
 use Bowerphp\Repository\RepositoryInterface;
-use Gaufrette\Filesystem;
+use Bowerphp\Util\Filesystem;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Exception\RequestException;
 use InvalidArgumentException;
 use RuntimeException;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Main class
@@ -113,7 +114,7 @@ class Bowerphp
         $this->output->writelnInstalledPackage($package);
 
         $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();
-        $this->filesystem->write($tmpFileName, $file, true);
+        $this->filesystem->write($tmpFileName, $file);
 
         $installer->install($package);
 
@@ -215,7 +216,7 @@ class Bowerphp
 
         // save temporary file
         $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();
-        $this->filesystem->write($tmpFileName, $file, true);
+        $this->filesystem->write($tmpFileName, $file);
 
         $installer->update($package);
 
@@ -340,11 +341,12 @@ class Bowerphp
      * Get a list of installed packages
      *
      * @param  InstallerInterface $installer
+     * @param  Finder             $finder
      * @return array
      */
-    public function getInstalledPackages(InstallerInterface $installer)
+    public function getInstalledPackages(InstallerInterface $installer, Finder $finder)
     {
-        return $installer->getInstalled();
+        return $installer->getInstalled($finder);
     }
 
     /**
@@ -355,7 +357,7 @@ class Bowerphp
      */
     public function isPackageInstalled(PackageInterface $package)
     {
-        return $this->filesystem->has($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json');
+        return $this->filesystem->exists($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json');
     }
 
     /**

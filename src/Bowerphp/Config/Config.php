@@ -12,8 +12,8 @@
 namespace Bowerphp\Config;
 
 use Bowerphp\Package\PackageInterface;
+use Bowerphp\Util\Filesystem;
 use Bowerphp\Util\Json;
-use Gaufrette\Filesystem;
 use RuntimeException;
 
 /**
@@ -42,7 +42,7 @@ class Config implements ConfigInterface
         $this->installDir = getcwd() . '/bower_components';
         $rc               = getcwd() . '/.bowerrc';
 
-        if ($this->filesystem->has($rc)) {
+        if ($this->filesystem->exists($rc)) {
             $json = json_decode($this->filesystem->read($rc), true);
             if (is_null($json)) {
                 throw new RuntimeException('Invalid .bowerrc file.');
@@ -129,7 +129,7 @@ class Config implements ConfigInterface
         $file = getcwd() . '/' . $this->standardBowerFileName;
         $json = Json::encode($decode);
 
-        return $this->filesystem->write($file, $json, true);
+        return $this->filesystem->write($file, $json);
     }
 
     /**
@@ -140,7 +140,7 @@ class Config implements ConfigInterface
         $json = Json::encode(array_merge($old, $new));
         $file = getcwd() . '/' . $this->standardBowerFileName;
 
-        return $this->filesystem->write($file, $json, true);
+        return $this->filesystem->write($file, $json);
     }
 
     /**
@@ -148,7 +148,7 @@ class Config implements ConfigInterface
      */
     public function getBowerFileContent()
     {
-        if (!$this->filesystem->has(getcwd() . '/' . $this->standardBowerFileName)) {
+        if (!$this->filesystem->exists(getcwd() . '/' . $this->standardBowerFileName)) {
             throw new RuntimeException('No ' . $this->standardBowerFileName . ' found. You can run "init" command to create it.');
         }
         $bowerJson = $this->filesystem->read(getcwd() . '/' . $this->standardBowerFileName);
@@ -165,7 +165,7 @@ class Config implements ConfigInterface
     public function getPackageBowerFileContent(PackageInterface $package)
     {
         $file = $this->getInstallDir() . '/' . $package->getName() . '/.bower.json';
-        if (!$this->filesystem->has($file)) {
+        if (!$this->filesystem->exists($file)) {
             throw new RuntimeException(sprintf('Could not find .bower.json file for package %s.', $package->getName()));
         }
         $bowerJson = $this->filesystem->read($file);
@@ -182,7 +182,7 @@ class Config implements ConfigInterface
      */
     public function bowerFileExists()
     {
-        return $this->filesystem->has(getcwd() . '/' . $this->standardBowerFileName);
+        return $this->filesystem->exists(getcwd() . '/' . $this->standardBowerFileName);
     }
 
     /**

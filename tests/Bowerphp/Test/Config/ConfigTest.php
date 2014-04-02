@@ -13,7 +13,7 @@ class ConfigTest extends TestCase
         $json = '{"directory": "app/Resources/bower", "storage": { "packages": "/tmp/bower" }}';
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(true)
             ->shouldReceive('read')->with(getcwd() . '/.bowerrc')->andReturn($json)
         ;
 
@@ -26,7 +26,7 @@ class ConfigTest extends TestCase
     public function testDefaultOptions()
     {
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(false)
         ;
 
         $config = new Config($this->filesystem);
@@ -42,7 +42,7 @@ class ConfigTest extends TestCase
     public function testMalformedJson()
     {
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(true)
             ->shouldReceive('read')->with(getcwd() . '/.bowerrc')->andReturn('{invalid')
         ;
 
@@ -54,9 +54,9 @@ class ConfigTest extends TestCase
         $json = '{"name": "jquery-ui", "version": "1.10.4", "main": ["ui/jquery-ui.js"], "dependencies": {"jquery": ">=1.6"}}';
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(true)
             ->shouldReceive('read')->with(getcwd() . '/.bowerrc')->andReturn($json)
-            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower.json')->andReturn(true)
             ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
         ;
 
@@ -74,11 +74,11 @@ class ConfigTest extends TestCase
     {
         $json = '{invalid';
 
-        $filesystem = Mockery::mock('Gaufrette\Filesystem');
+        $filesystem = Mockery::mock('Bowerphp\Util\Filesystem');
 
         $filesystem
-            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
-            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/bower.json')->andReturn(true)
             ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
         ;
 
@@ -92,11 +92,11 @@ class ConfigTest extends TestCase
      */
     public function testGetBowerFileContentWithExceptionOnBowerJsonDoesNotExist()
     {
-        $filesystem = Mockery::mock('Gaufrette\Filesystem');
+        $filesystem = Mockery::mock('Bowerphp\Util\Filesystem');
 
         $filesystem
-            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
-            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/bower.json')->andReturn(false)
         ;
 
         $config = new Config($filesystem);
@@ -119,10 +119,10 @@ class ConfigTest extends TestCase
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
-            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/bower.json')->andReturn(true)
             ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
-            ->shouldReceive('write')->with(getcwd() . '/bower.json', $json, true)->andReturn(123)
+            ->shouldReceive('write')->with(getcwd() . '/bower.json', $json)->andReturn(123)
         ;
 
         $config = new Config($this->filesystem);
@@ -139,8 +139,8 @@ class ConfigTest extends TestCase
         $json = "{\n    \"foo\": 2,\n    \"bar\": 3\n}";
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
-            ->shouldReceive('write')->with(getcwd() . '/bower.json', $json, true)->andReturn(456)
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('write')->with(getcwd() . '/bower.json', $json)->andReturn(456)
         ;
 
         $config = new Config($this->filesystem);
@@ -157,8 +157,8 @@ class ConfigTest extends TestCase
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/foobar/.bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/foobar/.bower.json')->andReturn(true)
             ->shouldReceive('read')->with(getcwd() . '/bower_components/foobar/.bower.json')->andReturn('{"name":"foobar","version":"1.2.3"}')
         ;
 
@@ -179,8 +179,8 @@ class ConfigTest extends TestCase
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/foobar/.bower.json')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/foobar/.bower.json')->andReturn(false)
         ;
 
         $config = new Config($this->filesystem);
@@ -200,8 +200,8 @@ class ConfigTest extends TestCase
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/foobar/.bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/foobar/.bower.json')->andReturn(true)
             ->shouldReceive('read')->with(getcwd() . '/bower_components/foobar/.bower.json')->andReturn('{invalid')
         ;
 
@@ -212,7 +212,7 @@ class ConfigTest extends TestCase
     public function testSetSaveToBowerJsonFile()
     {
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(false)
         ;
 
         $config = new Config($this->filesystem);
@@ -235,7 +235,7 @@ class ConfigTest extends TestCase
 }';
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(false)
             ->shouldReceive('write')->with(getcwd() . '/bower.json', $json)->andReturn(123)
         ;
 
@@ -247,7 +247,7 @@ class ConfigTest extends TestCase
     public function testGetBasePackagesUrl()
     {
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(false)
         ;
 
         $config = new Config($this->filesystem);
@@ -258,8 +258,8 @@ class ConfigTest extends TestCase
     public function testBowerFileExists()
     {
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
-            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(false, true)
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/bower.json')->andReturn(false, true)
         ;
 
         $config = new Config($this->filesystem);
@@ -271,8 +271,8 @@ class ConfigTest extends TestCase
     public function testGetAllPackagesUrl()
     {
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/.bowerrc')->andReturn(false)
-            ->shouldReceive('has')->with(getcwd() . '/bower.json')->andReturn(false, true)
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/bower.json')->andReturn(false, true)
         ;
 
         $config = new Config($this->filesystem);

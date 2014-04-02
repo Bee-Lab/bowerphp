@@ -3,6 +3,7 @@
 namespace Bowerphp\Installer;
 
 use Bowerphp\Package\PackageInterface;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Interface for the package installation manager.
@@ -35,15 +36,17 @@ interface InstallerInterface
     /**
      * Get installed packages.
      *
+     * @param  Finder $finder
      * @return array
      */
-    public function getInstalled();
+    public function getInstalled(Finder $finder);
 
     /**
      * Find packages that depend on given package.
      *
      * @param  PackageInterface $package
+     * @param  Finder $finder
      * @return array
      */
-    public function findDependentPackages(PackageInterface $package);
+    public function findDependentPackages(PackageInterface $package, Finder $finder);
 }

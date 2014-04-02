@@ -20,7 +20,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command = $application->get('install'));
         $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery'), array('decorated' => false));
 
-        $this->assertRegExp('/jquery#2/', $commandTester->getDisplay());
+        $this->assertRegExp('/jquery#2/m', $commandTester->getDisplay());
         $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
         $this->assertFileExists(getcwd() . '/bower_components/jquery/dist/jquery.js');
     }

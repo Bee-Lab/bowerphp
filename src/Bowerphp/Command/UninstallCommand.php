@@ -17,10 +17,9 @@ use Bowerphp\Installer\Installer;
 use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Package\Package;
 use Bowerphp\Repository\GithubRepository;
+use Bowerphp\Util\Filesystem;
 use Bowerphp\Util\ZipArchive;
 use Doctrine\Common\Cache\FilesystemCache;
-use Gaufrette\Adapter\Local as LocalAdapter;
-use Gaufrette\Filesystem;
 use Guzzle\Cache\DoctrineCacheAdapter;
 use Guzzle\Http\Client;
 use Guzzle\Plugin\Cache\CachePlugin;
@@ -57,10 +56,9 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $adapter        = new LocalAdapter('/');
-        $filesystem     = new Filesystem($adapter);
-        $httpClient     = new Client();
-        $config         = new Config($filesystem);
+        $filesystem = new Filesystem();
+        $httpClient = new Client();
+        $config     = new Config($filesystem);
 
         $this->logHttp($httpClient, $output);
 

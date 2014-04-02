@@ -41,14 +41,15 @@ class InstallerTest extends TestCase
             ->shouldReceive('open')->with('./tmp/jquery')->andReturn(true)
             ->shouldReceive('getNumFiles')->andReturn(1)
             ->shouldReceive('getNameIndex')->with(0)->andReturn('jquery')
-            ->shouldReceive('statIndex')->andReturn(array('name' => 'jquery/foo', 'size' => 10))
+            ->shouldReceive('statIndex')->andReturn(array('name' => 'jquery/foo', 'size' => 10, 'mtime' => 1396303200))
             ->shouldReceive('getStream')->with('jquery/foo')->andReturn('foo content')
             ->shouldReceive('close')
         ;
 
         $this->filesystem
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/foo', 'foo content', true)
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}', true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/foo', 'foo content')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}')
+            ->shouldReceive('touch')->with(getcwd() . '/bower_components/jquery/foo', 1396303200)
         ;
 
         $this->installer->install($package);
@@ -68,14 +69,15 @@ class InstallerTest extends TestCase
             ->shouldReceive('open')->with('./tmp/jquery')->andReturn(true)
             ->shouldReceive('getNumFiles')->andReturn(1)
             ->shouldReceive('getNameIndex')->with(0)->andReturn('')
-            ->shouldReceive('statIndex')->andReturn(array('name' => 'jquery/foo', 'size' => 10))
+            ->shouldReceive('statIndex')->andReturn(array('name' => 'jquery/foo', 'size' => 10, 'mtime' => 1396303200))
             ->shouldReceive('getStream')->with('jquery/foo')->andReturn('foo content')
             ->shouldReceive('close')
         ;
 
         $this->filesystem
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/foo', 'foo content', true)
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}', true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/foo', 'foo content')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}')
+            ->shouldReceive('touch')->with(getcwd() . '/bower_components/jquery/foo', 1396303200)
         ;
 
         $this->installer->update($package);
@@ -159,13 +161,8 @@ class InstallerTest extends TestCase
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
-            ->shouldReceive('listKeys')->with(getcwd() . '/bower_components/jquery/')->andReturn(array('dirs' => array(getcwd() . '/bower_components/jquery/subdir'), 'keys' => array(getcwd() . '/bower_components/jquery/file1', getcwd() . '/bower_components/jquery/file2')))
-            ->shouldReceive('listKeys')->with(getcwd() . '/bower_components/jquery/subdir/')->andReturn(array('dirs' => array(), 'keys' => array()))
-            ->shouldReceive('delete')->with(getcwd() . '/bower_components/jquery/file1')->andReturn(true)
-            ->shouldReceive('delete')->with(getcwd() . '/bower_components/jquery/file2')->andReturn(true)
-            ->shouldReceive('delete')->with(getcwd() . '/bower_components/jquery/subdir/')->andReturn(true)
-            ->shouldReceive('delete')->with(getcwd() . '/bower_components/jquery/')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
+            ->shouldReceive('remove')->with(getcwd() . '/bower_components/jquery')
         ;
 
         $this->installer->uninstall($package);
@@ -173,15 +170,21 @@ class InstallerTest extends TestCase
 
     public function testGetInstalled()
     {
+        $finder = Mockery::mock('Symfony\Component\Finder\Finder');
+
+        $finder
+            ->shouldReceive('directories->in')->andReturn(array('package1', 'package2'));
+        ;
+
         $this->filesystem
-            ->shouldReceive('listKeys')->with(getcwd() . '/bower_components')->andReturn(array('dirs' => array('package1', 'package2')))
-            ->shouldReceive('has')->with('package1/.bower.json')->andReturn(true)
-            ->shouldReceive('has')->with('package2/.bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components')->andReturn(true)
+            ->shouldReceive('exists')->with('package1/.bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with('package2/.bower.json')->andReturn(true)
             ->shouldReceive('read')->with('package1/.bower.json')->andReturn('{"name":"package1","version":"1.0.0"}')
             ->shouldReceive('read')->with('package2/.bower.json')->andReturn('{"name":"package2","version":"1.2.3"}')
         ;
 
-        $this->assertCount(2, $this->installer->getInstalled());
+        $this->assertCount(2, $this->installer->getInstalled($finder));
     }
 
     /**
@@ -190,32 +193,43 @@ class InstallerTest extends TestCase
      */
     public function testGetInstalledWithoutBowerJsonFile()
     {
+        $finder = Mockery::mock('Symfony\Component\Finder\Finder');
+
+        $finder
+            ->shouldReceive('directories->in')->andReturn(array('package1'));
+        ;
+
         $this->filesystem
-            ->shouldReceive('listKeys')->with(getcwd() . '/bower_components')->andReturn(array('dirs' => array('package1')))
-            ->shouldReceive('has')->with('package1/.bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components')->andReturn(true)
+            ->shouldReceive('exists')->with('package1/.bower.json')->andReturn(true)
             ->shouldReceive('read')->with('package1/.bower.json')->andReturn(null)
         ;
 
-        $this->installer->getInstalled();
+        $this->installer->getInstalled($finder);
     }
 
     public function testFindDependentPackages()
     {
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $finder = Mockery::mock('Symfony\Component\Finder\Finder');
 
         $package
             ->shouldReceive('getName')->andReturn('jquery')
         ;
 
+        $finder
+            ->shouldReceive('directories->in')->andReturn(array('package1', 'package2'));
+        ;
+
         $this->filesystem
-            ->shouldReceive('listKeys')->with(getcwd() . '/bower_components')->andReturn(array('dirs' => array('package1', 'package2')))
-            ->shouldReceive('has')->with('package1/.bower.json')->andReturn(true)
-            ->shouldReceive('has')->with('package2/.bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components')->andReturn(true)
+            ->shouldReceive('exists')->with('package1/.bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with('package2/.bower.json')->andReturn(true)
             ->shouldReceive('read')->with('package1/.bower.json')->andReturn('{"name":"package1","version":"1.0.0","dependencies":{"jquery": ">=1.3.2"}}')
             ->shouldReceive('read')->with('package2/.bower.json')->andReturn('{"name":"package2","version":"1.2.3","dependencies":{"jquery": ">=1.6"}}')
         ;
 
-        $packages = $this->installer->findDependentPackages($package);
+        $packages = $this->installer->findDependentPackages($package, $finder);
 
         $this->assertCount(2, $packages);
         $this->assertArrayHasKey('>=1.3.2', $packages);

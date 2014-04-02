@@ -66,6 +66,11 @@ EOT;
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
         $this->installPackage($package, $installer, array('jquery'), array('2.0.3'));
 
+        $this->filesystem
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
+            ->shouldReceive('write')->with('./tmp/jquery', "fileAsString...")
+        ;
+
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
         $bowerphp->installPackage($package, $installer);
     }
@@ -90,7 +95,7 @@ EOT;
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
         ;
 
         $this->httpClient
@@ -115,9 +120,13 @@ EOT;
             ->shouldReceive('install')->never()
         ;
 
+        #$this->filesystem
+        #    ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
+        #    ->shouldReceive('dumpFile')->with('./tmp/jquery', "fileAsString...", 0644)
+        #;
+
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
         $bowerphp->installPackage($package, $installer);
-
     }
 
     public function testInstallPackageAndSaveBowerJson()
@@ -128,6 +137,11 @@ EOT;
         $this->config
             ->shouldReceive('getSaveToBowerJsonFile')->andReturn(true)
             ->shouldReceive('updateBowerJsonFile')->with($package)
+        ;
+
+        $this->filesystem
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
+            ->shouldReceive('write')->with('./tmp/jquery', "fileAsString...")
         ;
 
         $this->installPackage($package, $installer, array('jquery'), array('2.0.3'));
@@ -150,6 +164,11 @@ EOT;
             ->shouldReceive('writelnNoBowerJsonFile');
         ;
 
+        $this->filesystem
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
+            ->shouldReceive('write')->with('./tmp/jquery', "fileAsString...")
+        ;
+
         $this->installPackage($package, $installer, array('jquery'), array('2.0.3'));
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
@@ -169,6 +188,11 @@ EOT;
 
         $this->config
             ->shouldReceive('getBowerFileContent')->andReturn($json)
+        ;
+
+        $this->filesystem
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
+            ->shouldReceive('write')->with('./tmp/jquery', "fileAsString...")
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
@@ -226,7 +250,7 @@ EOT;
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/notinbowerjson/.bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/notinbowerjson/.bower.json')->andReturn(true)
         ;
 
         $this->config
@@ -255,7 +279,7 @@ EOT;
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
         ;
 
         $this->config
@@ -282,7 +306,7 @@ EOT;
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/colorbox/.bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/colorbox/.bower.json')->andReturn(true)
         ;
 
         $this->config
@@ -323,7 +347,7 @@ EOT;
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/colorbox/.bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/colorbox/.bower.json')->andReturn(true)
         ;
 
         $this->config
@@ -383,10 +407,10 @@ EOT;
         ;
 
         $this->filesystem
-            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...', true)
-            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"1.10.1"}', true)
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}', true)
+            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...')
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"1.10.1"}')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}')
         ;
         $this->httpClient
             ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery-ui')->andReturn($request)
@@ -429,13 +453,13 @@ EOT;
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn(true)
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
             ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn('{"name":"jquery-ui","version":"1.10.0"}')
-            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...', true)
-            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"1.10.1"}', true)
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}', true)
+            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...')
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"1.10.1"}')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}')
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
@@ -484,7 +508,7 @@ EOT;
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/less/.bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/less/.bower.json')->andReturn(true)
             ->shouldReceive('read')->with(getcwd() . '/bower_components/less/.bower.json')->andReturn($packageJson)
         ;
 
@@ -504,7 +528,7 @@ EOT;
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/colorbox/.bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/colorbox/.bower.json')->andReturn(true)
         ;
 
         $this->config
@@ -633,14 +657,15 @@ EOT;
     public function testGetInstalledPackages()
     {
         $packages = array('a', 'b', 'c');
+        $finder = Mockery::mock('Symfony\Component\Finder\Finder');
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
         $installer
-            ->shouldReceive('getInstalled')->andReturn($packages)
+            ->shouldReceive('getInstalled')->with($finder)->andReturn($packages)
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $this->assertEquals($packages, $bowerphp->getInstalledPackages($installer));
+        $this->assertEquals($packages, $bowerphp->getInstalledPackages($installer, $finder));
     }
 
     public function testInstallPackageWithDependenciesToInstall()
@@ -667,12 +692,12 @@ EOT;
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn(false)
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
-            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...', true)
-            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"1.10.1"}', true)
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}', true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
+            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...')
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"1.10.1"}')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}')
         ;
 
         $this->httpClient
@@ -735,12 +760,12 @@ EOT;
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn(false)
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
-            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...', true)
-            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"1.10.1"}', true)
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}', true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
+            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...')
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"1.10.1"}')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}')
         ;
 
         $this->httpClient
@@ -933,12 +958,12 @@ EOT;
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn(true)
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
-            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...', true)
-            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"1.10.1"}', true)
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}', true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
+            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...')
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"1.10.1"}')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}')
         ;
 
         $this->httpClient
@@ -992,7 +1017,7 @@ EOT;
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
@@ -1024,12 +1049,12 @@ EOT;
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn(true)
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
-            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...', true)
-            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...', true)
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"1.10.1"}', true)
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}', true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery-ui/.bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
+            ->shouldReceive('write')->with('./tmp/jquery-ui', 'fileAsString...')
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', '{"name":"jquery-ui","version":"1.10.1"}')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}')
         ;
 
         $this->httpClient
@@ -1160,7 +1185,7 @@ EOT;
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/colorbox/.bower.json')->andReturn(true, false)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/colorbox/.bower.json')->andReturn(true, false)
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
@@ -1182,7 +1207,7 @@ EOT;
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
@@ -1204,7 +1229,7 @@ EOT;
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
@@ -1253,7 +1278,7 @@ EOT;
         ;
 
         $this->filesystem
-            ->shouldReceive('has')->with(getcwd() . '/bower_components/colorbox/.bower.json')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/colorbox/.bower.json')->andReturn(false)
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
@@ -1295,9 +1320,9 @@ EOT;
 
         foreach ($names as $k => $v) {
             $this->filesystem
-                ->shouldReceive('has')->with(getcwd() . '/bower_components/' . $names[$k] . '/.bower.json')->andReturn($update)
-                ->shouldReceive('write')->with('./tmp/' . $names[$k], 'fileAsString...', true)
-                ->shouldReceive('write')->with(getcwd() . '/bower_components/' . $names[$k] . '/.bower.json', '{"name":"' . $names[$k] . '","version":"' . $versions[$k] . '"}', true)
+                ->shouldReceive('exists')->with(getcwd() . '/bower_components/' . $names[$k] . '/.bower.json')->andReturn($update)
+                ->shouldReceive('write')->with('./tmp/' . $names[$k], 'fileAsString...')
+                ->shouldReceive('write')->with(getcwd() . '/bower_components/' . $names[$k] . '/.bower.json', '{"name":"' . $names[$k] . '","version":"' . $versions[$k] . '"}')
             ;
             $this->httpClient
                 ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/' . $names[$k])->andReturn($request)
@@ -1345,8 +1370,8 @@ EOT;
                     ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => $names[$k], 'version' => $versions[$k]))
                 ;
                 $this->filesystem
-                    ->shouldReceive('write')->with('./tmp/' . $names[$k], 'fileAsString...', true)
-                    ->shouldReceive('write')->with(getcwd() . '/bower_components/' . $names[$k] . '/.bower.json', '{"name":"' . $names[$k] . '","version":"' . $updateVersions[$k] . '"}', true)
+                    ->shouldReceive('write')->with('./tmp/' . $names[$k], 'fileAsString...')
+                    ->shouldReceive('write')->with(getcwd() . '/bower_components/' . $names[$k] . '/.bower.json', '{"name":"' . $names[$k] . '","version":"' . $updateVersions[$k] . '"}')
                 ;
             }
         }

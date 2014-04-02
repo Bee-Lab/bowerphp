@@ -16,12 +16,12 @@ use Bowerphp\Config\Config;
 use Bowerphp\Installer\Installer;
 use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Repository\GithubRepository;
+use Bowerphp\Util\Filesystem;
 use Bowerphp\Util\ZipArchive;
-use Gaufrette\Adapter\Local as LocalAdapter;
-use Gaufrette\Filesystem;
 use Guzzle\Http\Client;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Finder\Finder;
 
 /**
  * This command shows a list of installed packages.
@@ -52,14 +52,13 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $adapter = new LocalAdapter('/');
-        $filesystem = new Filesystem($adapter);
+        $filesystem = new Filesystem();
         $config = new Config($filesystem);
         $httpClient = new Client();
         $consoleOutput = new BowerphpConsoleOutput($output);
         $installer = new Installer($filesystem, new ZipArchive(), $config);
         $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), $consoleOutput);
-        $packages = $bowerphp->getInstalledPackages($installer);
+        $packages = $bowerphp->getInstalledPackages($installer, new Finder());
 
         foreach ($packages as $package) {
             $consoleOutput->writelnListPackage($package, $bowerphp);
