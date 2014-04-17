@@ -108,16 +108,8 @@ class GithubRepository implements RepositoryInterface
             return 'master';
         }
 
-        foreach ($tags as $tag) {
-            if (fnmatch($version, $tag['name'])) {
-                $this->tag = $tag;
-
-                return $tag['name'];
-            }
-        }
-        // try again with "v" (e.g. 1.4.2 --> v1.4.2)
-        foreach ($tags as $tag) {
-            if (fnmatch('v' . $version, $tag['name'])) {
+        foreach ($this->sortTags($tags) as $tag) {
+            if (fnmatch($version, $tag['name']) || fnmatch('v' . $version, $tag['name'])) {
                 $this->tag = $tag;
 
                 return $tag['name'];
@@ -225,7 +217,9 @@ class GithubRepository implements RepositoryInterface
             return '*';
         }
         $bits = explode('.', $version);
-        if (substr($version, 0, 2) == '>=') {
+        if (substr($version, 0, 1) == '~') {
+            $version = substr($version, 1) . '*';
+        } elseif (substr($version, 0, 2) == '>=') {
             if (count($bits) == 3) {
                 array_pop($bits);
                 $version = implode('.', $bits);
@@ -266,5 +260,32 @@ class GithubRepository implements RepositoryInterface
         }
 
         return $url;
+    }
+
+    /**
+     * @param array $tags
+     * @return array
+     */
+    private function sortTags($tags)
+    {
+        foreach ($tags as &$tag) {
+            if (preg_match('/^([\d\.]*)(.*)$/', $tag['name'], $matches)) {
+                $number = implode(
+                    array_map(
+                        function ($digit) {return str_pad($digit, 6, '0', STR_PAD_LEFT); },
+                        explode('.', trim($matches[1], '.'))
+                    )
+                );
+                $preRelease = $matches[2] ? : 'zzzzzz';
+
+                $tag['normal_version'] = $number . $preRelease;
+            } else {
+                $tag['normal_version'] = 'zzzzzz';
+            }
+        }
+
+        usort($tags, function ($tag1, $tag2) { return strcmp($tag2['normal_version'], $tag1['normal_version']); });
+
+        return $tags;
     }
 }

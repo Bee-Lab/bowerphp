@@ -3,6 +3,7 @@
 namespace Bowerphp\Test\Repository;
 
 use Bowerphp\Repository\GithubRepository;
+use Bowerphp\Repository\RepositoryInterface;
 use Bowerphp\Test\TestCase;
 use Guzzle\Http\Exception\RequestException;
 use Mockery;
@@ -10,6 +11,9 @@ use ReflectionClass;
 
 class GithubRepositoryTest extends TestCase
 {
+    /**
+     * @var RepositoryInterface
+     */
     protected $repository;
 
     public function setUp()
@@ -258,6 +262,27 @@ class GithubRepositoryTest extends TestCase
     }
 
     /**
+     * "version with ~" = something like "~1.2.3"
+     */
+    public function testFindPackageWithVersionWithTilde()
+    {
+        $response = '[{"name": "2.1.4", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.5", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.4", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.3-beta3", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.3b1", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.3", "zipball_url": "", "tarball_url": ""}]';
+
+        $this->mockTagsRequest($response);
+
+        $tag = $this->repository->findPackage('~2.0.3');
+        $this->assertEquals('2.0.3', $tag);
+
+        $tag = $this->repository->findPackage('~2.0');
+        $this->assertEquals('2.0.5', $tag);
+    }
+
+    /**
      * @expectedException RuntimeException
      */
     public function testFindPackageVersionNotFound()
@@ -349,6 +374,8 @@ class GithubRepositoryTest extends TestCase
         $this->assertEquals('1.9.*', $fixVersion->invokeArgs($this->repository, array('>=1.9')));
         $this->assertEquals('1.9.*', $fixVersion->invokeArgs($this->repository, array('>=1.9.0')));
         $this->assertEquals('1.9.*', $fixVersion->invokeArgs($this->repository, array('>= 1.9.0')));
+        $this->assertEquals('1.9.0*', $fixVersion->invokeArgs($this->repository, array('~1.9.0')));
+        $this->assertEquals('1.9*', $fixVersion->invokeArgs($this->repository, array('~1.9')));
         $this->assertEquals('1.*.*', $fixVersion->invokeArgs($this->repository, array('1')));
         $this->assertEquals('1.*.*', $fixVersion->invokeArgs($this->repository, array('1.*')));
         $this->assertEquals('1.5.*', $fixVersion->invokeArgs($this->repository, array('1.5')));
@@ -424,5 +451,21 @@ class GithubRepositoryTest extends TestCase
         $tag = $class->getProperty('tag');
         $tag->setAccessible(true);
         $tag->setValue($repository, $value);
+    }
+
+    /**
+     * @param $responseJson
+     */
+    private function mockTagsRequest($responseJson)
+    {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $this->httpClient
+            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags')->andReturn($request);
+        $request
+            ->shouldReceive('send')->andReturn($response);
+        $response
+            ->shouldReceive('getBody')->with(true)->andReturn($responseJson);
     }
 }
