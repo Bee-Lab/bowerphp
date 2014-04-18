@@ -2,6 +2,7 @@
     "name": "beelab/bowerphp",
     "description": "An implementation of bower in PHP",
     "keywords": ["package", "dependency", "frontend"],
+    "homepage": "http://bowerphp.org/",
     "type": "library",
     "license": "MIT",
     "authors": [
