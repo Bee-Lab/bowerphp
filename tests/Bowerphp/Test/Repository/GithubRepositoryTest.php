@@ -248,7 +248,7 @@ class GithubRepositoryTest extends TestCase
         $tagsJson = '[{"name": "v2.0.3", "zipball_url": "", "tarball_url": ""}, {"name": "v2.0.2", "zipball_url": "", "tarball_url": ""}]';
 
         $this->httpClient
-            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags')->andReturn($request)
+            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags?per_page=100')->andReturn($request)
         ;
         $request
             ->shouldReceive('send')->andReturn($response)
@@ -292,7 +292,7 @@ class GithubRepositoryTest extends TestCase
         $tagsJson = '[{"name": "2.0.3", "zipball_url": "https://api.github.com/repos/components/jquery/zipball/2.0.3", "tarball_url": ""}, {"name": "2.0.2", "zipball_url": "", "tarball_url": ""}]';
 
         $this->httpClient
-            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags')->andThrow($request)
+            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags?per_page=100')->andThrow($request)
         ;
         $request
             ->shouldReceive('send')->andReturn($response)
@@ -312,7 +312,7 @@ class GithubRepositoryTest extends TestCase
         $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
 
         $this->httpClient
-            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags')->andThrow(new RequestException())
+            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags?per_page=100')->andThrow(new RequestException())
         ;
 
         $tag = $this->repository->findPackage('3');

@@ -142,7 +142,7 @@ class GithubRepository implements RepositoryInterface
     {
         list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
         try {
-            $githubTagsURL = sprintf('https://api.github.com/repos/%s/%s/tags', $repoUser, $repoName);
+            $githubTagsURL = sprintf('https://api.github.com/repos/%s/%s/tags?per_page=100', $repoUser, $repoName);
             $request = $this->httpClient->get($githubTagsURL);
             $response = $request->send();
             $tags = json_decode($response->getBody(true), true);
