@@ -68,15 +68,15 @@ EOT
 
         $packageName = $input->getArgument('package');
 
-        $v = explode("#", $packageName);
-        $packageName    = isset($v[0]) ? $v[0] : $packageName;
-        $version        = isset($v[1]) ? $v[1] : "*";
+        $v = explode('#', $packageName);
+        $packageName   = isset($v[0]) ? $v[0] : $packageName;
+        $version       = isset($v[1]) ? $v[1] : '*';
 
-        $package        = new Package($packageName, $version);
-        $consoleOutput  = new BowerphpConsoleOutput($output);
-        $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), $consoleOutput);
+        $package       = new Package($packageName, $version);
+        $consoleOutput = new BowerphpConsoleOutput($output);
+        $bowerphp      = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), $consoleOutput);
 
-        $bower          = $bowerphp->getPackageInfo($package, 'original_url');
+        $bower         = $bowerphp->getPackageInfo($package, 'original_url');
 
         $consoleOutput->writelnSearchOrLookup($bower['name'], $bower['url']);
 

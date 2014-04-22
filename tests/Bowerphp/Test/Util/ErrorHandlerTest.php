@@ -1,6 +1,6 @@
 <?php
 
-namespace Bowerphp\Test\Repository;
+namespace Bowerphp\Test\Util;
 
 use Bowerphp\Util\ErrorHandler;
 use Bowerphp\Test\TestCase;

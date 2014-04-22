@@ -69,9 +69,9 @@ EOT
 
         $packageName = $input->getArgument('package');
 
-        $v = explode("#", $packageName);
+        $v = explode('#', $packageName);
         $packageName = isset($v[0]) ? $v[0] : $packageName;
-        $version = isset($v[1]) ? $v[1] : "*";
+        $version = isset($v[1]) ? $v[1] : '*';
 
         $package = new Package($packageName, $version);
         $consoleOutput = new BowerphpConsoleOutput($output);
