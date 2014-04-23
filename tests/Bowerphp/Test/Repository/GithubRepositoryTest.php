@@ -260,6 +260,25 @@ class GithubRepositoryTest extends TestCase
         $tag = $this->repository->findPackage('2.0.2');
         $this->assertEquals('v2.0.2', $tag);
     }
+    public function testLastedPackage()
+    {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+        $tagsJson = '[{"name": "v2.0.3", "zipball_url": "", "tarball_url": ""}, {"name": "v2.0.2", "zipball_url": "", "tarball_url": ""}]';
+
+        $this->httpClient
+            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags?per_page=100')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->with(true)->andReturn($tagsJson)
+        ;
+
+        $tag = $this->repository->findPackage('latest');
+        $this->assertEquals('v2.0.3', $tag);
+    }
 
     /**
      * "version with ~" = something like "~1.2.3"
