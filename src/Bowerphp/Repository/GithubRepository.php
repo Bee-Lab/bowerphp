@@ -116,6 +116,11 @@ class GithubRepository implements RepositoryInterface
             }
         }
 
+        if($version == 'latest.*.*') {
+            $this->tag = $tags[0];
+            return $tags[0]['name'];
+        }
+
         throw new RuntimeException(sprintf('Version %s not found.', $version), self::VERSION_NOT_FOUND);
     }
 
