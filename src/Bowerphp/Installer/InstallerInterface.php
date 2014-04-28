@@ -45,7 +45,7 @@ interface InstallerInterface
      * Find packages that depend on given package.
      *
      * @param  PackageInterface $package
-     * @param  Finder $finder
+     * @param  Finder           $finder
      * @return array
      */
     public function findDependentPackages(PackageInterface $package, Finder $finder);

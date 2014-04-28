@@ -21,7 +21,7 @@ class GithubRepositoryTest extends TestCase
         parent::setUp();
 
         $this->repository = new GithubRepository();
-        $this->repository->setUrl('https://raw.github.com/components/jquery')->setHttpClient($this->httpClient);
+        $this->repository->setUrl('https://raw.githubusercontent.com/components/jquery')->setHttpClient($this->httpClient);
     }
 
     public function testGetBower()
@@ -30,7 +30,7 @@ class GithubRepositoryTest extends TestCase
         $response = Mockery::mock('Guzzle\Http\Message\Response');
 
         $bowerJson = '{"name": "jquery", "version": "2.0.3", "main": "jquery.js"}';
-        $url = 'https://raw.github.com/components/jquery/master/bower.json';
+        $url = 'https://raw.githubusercontent.com/components/jquery/master/bower.json';
 
         $this->httpClient
             ->shouldReceive('get')->with($url)->andReturn($request)
@@ -44,7 +44,7 @@ class GithubRepositoryTest extends TestCase
         ;
 
         $this->assertEquals($bowerJson, $this->repository->getBower());
-        $this->assertEquals($bowerJson, $this->repository->getBower('master', false, 'https://raw.github.com/components/jquery'));
+        $this->assertEquals($bowerJson, $this->repository->getBower('master', false, 'https://raw.githubusercontent.com/components/jquery'));
     }
 
     public function testGetBowerWithoutBowerJsonButWithPackageJson()
@@ -59,8 +59,8 @@ class GithubRepositoryTest extends TestCase
     "version": "2.0.3",
     "main": "jquery.js"
 }';
-        $url1 = 'https://raw.github.com/components/jquery/master/bower.json';
-        $url2 = 'https://raw.github.com/components/jquery/master/package.json';
+        $url1 = 'https://raw.githubusercontent.com/components/jquery/master/bower.json';
+        $url2 = 'https://raw.githubusercontent.com/components/jquery/master/package.json';
 
         $badResponseException
             ->shouldReceive('getResponse')->andReturn($response)
@@ -87,7 +87,7 @@ class GithubRepositoryTest extends TestCase
 
     /**
      * @expectedException        RuntimeException
-     * @expectedExceptionMessage Cannot open package git URL https://raw.github.com/components/jquery/master/bower.json nor https://raw.github.com/components/jquery/master/package.json (an error).
+     * @expectedExceptionMessage Cannot open package git URL https://raw.githubusercontent.com/components/jquery/master/bower.json nor https://raw.githubusercontent.com/components/jquery/master/package.json (an error).
      */
     public function testGetBowerWithoutBowerJsonNorPackageJson()
     {
@@ -96,8 +96,8 @@ class GithubRepositoryTest extends TestCase
         $badResponseException = Mockery::mock('Guzzle\Http\Exception\BadResponseException');
 
         $bowerJson = '{"name": "jquery", "version": "2.0.3", "main": "jquery.js"}';
-        $url1 = 'https://raw.github.com/components/jquery/master/bower.json';
-        $url2 = 'https://raw.github.com/components/jquery/master/package.json';
+        $url1 = 'https://raw.githubusercontent.com/components/jquery/master/bower.json';
+        $url2 = 'https://raw.githubusercontent.com/components/jquery/master/package.json';
 
         $badResponseException
             ->shouldReceive('getResponse')->andReturn($response)
@@ -119,11 +119,11 @@ class GithubRepositoryTest extends TestCase
 
     /**
      * @expectedException        RuntimeException
-     * @expectedExceptionMessage Cannot open package git URL https://raw.github.com/components/jquery/master/bower.json (request error).
+     * @expectedExceptionMessage Cannot open package git URL https://raw.githubusercontent.com/components/jquery/master/bower.json (request error).
      */
     public function testGetBowerPackageNotFound()
     {
-        $url = 'https://raw.github.com/components/jquery/master/bower.json';
+        $url = 'https://raw.githubusercontent.com/components/jquery/master/bower.json';
 
         $this->httpClient
             ->shouldReceive('get')->with($url)->andThrow(new RequestException('request error'))
@@ -148,10 +148,10 @@ class GithubRepositoryTest extends TestCase
     "main": "jquery.js"
 }';
 
-        $url1 = 'https://raw.github.com/components/jquery/v2.7.2/bower.json';
-        $url2 = 'https://raw.github.com/components/jquery/v2.7.2/package.json';
-        $url3 = 'https://raw.github.com/components/jquery/master/bower.json';
-        $url4 = 'https://raw.github.com/components/jquery/master/package.json';
+        $url1 = 'https://raw.githubusercontent.com/components/jquery/v2.7.2/bower.json';
+        $url2 = 'https://raw.githubusercontent.com/components/jquery/v2.7.2/package.json';
+        $url3 = 'https://raw.githubusercontent.com/components/jquery/master/bower.json';
+        $url4 = 'https://raw.githubusercontent.com/components/jquery/master/package.json';
 
         $badResponseException
             ->shouldReceive('getResponse')->andReturn($response)
@@ -181,8 +181,8 @@ class GithubRepositoryTest extends TestCase
         $response = Mockery::mock('Guzzle\Http\Message\Response');
 
         $bower1 = array('name' => 'jquery', 'version' => '2.0.3', 'main' => 'jquery.js');
-        $bower2 = array('name' => 'jquery', 'version' => '2.0.3', 'main' => 'jquery.js', 'homepage' => 'https://raw.github.com/components/jquery/master/bower.json');
-        $url = 'https://raw.github.com/components/jquery/master/bower.json';
+        $bower2 = array('name' => 'jquery', 'version' => '2.0.3', 'main' => 'jquery.js', 'homepage' => 'https://raw.githubusercontent.com/components/jquery/master/bower.json');
+        $url = 'https://raw.githubusercontent.com/components/jquery/master/bower.json';
 
         $this->httpClient
             ->shouldReceive('get')->with($url)->andReturn($request)
@@ -196,7 +196,7 @@ class GithubRepositoryTest extends TestCase
         ;
 
         $this->assertEquals($bower2, json_decode($this->repository->getBower('master', true), true));
-        $this->assertEquals($bower2, json_decode($this->repository->getBower('master', true, 'https://raw.github.com/components/jquery'), true));
+        $this->assertEquals($bower2, json_decode($this->repository->getBower('master', true, 'https://raw.githubusercontent.com/components/jquery'), true));
     }
 
     public function testFindPackage()
@@ -375,7 +375,7 @@ class GithubRepositoryTest extends TestCase
 
     public function testGetUrl()
     {
-        $this->assertEquals('https://raw.github.com/components/jquery', $this->repository->getUrl());
+        $this->assertEquals('https://raw.githubusercontent.com/components/jquery', $this->repository->getUrl());
         $this->repository->setUrl('git://github.com/components/jquery-ui.git', false);
         $this->assertEquals('https://github.com/components/jquery-ui', $this->repository->getUrl());
     }
@@ -455,7 +455,7 @@ class GithubRepositoryTest extends TestCase
 
     public function testGetOriginalUrl()
     {
-        $this->assertEquals('https://raw.github.com/components/jquery', $this->repository->getOriginalUrl());
+        $this->assertEquals('https://raw.githubusercontent.com/components/jquery', $this->repository->getOriginalUrl());
     }
 
     /**

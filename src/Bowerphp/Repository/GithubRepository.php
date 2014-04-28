@@ -116,8 +116,9 @@ class GithubRepository implements RepositoryInterface
             }
         }
 
-        if($version == 'latest.*.*') {
+        if ($version == 'latest.*.*') {
             $this->tag = $tags[0];
+
             return $tags[0]['name'];
         }
 
@@ -257,8 +258,8 @@ class GithubRepository implements RepositoryInterface
         }
         if (substr($url, 0, 11) == 'github.com/') {
             $url = substr($url, 11);
-        } elseif (substr($url, 0, 15) == 'raw.github.com/') {
-            $url = substr($url, 15);
+        } elseif (substr($url, 0, 26) == 'raw.githubusercontent.com/') {
+            $url = substr($url, 26);
         }
         if (substr($url, -4) == '.git') {
             $url = substr($url, 0, -4);
@@ -268,7 +269,7 @@ class GithubRepository implements RepositoryInterface
     }
 
     /**
-     * @param array $tags
+     * @param  array $tags
      * @return array
      */
     private function sortTags($tags)
