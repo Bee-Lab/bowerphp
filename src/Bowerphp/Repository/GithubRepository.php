@@ -195,6 +195,8 @@ class GithubRepository implements RepositoryInterface
                 } catch (RequestException $e) {
                     throw new RuntimeException(sprintf('Cannot open package git URL %s nor %s (%s).', $depBowerJsonURL, $depPackageJsonURL, $e->getMessage()));
                 }
+            } else {
+                throw $e;
             }
         } catch (RequestException $e) {
             throw new RuntimeException(sprintf('Cannot open package git URL %s (%s).', $depBowerJsonURL, $e->getMessage()));
