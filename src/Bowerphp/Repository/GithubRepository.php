@@ -191,6 +191,8 @@ class GithubRepository implements RepositoryInterface
                     if ($version != 'master' && $e->getResponse()->getStatusCode() == 404) {
                         // fallback on master
                         return $this->getDepBowerJson('master');
+                    } else {
+                        throw $e;
                     }
                 } catch (RequestException $e) {
                     throw new RuntimeException(sprintf('Cannot open package git URL %s nor %s (%s).', $depBowerJsonURL, $depPackageJsonURL, $e->getMessage()));
