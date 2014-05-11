@@ -35,7 +35,7 @@ class UpdateCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFileExists(getcwd() . '/bower_components/jquery/dist/jquery.js');
         $dotBower = json_decode(file_get_contents(getcwd() . '/bower_components/jquery/.bower.json'), true);
-        $this->assertEquals('1.11.1-rc2', $dotBower['version']);
+        $this->assertEquals('1.11.1', $dotBower['version']);
     }
 
     public function testExecuteWithoutPackage()
@@ -46,7 +46,7 @@ class UpdateCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFileExists(getcwd() . '/bower_components/jquery/dist/jquery.js');
         $dotBower = json_decode(file_get_contents(getcwd() . '/bower_components/jquery/.bower.json'), true);
-        $this->assertEquals('1.11.1-rc2', $dotBower['version']);
+        $this->assertEquals('1.11.1', $dotBower['version']);
     }
 
     public function tearDown()
