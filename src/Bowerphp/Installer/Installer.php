@@ -99,7 +99,7 @@ class Installer implements InstallerInterface
         foreach ($files as $i => $file) {
             $stat = $this->zipArchive->statIndex($i);
             $fileName = $this->config->getInstallDir() . '/' . str_replace($dirName, $package->getName(), $file);
-            if (substr($fileName, -1) == '/') {
+            if (substr($fileName, -1) == '/' && is_dir($fileName)) {
                 $this->filesystem->touch($fileName, $stat['mtime']);
             }
         }
