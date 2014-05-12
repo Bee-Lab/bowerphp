@@ -25,6 +25,7 @@ class GithubRepository implements RepositoryInterface
     {
         $this->originalUrl = $url;
         $this->url         = preg_replace('/\.git$/', '', str_replace('git://', 'https://' . ($raw ? 'raw.' : ''), $this->originalUrl));
+        $this->url         = str_replace('raw.github.com', 'raw.githubusercontent.com', $this->url);
 
         return $this;
     }
