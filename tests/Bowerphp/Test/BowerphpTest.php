@@ -14,7 +14,7 @@ use RuntimeException;
  */
 class BowerphpTest extends TestCase
 {
-    protected $bowerphp;
+    protected $bowerphp, $config, $repository;
 
     public function setUp()
     {
@@ -608,8 +608,8 @@ EOT;
     {
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
         $expected = array('name' => '', 'authors' => array('Beelab <info@bee-lab.net>', 'pippo'), 'private' => true, 'dependencies' => new \StdClass());
-        $createAClearBowerFile = $this->getMethod('Bowerphp\Bowerphp', 'createAClearBowerFile');
-        $this->assertEquals($expected, $createAClearBowerFile->invokeArgs($bowerphp, array(array('name' => '', 'author' => 'pippo'))));
+        $method = $this->getMethod('Bowerphp\Bowerphp', 'createAClearBowerFile');
+        $this->assertEquals($expected, $method->invokeArgs($bowerphp, array(array('name' => '', 'author' => 'pippo'))));
     }
 
     public function testSearchPackages()
