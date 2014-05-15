@@ -187,6 +187,17 @@ class InstallerTest extends TestCase
         $this->assertCount(2, $this->installer->getInstalled($finder));
     }
 
+    public function testGetInstalledWithoutInstalledPackages()
+    {
+        $finder = Mockery::mock('Symfony\Component\Finder\Finder');
+
+        $this->filesystem
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components')->andReturn(false)
+        ;
+
+        $this->assertEquals(array(), $this->installer->getInstalled($finder));
+    }
+
     /**
      * @expectedException        RuntimeException
      * @expectedExceptionMessage Invalid content in .bower.json for package package1.
@@ -247,6 +258,7 @@ class InstallerTest extends TestCase
             'docs-assets',
             'examples',
             '/fonts',
+            '/fontsWithSlash/',
             'js/tests',
             'CNAME',
             'CONTRIBUTING.md',

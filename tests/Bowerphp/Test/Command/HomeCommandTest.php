@@ -28,6 +28,13 @@ class HomeCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery'), array('decorated' => false, 'verbosity' => OutputInterface::VERBOSITY_DEBUG));
     }
 
+    public function testExecuteNonVerbose()
+    {
+        $application = new Application();
+        $commandTester = new CommandTester($command = $application->get('home'));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery'), array('decorated' => false, 'verbosity' => OutputInterface::VERBOSITY_NORMAL));
+    }
+
     /**
      * @expectedException        RuntimeException
      * @expectedExceptionMessage Not enough arguments.

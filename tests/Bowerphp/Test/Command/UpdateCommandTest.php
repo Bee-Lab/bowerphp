@@ -38,6 +38,15 @@ class UpdateCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('1.11.1', $dotBower['version']);
     }
 
+    public function testExecuteNonexistentPackage()
+    {
+        $application = new Application();
+        $commandTester = new CommandTester($command = $application->get('update'));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => 'nonexistent-package'), array('decorated' => false));
+
+        $this->assertRegExp('/Package nonexistent-package is not installed/', $commandTester->getDisplay());
+    }
+
     public function testExecuteWithoutPackage()
     {
         $application = new Application();
