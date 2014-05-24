@@ -1,6 +1,6 @@
 <?php
 
-namespace Bowerphp\Test;
+namespace Bowerphp\Test\Config;
 
 use Bowerphp\Config\Config;
 use Bowerphp\Test\TestCase;

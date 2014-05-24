@@ -104,7 +104,7 @@ class GithubRepository implements RepositoryInterface
         // edge case: package has no tags
         if (count($tags) === 0) {
             $zipball_url = sprintf('https://api.github.com/repos/%s/%s/zipball/master', $repoUser, $repoName);
-            $this->tag = compact('zipball_url');
+            $this->tag = array('zipball_url' => $zipball_url);
 
             return 'master';
         }

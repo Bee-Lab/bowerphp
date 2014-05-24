@@ -71,9 +71,9 @@ EOT
         $packageName = $input->getArgument('package');
         $property = $input->getArgument('property');
 
-        $v = explode('#', $packageName);
-        $packageName = isset($v[0]) ? $v[0] : $packageName;
-        $version = isset($v[1]) ? $v[1] : '*';
+        $ver = explode('#', $packageName);
+        $packageName = isset($ver[0]) ? $ver[0] : $packageName;
+        $version = isset($ver[1]) ? $ver[1] : '*';
 
         $package = new Package($packageName, $version);
         $consoleOutput = new BowerphpConsoleOutput($output);
@@ -96,8 +96,8 @@ EOT
                     $output->writeln('No versions available.');
                 } else {
                     $output->writeln('<fg=cyan>Available versions:</fg=cyan>');
-                    foreach ($versions as $v) {
-                        $output->writeln("- $v");
+                    foreach ($versions as $vrs) {
+                        $output->writeln("- $vrs");
                     }
                 }
             }

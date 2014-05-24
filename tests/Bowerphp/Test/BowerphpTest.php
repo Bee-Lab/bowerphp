@@ -3,7 +3,6 @@
 namespace Bowerphp\Test;
 
 use Bowerphp\Bowerphp;
-use Bowerphp\Test\TestCase;
 use Guzzle\Http\Exception\RequestException;
 use Mockery;
 use Mockery\MockInterface;

@@ -92,9 +92,9 @@ EOT
             if (is_null($packageName)) {
                 $bowerphp->installDependencies($installer);
             } else {
-                $v = explode("#", $packageName);
-                $packageName = isset($v[0]) ? $v[0] : $packageName;
-                $version = isset($v[1]) ? $v[1] : "*";
+                $ver = explode("#", $packageName);
+                $packageName = isset($ver[0]) ? $ver[0] : $packageName;
+                $version = isset($ver[1]) ? $ver[1] : "*";
 
                 $package = new Package($packageName, $version);
 

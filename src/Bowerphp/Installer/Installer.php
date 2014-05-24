@@ -206,17 +206,17 @@ class Installer implements InstallerInterface
      */
     public function isIgnored($name, array $ignore, $dirName)
     {
-        $v = substr($name, strlen($dirName));
+        $vName = substr($name, strlen($dirName));
         foreach ($ignore as $pattern) {
             if (strpos($pattern, '**') !== false) {
                 $pattern = str_replace('**', '*', $pattern);
                 if (substr($pattern, 0, 1) == '/') {
-                    $v = '/'. $v;
+                    $vName = '/'. $vName;
                 }
-                if (substr($v, 0, 1) == '.') {
-                    $v = '/'. $v;
+                if (substr($vName, 0, 1) == '.') {
+                    $vName = '/'. $vName;
                 }
-                if (fnmatch($pattern, $v, FNM_PATHNAME)) {
+                if (fnmatch($pattern, $vName, FNM_PATHNAME)) {
                     return true;
                 }
             } elseif (substr($pattern, -1) == '/') { // trailing slash
@@ -224,22 +224,22 @@ class Installer implements InstallerInterface
                     $pattern = substr($pattern, 1); // remove possible starting slash
                 }
                 $escPattern = str_replace(array('.', '*'), array('\.', '.*'), $pattern);
-                if (preg_match('#^' . $escPattern . '#', $v) > 0) {
+                if (preg_match('#^' . $escPattern . '#', $vName) > 0) {
                     return true;
                 }
             } elseif (strpos($pattern, '/') === false) { // no slash
                 $escPattern = str_replace(array('.', '*'), array('\.', '.*'), $pattern);
-                if (preg_match('#^' . $escPattern . '#', $v) > 0) {
+                if (preg_match('#^' . $escPattern . '#', $vName) > 0) {
                     return true;
                 }
             } elseif (substr($pattern, 0, 1) == '/') {    // starting slash
                 $escPattern = str_replace(array('.', '*'), array('\.', '.*'), $pattern);
-                if (preg_match('#^' . $escPattern . '#', '/' . $v) > 0) {
+                if (preg_match('#^' . $escPattern . '#', '/' . $vName) > 0) {
                     return true;
                 }
             } else {
                 $escPattern = str_replace(array('.', '*'), array('\.', '.*'), $pattern);
-                if (preg_match('#^' . $escPattern . '#', $v) > 0) {
+                if (preg_match('#^' . $escPattern . '#', $vName) > 0) {
                     return true;
                 }
             }

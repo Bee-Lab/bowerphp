@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Bowerphp\Tests\Output;
+namespace Bowerphp\Test\Output;
 
 use Bowerphp\Output\BowerphpConsoleOutput;
 use Mockery;
