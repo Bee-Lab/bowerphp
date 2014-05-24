@@ -193,9 +193,9 @@ class Config implements ConfigInterface
     {
         $structure =  array(
             'name' => $params['name'],
-            'authors' => array (
+            'authors' => array(
                 0 => 'Beelab <info@bee-lab.net>',
-                1 => $params['author']
+                1 => $params['author'],
             ),
             'private' => true,
             'dependencies' => new \StdClass(),
