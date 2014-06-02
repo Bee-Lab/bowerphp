@@ -47,6 +47,29 @@ class GithubRepositoryTest extends TestCase
         $this->assertEquals($bowerJson, $this->repository->getBower('master', false, 'https://raw.githubusercontent.com/components/jquery'));
     }
 
+    /**
+     * @expectedException Guzzle\Http\Exception\BadResponseException
+     */
+    public function testGetBowerWithBadReponse()
+    {
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+        $badResponseException = Mockery::mock('Guzzle\Http\Exception\BadResponseException');
+
+        $badResponseException
+            ->shouldReceive('getResponse')->andReturn($response)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->andThrow($badResponseException)
+        ;
+
+        $response
+            ->shouldReceive('getStatusCode')->andReturn(500)
+        ;
+
+        $this->repository->getBower();
+    }
+
     public function testGetBowerWithoutBowerJsonButWithPackageJson()
     {
         $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
@@ -83,6 +106,29 @@ class GithubRepositoryTest extends TestCase
         ;
 
         $this->assertEquals($expectedJson, $this->repository->getBower());
+    }
+
+    /**
+     * @expectedException Guzzle\Http\Exception\BadResponseException
+     */
+    public function testGetBowerWithoutBowerJsonButWithPackageJsonAndBadResponse()
+    {
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+        $badResponseException = Mockery::mock('Guzzle\Http\Exception\BadResponseException');
+
+        $badResponseException
+            ->shouldReceive('getResponse')->andReturn($response)
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->twice()->andThrow($badResponseException)
+        ;
+
+        $response
+            ->shouldReceive('getStatusCode')->andReturn(404, 500)
+        ;
+
+        $this->repository->getBower('1.0.0');
     }
 
     /**
