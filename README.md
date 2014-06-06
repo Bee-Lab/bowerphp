@@ -24,3 +24,9 @@ Still to do
 * decent output
 
 See [issues](https://github.com/Bee-Lab/bowerphp/issues) for more details ;)
+
+
+##### Requirements
+php modules
+- phar
+- zip
