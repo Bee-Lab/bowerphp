@@ -72,27 +72,7 @@ class Bowerphp
      */
     public function installPackage(PackageInterface $package, InstallerInterface $installer, $isDependency = false)
     {
-        try {
-            $request = $this->httpClient->get($this->config->getBasePackagesUrl() . $package->getName());
-            $response = $request->send();
-        } catch (RequestException $e) {
-            throw new RuntimeException(sprintf('Cannot download package %s (%s).', $package->getName(), $e->getMessage()));
-        }
-        $decode = json_decode($response->getBody(true), true);
-        if (!is_array($decode) || empty($decode['url'])) {
-            throw new RuntimeException(sprintf('Package %s has malformed json or is missing "url".', $package->getName()));
-        }
-        $repoUrl = $decode['url'];
-        $this->repository->setUrl($repoUrl)->setHttpClient($this->httpClient);
-        $bowerJson = $this->repository->getBower($package->getRequiredVersion());
-        $bower = json_decode($bowerJson, true);
-        if (!is_array($bower)) {
-            throw new RuntimeException(sprintf('Invalid bower.json found in package %s: %s.', $package->getName(), $bowerJson));
-        }
-        $packageTag = $this->repository->findPackage($package->getRequiredVersion());
-        if (is_null($packageTag)) {
-            throw new RuntimeException(sprintf('Cannot find package %s version %s.', $package->getName(), $package->getRequiredVersion()));
-        }
+        $packageTag = $this->getPackageTag($package, true);
 
         // if package is already installed, match current version with latest available version
         if ($this->isPackageInstalled($package)) {
@@ -104,7 +84,6 @@ class Bowerphp
         }
 
         $package->setRepository($this->repository);
-        $package->setInfo($bower);
         $package->setVersion($packageTag);
 
         $this->output->writelnInfoPackage($package);
@@ -178,30 +157,7 @@ class Bowerphp
         $package->setVersion($bower['version']);
         $package->setRequires(isset($bower['dependencies']) ? $bower['dependencies'] : null);
 
-        // look for package in bower
-        try {
-            $request = $this->httpClient->get($this->config->getBasePackagesUrl() . $package->getName());
-            $response = $request->send();
-        } catch (RequestException $e) {
-            throw new RuntimeException(sprintf('Cannot download package %s (%s).', $package->getName(), $e->getMessage()));
-        }
-        $decode = json_decode($response->getBody(true), true);
-        if (!is_array($decode) || empty($decode['url'])) {
-            throw new RuntimeException(sprintf('Package %s has malformed json or is missing "url".', $package->getName()));
-        }
-
-        // open package repository
-        $repoUrl = $decode['url'];
-        $this->repository->setUrl($repoUrl)->setHttpClient($this->httpClient);
-        $bowerJson = $this->repository->getBower($package->getRequiredVersion());
-        $bower = json_decode($bowerJson, true);
-        if (!is_array($bower)) {
-            throw new RuntimeException(sprintf('Invalid bower.json found in package %s: %s.', $package->getName(), $bowerJson));
-        }
-        $packageTag = $this->repository->findPackage($package->getRequiredVersion());
-        if (is_null($packageTag)) {
-            throw new RuntimeException(sprintf('Cannot find package %s version %s.', $package->getName(), $package->getRequiredVersion()));
-        }
+        $packageTag = $this->getPackageTag($package);
         $package->setRepository($this->repository);
 
         // match installed package version with lastest available version
@@ -399,5 +355,42 @@ class Bowerphp
         );
 
         return $structure;
+    }
+
+    /**
+     * @param  PackageInterface $package
+     * @param  boolean          $setInfo 
+     * @return string
+     */
+    protected function getPackageTag($package, $setInfo = false)
+    {
+        // look for package in bower
+        try {
+            $request = $this->httpClient->get($this->config->getBasePackagesUrl() . $package->getName());
+            $response = $request->send();
+        } catch (RequestException $e) {
+            throw new RuntimeException(sprintf('Cannot download package %s (%s).', $package->getName(), $e->getMessage()));
+        }
+        $decode = json_decode($response->getBody(true), true);
+        if (!is_array($decode) || empty($decode['url'])) {
+            throw new RuntimeException(sprintf('Package %s has malformed json or is missing "url".', $package->getName()));
+        }
+        // open package repository
+        $repoUrl = $decode['url'];
+        $this->repository->setUrl($repoUrl)->setHttpClient($this->httpClient);
+        $bowerJson = $this->repository->getBower($package->getRequiredVersion());
+        $bower = json_decode($bowerJson, true);
+        if (!is_array($bower)) {
+            throw new RuntimeException(sprintf('Invalid bower.json found in package %s: %s.', $package->getName(), $bowerJson));
+        }
+        $packageTag = $this->repository->findPackage($package->getRequiredVersion());
+        if (is_null($packageTag)) {
+            throw new RuntimeException(sprintf('Cannot find package %s version %s.', $package->getName(), $package->getRequiredVersion()));
+        }
+        if ($setInfo) {
+            $package->setInfo($bower);
+        }
+
+        return $packageTag;
     }
 }

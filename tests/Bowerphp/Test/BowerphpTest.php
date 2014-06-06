@@ -87,6 +87,7 @@ EOT;
         $package
             ->shouldReceive('getName')->andReturn('jquery')
             ->shouldReceive('getRequiredVersion')->andReturn('*')
+            ->shouldReceive('setInfo')->with(array('name' => 'jquery', 'version' => '2.0.3', 'main'=>'jquery.js'))
         ;
 
         $this->config
