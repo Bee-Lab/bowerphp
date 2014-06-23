@@ -21,16 +21,14 @@ use RuntimeException;
  */
 class Config implements ConfigInterface
 {
-    protected
-        $cacheDir,
-        $installDir,
-        $filesystem,
-        $basePackagesUrl     = 'http://bower.herokuapp.com/packages/',
-        $allPackagesUrl      = 'https://bower-component-list.herokuapp.com/',
-        $saveToBowerJsonFile = false,
-        $bowerFileNames      = array('bower.json', 'package.json'),
-        $stdBowerFileName    = 'bower.json'
-    ;
+    protected $cacheDir;
+    protected $installDir;
+    protected $filesystem;
+    protected $basePackagesUrl     = 'http://bower.herokuapp.com/packages/';
+    protected $allPackagesUrl      = 'https://bower-component-list.herokuapp.com/';
+    protected $saveToBowerJsonFile = false;
+    protected $bowerFileNames      = array('bower.json', 'package.json');
+    protected $stdBowerFileName    = 'bower.json';
 
     /**
      * @param Filesystem $filesystem
@@ -91,7 +89,7 @@ class Config implements ConfigInterface
     /**
      * {@inheritDoc}
      */
-    public function getSaveToBowerJsonFile()
+    public function isSaveToBowerJsonFile()
     {
         return $this->saveToBowerJsonFile;
     }
@@ -120,7 +118,7 @@ class Config implements ConfigInterface
      */
     public function updateBowerJsonFile(PackageInterface $package)
     {
-        if (!$this->getSaveToBowerJsonFile()) {
+        if (!$this->isSaveToBowerJsonFile()) {
             return false;
         }
 

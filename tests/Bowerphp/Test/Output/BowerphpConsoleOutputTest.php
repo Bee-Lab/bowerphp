@@ -31,8 +31,8 @@ class BowerphpConsoleOutputTest extends \PHPUnit_Framework_TestCase
             ->shouldReceive('writeln')->with('bower <info>jquery#2.1           </info>')
         ;
 
-        $BConsoleOutput = new BowerphpConsoleOutput($output);
-        $BConsoleOutput->writelnInfoPackage($package);
+        $bConsoleOutput = new BowerphpConsoleOutput($output);
+        $bConsoleOutput->writelnInfoPackage($package);
     }
 
     public function testWritelnInstalledPackage()
@@ -49,8 +49,8 @@ class BowerphpConsoleOutputTest extends \PHPUnit_Framework_TestCase
             ->shouldReceive('writeln')->with('bower <info>jquery#2.1           </info> <fg=cyan>   install</fg=cyan>')
         ;
 
-        $BConsoleOutput = new BowerphpConsoleOutput($output);
-        $BConsoleOutput->writelnInstalledPackage($package);
+        $bConsoleOutput = new BowerphpConsoleOutput($output);
+        $bConsoleOutput->writelnInstalledPackage($package);
     }
 
     public function testWritelnNoBowerJsonFile()
@@ -61,8 +61,8 @@ class BowerphpConsoleOutputTest extends \PHPUnit_Framework_TestCase
             ->shouldReceive('writeln')->with('bower <info>                     </info> <fg=yellow>   no-json</fg=yellow> No bower.json file to save to, use bower init to create one')
         ;
 
-        $BConsoleOutput = new BowerphpConsoleOutput($output);
-        $BConsoleOutput->writelnNoBowerJsonFile();
+        $bConsoleOutput = new BowerphpConsoleOutput($output);
+        $bConsoleOutput->writelnNoBowerJsonFile();
     }
 
     public function testWritelnJson()
@@ -73,8 +73,8 @@ class BowerphpConsoleOutputTest extends \PHPUnit_Framework_TestCase
             ->shouldReceive('writeln')->with('{<info>name</info>: <fg=cyan>\'foo\'</fg=cyan>}')
         ;
 
-        $BConsoleOutput = new BowerphpConsoleOutput($output);
-        $BConsoleOutput->writelnJson('{"name": "foo"}');
+        $bConsoleOutput = new BowerphpConsoleOutput($output);
+        $bConsoleOutput->writelnJson('{"name": "foo"}');
     }
 
     public function testWritelnJsonText()
@@ -85,8 +85,8 @@ class BowerphpConsoleOutputTest extends \PHPUnit_Framework_TestCase
             ->shouldReceive('writeln')->with('<fg=cyan>"name"</fg=cyan>')
         ;
 
-        $BConsoleOutput = new BowerphpConsoleOutput($output);
-        $BConsoleOutput->writelnJsonText("name");
+        $bConsoleOutput = new BowerphpConsoleOutput($output);
+        $bConsoleOutput->writelnJsonText("name");
     }
 
     public function testWritelnListPackage()
@@ -109,9 +109,9 @@ class BowerphpConsoleOutputTest extends \PHPUnit_Framework_TestCase
             ->shouldReceive('writeln')->with('fonts.css#1.0.0<info></info>')
         ;
 
-        $BConsoleOutput = new BowerphpConsoleOutput($output);
-        $BConsoleOutput->writelnListPackage($package, $bowerphp);
-        $BConsoleOutput->writelnListPackage($package, $bowerphp);
+        $bConsoleOutput = new BowerphpConsoleOutput($output);
+        $bConsoleOutput->writelnListPackage($package, $bowerphp);
+        $bConsoleOutput->writelnListPackage($package, $bowerphp);
     }
 
     public function testWritelnSearchOrLookup()
@@ -123,8 +123,8 @@ class BowerphpConsoleOutputTest extends \PHPUnit_Framework_TestCase
             ->shouldReceive('writeln')->with('   <fg=cyan>foo</fg=cyan> bar')
         ;
 
-        $BConsoleOutput = new BowerphpConsoleOutput($output);
-        $BConsoleOutput->writelnSearchOrLookup('foo', 'bar');
-        $BConsoleOutput->writelnSearchOrLookup('foo', 'bar', 3);
+        $bConsoleOutput = new BowerphpConsoleOutput($output);
+        $bConsoleOutput->writelnSearchOrLookup('foo', 'bar');
+        $bConsoleOutput->writelnSearchOrLookup('foo', 'bar', 3);
     }
 }

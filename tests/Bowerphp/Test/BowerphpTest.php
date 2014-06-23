@@ -13,7 +13,9 @@ use RuntimeException;
  */
 class BowerphpTest extends TestCase
 {
-    protected $bowerphp, $config, $repository;
+    protected $bowerphp;
+    protected $config;
+    protected $repository;
 
     public function setUp()
     {
@@ -135,7 +137,7 @@ EOT;
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
         $this->config
-            ->shouldReceive('getSaveToBowerJsonFile')->andReturn(true)
+            ->shouldReceive('isSaveToBowerJsonFile')->andReturn(true)
             ->shouldReceive('updateBowerJsonFile')->with($package)
         ;
 
@@ -156,7 +158,7 @@ EOT;
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
         $this->config
-            ->shouldReceive('getSaveToBowerJsonFile')->andReturn(true)
+            ->shouldReceive('isSaveToBowerJsonFile')->andReturn(true)
             ->shouldReceive('updateBowerJsonFile')->with($package)->andThrow(new RuntimeException)
         ;
 
@@ -437,7 +439,7 @@ EOT;
             ->shouldReceive('writelnInstalledPackage')
         ;
         $this->config
-            ->shouldReceive('getSaveToBowerJsonFile')->andReturn(false)
+            ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
             ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery-ui', 'version' => '1.10.0'))
         ;
 
@@ -725,7 +727,7 @@ EOT;
             ->shouldReceive('writelnInstalledPackage')
         ;
         $this->config
-            ->shouldReceive('getSaveToBowerJsonFile')->andReturn(false)
+            ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
         ;
 
         $installer
@@ -795,7 +797,7 @@ EOT;
         ;
 
         $this->config
-            ->shouldReceive('getSaveToBowerJsonFile')->andReturn(false)
+            ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
             ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery', 'version' => '1.0.0'))
             ->shouldReceive('getBowerFileContent')->andReturn(array())
         ;
@@ -991,7 +993,7 @@ EOT;
             ->shouldReceive('writelnInstalledPackage')
         ;
         $this->config
-            ->shouldReceive('getSaveToBowerJsonFile')->andReturn(false)
+            ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
             ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery-ui', 'version' => '1.10.0'), array('name' => 'jquery', 'version' => '2.0.1'))
         ;
 
@@ -1082,7 +1084,7 @@ EOT;
             ->shouldReceive('writelnInstalledPackage')
         ;
         $this->config
-            ->shouldReceive('getSaveToBowerJsonFile')->andReturn(false)
+            ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
             ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery-ui', 'version' => '1.10.0'), array('name' => 'jquery', 'version' => '2.0.1'))
         ;
 
@@ -1351,7 +1353,7 @@ EOT;
             ->shouldReceive('writelnInstalledPackage')
         ;
         $this->config
-            ->shouldReceive('getSaveToBowerJsonFile')->andReturn(false)
+            ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
         ;
 
         $installer

@@ -14,11 +14,14 @@ use RuntimeException;
  */
 class GithubRepository implements RepositoryInterface
 {
-    protected $url, $originalUrl, $tag = array(), $httpClient;
+    protected $url;
+    protected $originalUrl;
+    protected $tag = array();
+    protected $httpClient;
 
     /**
-     * @param  string           $url
-     * @param  boolean          $raw
+     * {@inheritDoc}
+     *
      * @return GithubRepository
      */
     public function setUrl($url, $raw = true)
@@ -103,8 +106,8 @@ class GithubRepository implements RepositoryInterface
 
         // edge case: package has no tags
         if (count($tags) === 0) {
-            $zipball_url = sprintf('https://api.github.com/repos/%s/%s/zipball/master', $repoUser, $repoName);
-            $this->tag = array('zipball_url' => $zipball_url);
+            $zipballUrl = sprintf('https://api.github.com/repos/%s/%s/zipball/master', $repoUser, $repoName);
+            $this->tag = array('zipball_url' => $zipballUrl);
 
             return 'master';
         }

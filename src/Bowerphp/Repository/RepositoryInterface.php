@@ -13,9 +13,10 @@ interface RepositoryInterface
     const VERSION_NOT_FOUND = 3;
 
     /**
-     * @param string $url
+     * @param string  $url
+     * @param boolean $raw
      */
-    public function setUrl($url);
+    public function setUrl($url, $raw = true);
 
     /**
      * @param ClientInterface $httpClient

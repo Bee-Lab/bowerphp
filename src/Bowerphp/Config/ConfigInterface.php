@@ -41,7 +41,7 @@ interface ConfigInterface
     /**
      * @return boolean
      */
-    public function getSaveToBowerJsonFile();
+    public function isSaveToBowerJsonFile();
 
     /**
      * Set true|false for decide if add package reference on bower.json file during install procedure

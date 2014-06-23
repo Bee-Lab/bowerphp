@@ -97,7 +97,7 @@ class Bowerphp
 
         $installer->install($package);
 
-        if ($this->config->getSaveToBowerJsonFile() && !$isDependency) {
+        if ($this->config->isSaveToBowerJsonFile() && !$isDependency) {
             try {
                 $this->config->updateBowerJsonFile($package);
             } catch (RuntimeException $e) {
@@ -210,7 +210,7 @@ class Bowerphp
     /**
      * @param  PackageInterface $package
      * @param  string           $info
-     * @return string
+     * @return mixed
      */
     public function getPackageInfo(PackageInterface $package, $info = 'url')
     {
@@ -359,7 +359,7 @@ class Bowerphp
 
     /**
      * @param  PackageInterface $package
-     * @param  boolean          $setInfo 
+     * @param  boolean          $setInfo
      * @return string
      */
     protected function getPackageTag($package, $setInfo = false)

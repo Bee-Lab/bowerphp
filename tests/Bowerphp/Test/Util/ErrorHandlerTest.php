@@ -9,9 +9,9 @@ class ErrorHandlerTest extends TestCase
 {
     public function testHandle()
     {
-        $old_error_reporting = error_reporting(0);
+        $oldErrorReporting = error_reporting(0);
         ErrorHandler::handle(1, 'foo', 'bar', 42);
-        error_reporting($old_error_reporting);
+        error_reporting($oldErrorReporting);
     }
 
     /**
