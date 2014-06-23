@@ -6,6 +6,7 @@ use Bowerphp\Config\ConfigInterface;
 use Bowerphp\Package\Package;
 use Bowerphp\Package\PackageInterface;
 use Bowerphp\Util\Filesystem;
+use Bowerphp\Util\Json;
 use Bowerphp\Util\ZipArchive;
 use RuntimeException;
 use Symfony\Component\Finder\Finder;
@@ -68,8 +69,9 @@ class Installer implements InstallerInterface
         $this->zipArchive->close();
 
         // create .bower.json metadata file
-        // XXX for now, we just save some basic info
-        $dotBowerJson = json_encode(array('name' => $package->getName(), 'version' => $package->getVersion()));
+        // XXX we still need to add some other info...
+        $dotBowerJson = Json::encode($package->getInfo());
+#var_dump($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json', $dotBowerJson);
         $this->filesystem->write($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json', $dotBowerJson);
     }
 
@@ -106,8 +108,8 @@ class Installer implements InstallerInterface
         $this->zipArchive->close();
 
         // update .bower.json metadata file
-        // XXX for now, we just save some basic info
-        $dotBowerJson = json_encode(array('name' => $package->getName(), 'version' => $package->getVersion()));
+        // XXX we still need to add some other info...
+        $dotBowerJson = Json::encode($package->getInfo());
         $this->filesystem->write($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json', $dotBowerJson);
     }
 

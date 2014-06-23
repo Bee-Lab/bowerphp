@@ -9,7 +9,9 @@ use RuntimeException;
 
 class InstallerTest extends TestCase
 {
-    protected $installer, $zipArchive, $config;
+    protected $installer;
+    protected $zipArchive;
+    protected $config;
 
     public function setUp()
     {
@@ -33,7 +35,7 @@ class InstallerTest extends TestCase
 
         $package
             ->shouldReceive('getName')->andReturn('jquery')
-            ->shouldReceive('getInfo')->andReturn(null)
+            ->shouldReceive('getInfo')->andReturn(array('name' => 'jquery', 'version' => '2.0.3'))
             ->shouldReceive('getVersion')->andReturn('2.0.3')
         ;
 
@@ -46,9 +48,14 @@ class InstallerTest extends TestCase
             ->shouldReceive('close')
         ;
 
+        $json = '{
+    "name": "jquery",
+    "version": "2.0.3"
+}';
+
         $this->filesystem
             ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/foo', 'foo content')
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', $json)
             ->shouldReceive('touch')->with(getcwd() . '/bower_components/jquery/foo', 1396303200)
         ;
 
@@ -61,7 +68,7 @@ class InstallerTest extends TestCase
 
         $package
             ->shouldReceive('getName')->andReturn('jquery')
-            ->shouldReceive('getInfo')->andReturn(null)
+            ->shouldReceive('getInfo')->andReturn(array('name' => 'jquery', 'version' => '2.0.3'))
             ->shouldReceive('getVersion')->andReturn('2.0.3')
         ;
 
@@ -74,9 +81,14 @@ class InstallerTest extends TestCase
             ->shouldReceive('close')
         ;
 
+        $json = '{
+    "name": "jquery",
+    "version": "2.0.3"
+}';
+
         $this->filesystem
             ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/foo', 'foo content')
-            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', $json)
             ->shouldReceive('touch')->with(getcwd() . '/bower_components/jquery/foo', 1396303200)
         ;
 
