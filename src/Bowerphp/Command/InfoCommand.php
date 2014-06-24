@@ -83,25 +83,25 @@ EOT
         if ($version == '*') {
             $versions = $bowerphp->getPackageInfo($package, 'versions');
         }
-
         if (!is_null($property)) {
             $bowerArray = json_decode($bower, true);
             $propertyValue = isset($bowerArray[$property]) ? $bowerArray[$property] : '';
             $consoleOutput->writelnJsonText($propertyValue);
+
+            return;
+        }
+        $consoleOutput->writelnJson($bower);
+        if ($version != '*') {
+            return;
+        }
+        $output->writeln('');
+        if (empty($versions)) {
+            $output->writeln('No versions available.');
         } else {
-            $consoleOutput->writelnJson($bower);
-            if ($version == '*') {
-                $output->writeln('');
-                if (empty($versions)) {
-                    $output->writeln('No versions available.');
-                } else {
-                    $output->writeln('<fg=cyan>Available versions:</fg=cyan>');
-                    foreach ($versions as $vrs) {
-                        $output->writeln("- $vrs");
-                    }
-                }
+            $output->writeln('<fg=cyan>Available versions:</fg=cyan>');
+            foreach ($versions as $vrs) {
+                $output->writeln("- $vrs");
             }
         }
     }
-
 }
