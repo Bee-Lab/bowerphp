@@ -17,11 +17,9 @@ use Symfony\Component\Finder\Finder;
  */
 class Installer implements InstallerInterface
 {
-    protected
-        $filesystem,
-        $zipArchive,
-        $config
-    ;
+    protected $filesystem;
+    protected $zipArchive;
+    protected $config;
 
     /**
      * Initializes library installer.
