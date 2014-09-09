@@ -75,6 +75,12 @@ class GithubRepository implements RepositoryInterface
             $this->setUrl($url, true);
         }
         $json = $this->getDepBowerJson($version);
+
+        if (substr($json, 0, 3) == "\xef\xbb\xbf") {
+            // remove BOM if exists
+            $json = substr($json, 3);
+        }
+
         if ($includeHomepage) {
             $array = json_decode($json, true);
             if (!empty($url)) {
