@@ -17,7 +17,7 @@ class SearchCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester->execute(array('command' => $command->getName(), 'name' => 'smart'), array('decorated' => false));
 
         $this->assertRegExp('/Search results/', $commandTester->getDisplay());
-        $this->assertRegExp('/smart-time-ago.git/', $commandTester->getDisplay());
+        $this->assertRegExp('/jquery.smartbanner.git/', $commandTester->getDisplay());
         $this->assertRegExp('/git:/', $commandTester->getDisplay());
     }
 
