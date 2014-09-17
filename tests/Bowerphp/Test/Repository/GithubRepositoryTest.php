@@ -40,6 +40,7 @@ class GithubRepositoryTest extends TestCase
         ;
         $response
             ->shouldReceive('getEffectiveUrl')->andReturn($url)
+            ->shouldReceive('hasHeader')->andReturn(false)
             ->shouldReceive('getBody')->andReturn($bowerJson)
         ;
 
@@ -64,6 +65,7 @@ class GithubRepositoryTest extends TestCase
         ;
 
         $response
+            ->shouldReceive('hasHeader')->andReturn(false)
             ->shouldReceive('getStatusCode')->andReturn(500)
         ;
 
@@ -100,6 +102,7 @@ class GithubRepositoryTest extends TestCase
             ->shouldReceive('send')->andReturn($response)
         ;
         $response
+            ->shouldReceive('hasHeader')->andReturn(false)
             ->shouldReceive('getStatusCode')->andReturn(404)
             ->shouldReceive('getEffectiveUrl')->andReturn($url2)
             ->shouldReceive('getBody')->andReturn($bowerJson)
@@ -157,6 +160,7 @@ class GithubRepositoryTest extends TestCase
             ->shouldReceive('get')->with($url2)->andThrow(new RequestException('an error'))
         ;
         $response
+            ->shouldReceive('hasHeader')->andReturn(false)
             ->shouldReceive('getStatusCode')->andReturn(404)
         ;
 
@@ -237,6 +241,7 @@ class GithubRepositoryTest extends TestCase
             ->shouldReceive('send')->andReturn($response)
         ;
         $response
+            ->shouldReceive('hasHeader')->andReturn(false)
             ->shouldReceive('getEffectiveUrl')->andReturn($url)
             ->shouldReceive('getBody')->andReturn(json_encode($bower1))
         ;
@@ -258,6 +263,7 @@ class GithubRepositoryTest extends TestCase
             ->shouldReceive('send')->andReturn($response)
         ;
         $response
+            ->shouldReceive('hasHeader')->andReturn(false)
             ->shouldReceive('getBody')->with(true)->andReturn($tagsJson)
         ;
 
@@ -277,6 +283,7 @@ class GithubRepositoryTest extends TestCase
             ->shouldReceive('send')->andReturn($response)
         ;
         $response
+            ->shouldReceive('hasHeader')->andReturn(false)
             ->shouldReceive('getBody')->with(true)->andReturn('[ ]')
         ;
 
@@ -300,6 +307,7 @@ class GithubRepositoryTest extends TestCase
             ->shouldReceive('send')->andReturn($response)
         ;
         $response
+            ->shouldReceive('hasHeader')->andReturn(false)
             ->shouldReceive('getBody')->with(true)->andReturn($tagsJson)
         ;
 
@@ -319,6 +327,7 @@ class GithubRepositoryTest extends TestCase
             ->shouldReceive('send')->andReturn($response)
         ;
         $response
+            ->shouldReceive('hasHeader')->andReturn(false)
             ->shouldReceive('getBody')->with(true)->andReturn($tagsJson)
         ;
 
@@ -363,6 +372,7 @@ class GithubRepositoryTest extends TestCase
             ->shouldReceive('send')->andReturn($response)
         ;
         $response
+            ->shouldReceive('hasHeader')->andReturn(false)
             ->shouldReceive('getBody')->with(true)->andReturn($tagsJson)
         ;
 
@@ -397,6 +407,7 @@ class GithubRepositoryTest extends TestCase
             ->shouldReceive('send')->andReturn($response)
         ;
         $response
+            ->shouldReceive('hasHeader')->andReturn(false)
             ->shouldReceive('getBody')->andReturn('...')
         ;
 
@@ -463,6 +474,7 @@ class GithubRepositoryTest extends TestCase
             ->shouldReceive('send')->andReturn($response)
         ;
         $response
+            ->shouldReceive('hasHeader')->andReturn(false)
             ->shouldReceive('getBody')->andReturn($tagJson)
         ;
 
@@ -481,6 +493,7 @@ class GithubRepositoryTest extends TestCase
             ->shouldReceive('send')->andReturn($response)
         ;
         $response
+            ->shouldReceive('hasHeader')->andReturn(false)
             ->shouldReceive('getBody')->andReturn('[ ]')
         ;
 
@@ -531,6 +544,7 @@ class GithubRepositoryTest extends TestCase
         $request
             ->shouldReceive('send')->andReturn($response);
         $response
+            ->shouldReceive('hasHeader')->andReturn(false)
             ->shouldReceive('getBody')->with(true)->andReturn($responseJson);
     }
 }

@@ -99,6 +99,11 @@ class GithubRepository implements RepositoryInterface
             $request = $this->httpClient->get($githubTagsURL);
             $response = $request->send();
             $tags = json_decode($response->getBody(true), true);
+            while ($response->hasHeader('Link') && $response->getHeader('Link')->hasLink('next')) {
+                $link = $response->getHeader('Link')->getLink('next');
+                $response = $this->httpClient->get($link['url'])->send();
+                $tags = array_merge($tags, json_decode($response->getBody(true), true));
+            }
         } catch (RequestException $e) {
             throw new RuntimeException(sprintf('Cannot open repo %s/%s (%s).', $repoUser, $repoName, $e->getMessage()));
         }
