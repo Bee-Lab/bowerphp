@@ -362,7 +362,7 @@ class Bowerphp
      * @param  boolean          $setInfo
      * @return string
      */
-    protected function getPackageTag($package, $setInfo = false)
+    protected function getPackageTag(PackageInterface $package, $setInfo = false)
     {
         // look for package in bower
         try {
@@ -394,3 +394,4 @@ class Bowerphp
         return $packageTag;
     }
 }
+

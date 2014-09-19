@@ -34,8 +34,7 @@ abstract class Command extends BaseCommand
     {
         // debug http interactions
         if (OutputInterface::VERBOSITY_DEBUG <= $output->getVerbosity()) {
-            $self = $this;
-            $logger = function ($message) use ($output, $self) {
+            $logger = function ($message) use ($output) {
                 $finfo = new \finfo(FILEINFO_MIME);
                 $msg =  (substr($finfo->buffer($message), 0, 4) == 'text') ? $message : '(binary string)';
                 $output->writeln('<info>Guzzle</info> ' . $msg);
@@ -47,3 +46,4 @@ abstract class Command extends BaseCommand
     }
 
 }
+
