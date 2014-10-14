@@ -48,6 +48,29 @@ class GithubRepositoryTest extends TestCase
         $this->assertEquals($bowerJson, $this->repository->getBower('master', false, 'https://raw.githubusercontent.com/components/jquery'));
     }
 
+    public function testGetBowerWithByteMarkOrder()
+    {
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $bowerJson = '{"name": "jquery", "version": "2.0.3", "main": "jquery.js"}';
+        $bowerJsonWithBOM = "\xef\xbb\xbf".$bowerJson;
+        $url = 'https://raw.githubusercontent.com/components/jquery/master/bower.json';
+
+        $this->httpClient
+            ->shouldReceive('get')->with($url)->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getEffectiveUrl')->andReturn($url)
+            ->shouldReceive('getBody')->andReturn($bowerJsonWithBOM)
+        ;
+
+        $this->assertEquals($bowerJson, $this->repository->getBower());
+    }
+
     /**
      * @expectedException Guzzle\Http\Exception\BadResponseException
      */
