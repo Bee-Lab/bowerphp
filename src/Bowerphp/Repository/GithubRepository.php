@@ -75,6 +75,7 @@ class GithubRepository implements RepositoryInterface
             $this->setUrl($url, true);
         }
         $json = $this->getDepBowerJson($version);
+
         if ($includeHomepage) {
             $array = json_decode($json, true);
             if (!empty($url)) {
