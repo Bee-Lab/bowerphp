@@ -76,11 +76,6 @@ class GithubRepository implements RepositoryInterface
         }
         $json = $this->getDepBowerJson($version);
 
-        if (substr($json, 0, 3) == "\xef\xbb\xbf") {
-            // remove BOM if exists
-            $json = substr($json, 3);
-        }
-
         if ($includeHomepage) {
             $array = json_decode($json, true);
             if (!empty($url)) {
@@ -214,6 +209,11 @@ class GithubRepository implements RepositoryInterface
             throw new RuntimeException(sprintf('Cannot open package git URL %s (%s).', $depBowerJsonURL, $e->getMessage()));
         }
         $json = $response->getBody(true);
+
+        // remove BOM if exists
+        if (substr($json, 0, 3) == "\xef\xbb\xbf") {
+            $json = substr($json, 3);
+        }
 
         // for package.json, remove dependencies (see the case of Modernizr)
         if (isset($depPackageJsonURL)) {
