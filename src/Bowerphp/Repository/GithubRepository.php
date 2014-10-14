@@ -209,6 +209,11 @@ class GithubRepository implements RepositoryInterface
         }
         $json = $response->getBody(true);
 
+        // remove BOM if exists
+        if (substr($json, 0, 3) == "\xef\xbb\xbf") {
+            $json = substr($json, 3);
+        }
+
         // for package.json, remove dependencies (see the case of Modernizr)
         if (isset($depPackageJsonURL)) {
             $array = json_decode($json, true);
