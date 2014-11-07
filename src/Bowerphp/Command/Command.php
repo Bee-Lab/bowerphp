@@ -11,7 +11,7 @@
 
 namespace Bowerphp\Command;
 
-use Guzzle\Http\ClientInterface;
+use Github\HttpClient\HttpClientInterface as ClientInterface;
 use Guzzle\Log\ClosureLogAdapter;
 use Guzzle\Log\MessageFormatter;
 use Guzzle\Plugin\Log\LogPlugin;

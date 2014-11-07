@@ -3,7 +3,7 @@
 namespace Bowerphp\Repository;
 
 use Bowerphp\Util\Json;
-use Guzzle\Http\ClientInterface;
+use Github\HttpClient\HttpClientInterface as ClientInterface;
 use Guzzle\Http\Exception\BadResponseException;
 use Guzzle\Http\Exception\RequestException;
 use RuntimeException;
@@ -96,12 +96,11 @@ class GithubRepository implements RepositoryInterface
         list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
         try {
             $githubTagsURL = sprintf('https://api.github.com/repos/%s/%s/tags?per_page=100', $repoUser, $repoName);
-            $request = $this->httpClient->get($githubTagsURL);
-            $response = $request->send();
+            $response = $this->httpClient->get($githubTagsURL);
             $tags = json_decode($response->getBody(true), true);
             while ($response->hasHeader('Link') && $response->getHeader('Link')->hasLink('next')) {
                 $link = $response->getHeader('Link')->getLink('next');
-                $response = $this->httpClient->get($link['url'])->send();
+                $response = $this->httpClient->get($link['url']);
                 $tags = array_merge($tags, json_decode($response->getBody(true), true));
             }
         } catch (RequestException $e) {
@@ -141,8 +140,7 @@ class GithubRepository implements RepositoryInterface
     {
         $file = $this->tag[$type . 'ball_url'];
         try {
-            $request = $this->httpClient->get($file);
-            $response = $request->send();
+            $response = $this->httpClient->get($file);
 
             return $response->getBody();
         } catch (RequestException $e) {
@@ -158,8 +156,7 @@ class GithubRepository implements RepositoryInterface
         list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
         try {
             $githubTagsURL = sprintf('https://api.github.com/repos/%s/%s/tags?per_page=100', $repoUser, $repoName);
-            $request = $this->httpClient->get($githubTagsURL);
-            $response = $request->send();
+            $response = $this->httpClient->get($githubTagsURL);
             $tags = json_decode($response->getBody(true), true);
             // edge case: no tags
             if (count($tags) === 0) {
@@ -184,8 +181,7 @@ class GithubRepository implements RepositoryInterface
     {
         $depBowerJsonURL = $this->url . '/' . $version . '/bower.json';
         try {
-            $request = $this->httpClient->get($depBowerJsonURL);
-            $response = $request->send();
+            $response = $this->httpClient->get($depBowerJsonURL);
             // we need this in case of redirect (e.g. 'less/less' becomes 'less/less.js')
             $this->setUrl($response->getEffectiveUrl());
         } catch (BadResponseException $e) {
@@ -193,8 +189,7 @@ class GithubRepository implements RepositoryInterface
                 // fallback on package.json
                 $depPackageJsonURL = $this->url . '/' . $version . '/package.json';
                 try {
-                    $request = $this->httpClient->get($depPackageJsonURL);
-                    $response = $request->send();
+                    $response = $this->httpClient->get($depPackageJsonURL);
                     $this->setUrl($response->getEffectiveUrl());
                 } catch (BadResponseException $e) {
                     if ($version != 'master' && $e->getResponse()->getStatusCode() == 404) {

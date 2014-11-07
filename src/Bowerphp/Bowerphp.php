@@ -18,7 +18,7 @@ use Bowerphp\Package\Package;
 use Bowerphp\Package\PackageInterface;
 use Bowerphp\Repository\RepositoryInterface;
 use Bowerphp\Util\Filesystem;
-use Guzzle\Http\ClientInterface;
+use Github\HttpClient\HttpClientInterface as ClientInterface;
 use Guzzle\Http\Exception\RequestException;
 use InvalidArgumentException;
 use RuntimeException;
@@ -216,8 +216,7 @@ class Bowerphp
     {
         // look for package in bower
         try {
-            $request = $this->httpClient->get($this->config->getBasePackagesUrl() . urlencode($package->getName()));
-            $response = $request->send();
+            $response = $this->httpClient->get($this->config->getBasePackagesUrl() . urlencode($package->getName()));
         } catch (RequestException $e) {
             throw new RuntimeException(sprintf('Cannot download package %s (%s).', $package->getName(), $e->getMessage()));
         }
@@ -277,8 +276,7 @@ class Bowerphp
     {
         try {
             $url = $this->config->getAllPackagesUrl();
-            $request = $this->httpClient->get($url);
-            $response = $request->send();
+            $response = $this->httpClient->get($url);
         } catch (RequestException $e) {
             throw new RuntimeException(sprintf('Cannot get package list from %s.', $url));
         }
@@ -366,8 +364,7 @@ class Bowerphp
     {
         // look for package in bower
         try {
-            $request = $this->httpClient->get($this->config->getBasePackagesUrl() . $package->getName());
-            $response = $request->send();
+            $response = $this->httpClient->get($this->config->getBasePackagesUrl() . $package->getName());
         } catch (RequestException $e) {
             throw new RuntimeException(sprintf('Cannot download package %s (%s).', $package->getName(), $e->getMessage()));
         }

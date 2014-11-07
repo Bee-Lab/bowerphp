@@ -19,7 +19,7 @@ use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Util\Filesystem;
 use Doctrine\Common\Cache\FilesystemCache;
 use Guzzle\Cache\DoctrineCacheAdapter;
-use Guzzle\Http\Client;
+use Github\Client;
 use Guzzle\Plugin\Cache\CachePlugin;
 use Guzzle\Plugin\Cache\DefaultCacheStorage;
 use Symfony\Component\Console\Input\InputInterface;
@@ -57,8 +57,9 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $filesystem = new Filesystem();
-        $httpClient = new Client();
+        $githubApi = new Client();
         $config = new Config($filesystem);
+        $httpClient = $githubApi->getHttpClient();
 
         $this->logHttp($httpClient, $output);
 
