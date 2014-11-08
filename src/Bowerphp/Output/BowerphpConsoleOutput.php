@@ -112,4 +112,12 @@ class BowerphpConsoleOutput
             $bowerphp->isPackageExtraneous($package) ? ' extraneous' : ''
         ));
     }
+
+    public function writelnUpdatingPackage(PackageInterface $package)
+    {
+        $this->output->writeln(sprintf('bower <info>%s</info> <fg=cyan>%s</fg=cyan>',
+            str_pad($package->getName() . '#' . $package->getRequiredVersion(), 21, ' ', STR_PAD_RIGHT),
+            str_pad('install', 10, ' ', STR_PAD_LEFT)
+        ));
+    }
 }

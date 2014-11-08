@@ -165,6 +165,9 @@ class Bowerphp
             // if version is fully matching, there's no need to update
             return;
         }
+
+        $this->output->writelnUpdatingPackage($package);
+
         $package->setVersion($packageTag);
 
         // get release archive from repository
