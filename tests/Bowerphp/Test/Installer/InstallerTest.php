@@ -69,7 +69,7 @@ class InstallerTest extends TestCase
         $package
             ->shouldReceive('getName')->andReturn('jquery')
             ->shouldReceive('getInfo')->andReturn(array('name' => 'jquery', 'version' => '2.0.3'))
-            ->shouldReceive('getVersion')->andReturn('2.0.3')
+            ->shouldReceive('getRequiredVersion')->andReturn('2.0.3')
         ;
 
         $this->zipArchive
