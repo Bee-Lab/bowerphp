@@ -47,8 +47,10 @@ class UpdateCommandTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Package nonexistent-package is not installed
      */
-    public function shouldReturnNonexistentPackage()
+    public function shouldThrowExceptionWhenPackageIsNotInstalled()
     {
         //when
         $commandTester = CommandFactory::tester('update', array('package' => 'nonexistent-package'));

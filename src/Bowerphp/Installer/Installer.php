@@ -106,7 +106,7 @@ class Installer implements InstallerInterface
 
         // update .bower.json metadata file
         // XXX we still need to add some other info...
-        $dotBowerContent = array_merge($package->getInfo(), array('version' => $package->getVersion()));
+        $dotBowerContent = array_merge($package->getInfo(), array('version' => $package->getRequiredVersion()));
         $dotBowerJson = Json::encode($dotBowerContent);
         $this->filesystem->write($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json', $dotBowerJson);
     }
