@@ -437,6 +437,7 @@ EOT;
         $this->output
             ->shouldReceive('writelnInfoPackage')
             ->shouldReceive('writelnInstalledPackage')
+            ->shouldReceive('writelnUpdatingPackage')
         ;
         $this->config
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
@@ -991,6 +992,7 @@ EOT;
         $this->output
             ->shouldReceive('writelnInfoPackage')
             ->shouldReceive('writelnInstalledPackage')
+            ->shouldReceive('writelnUpdatingPackage')
         ;
         $this->config
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
@@ -1082,6 +1084,7 @@ EOT;
         $this->output
             ->shouldReceive('writelnInfoPackage')
             ->shouldReceive('writelnInstalledPackage')
+            ->shouldReceive('writelnUpdatingPackage')
         ;
         $this->config
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
