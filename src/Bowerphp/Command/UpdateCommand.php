@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of Bowerphp.
  *
@@ -8,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
@@ -24,8 +22,9 @@ use Guzzle\Cache\DoctrineCacheAdapter;
 use Guzzle\Http\Client;
 use Guzzle\Plugin\Cache\CachePlugin;
 use Guzzle\Plugin\Cache\DefaultCacheStorage;
-use Symfony\Component\Console\Input\InputInterface;
+use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -54,8 +53,7 @@ If an optional package name is passed, only that package is updated.
   <info>php %command.full_name% packageName</info>
 
 EOT
-            )
-        ;
+            );
     }
 
     /**
@@ -63,41 +61,30 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $packageName = $input->getArgument('package');
+
         $filesystem = new Filesystem();
         $httpClient = new Client();
-        $config     = new Config($filesystem);
+        $config = new Config($filesystem);
 
         $this->logHttp($httpClient, $output);
 
         // http cache
         $cachePlugin = new CachePlugin(array(
-           'storage' => new DefaultCacheStorage(new DoctrineCacheAdapter(new FilesystemCache($config->getCacheDir())), 'bowerphp', 86400)
+            'storage' => new DefaultCacheStorage(new DoctrineCacheAdapter(new FilesystemCache($config->getCacheDir())), 'bowerphp', 86400)
         ));
         $httpClient->addSubscriber($cachePlugin);
 
-        $packageName = $input->getArgument('package');
-
-        $consoleOutput = new BowerphpConsoleOutput($output);
-        $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), $consoleOutput);
-
         try {
-            $installer = new Installer($filesystem, new ZipArchive(), $config);
-
+            $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), new BowerphpConsoleOutput($output), new Installer($filesystem, new ZipArchive(), $config));
             if (is_null($packageName)) {
-                $output->writeln('Updating dependencies:');
-                $bowerphp->updateDependencies($installer);
+                $bowerphp->updatePackages();
             } else {
-                $package = new Package($packageName);
-
-                $bowerphp->updatePackage($package, $installer);
+                $bowerphp->updatePackage(new Package($packageName));
             }
-        } catch (\RuntimeException $e) {
-            $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
-
-            return $e->getCode();
+        } catch (RuntimeException $e) {
+            throw new RuntimeException($e->getMessage());
         }
-
         $output->writeln('');
     }
-
 }
