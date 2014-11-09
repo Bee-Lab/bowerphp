@@ -30,6 +30,10 @@ use Symfony\Component\Finder\Finder;
 class Bowerphp
 {
     protected $config, $filesystem, $httpClient, $repository, $output;
+    /**
+     * @var InstallerInterface
+     */
+    private $installer;
 
     /**
      * @param ConfigInterface       $config
@@ -38,13 +42,14 @@ class Bowerphp
      * @param RepositoryInterface   $repository
      * @param BowerphpConsoleOutput $output
      */
-    public function __construct(ConfigInterface $config, Filesystem $filesystem, ClientInterface $httpClient, RepositoryInterface $repository, BowerphpConsoleOutput $output)
+    public function __construct(ConfigInterface $config, Filesystem $filesystem, ClientInterface $httpClient, RepositoryInterface $repository, BowerphpConsoleOutput $output, InstallerInterface $installer = null)
     {
         $this->config = $config;
         $this->filesystem = $filesystem;
         $this->httpClient = $httpClient;
         $this->repository = $repository;
         $this->output = $output;
+        $this->installer = $installer;
     }
 
     /**
@@ -111,7 +116,7 @@ class Bowerphp
                 if (!$this->isPackageInstalled($depPackage)) {
                     $this->installPackage($depPackage, $installer, true);
                 } else {
-                    $this->updatePackage($depPackage, $installer);
+                    $this->updatePackage($depPackage);
                 }
             }
         }
@@ -136,11 +141,11 @@ class Bowerphp
     /**
      * Update a single package
      *
-     * @param PackageInterface   $package
-     * @param InstallerInterface $installer
+     * @param PackageInterface $package
      */
-    public function updatePackage(PackageInterface $package, InstallerInterface $installer)
+    public function updatePackage(PackageInterface $package)
     {
+        $installer = $this->installer;
         if (!$this->isPackageInstalled($package)) {
             throw new RuntimeException(sprintf('Package %s is not installed.', $package->getName()));
         }
@@ -160,23 +165,21 @@ class Bowerphp
         $packageTag = $this->getPackageTag($package);
         $package->setRepository($this->repository);
 
-        // match installed package version with lastest available version
         if ($packageTag == $package->getVersion()) {
             // if version is fully matching, there's no need to update
             return;
         }
-        $package->setVersion($packageTag);
+
+        $this->output->writelnUpdatingPackage($package);
 
         // get release archive from repository
         $file = $this->repository->getRelease();
 
-        // save temporary file
         $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();
         $this->filesystem->write($tmpFileName, $file);
 
         $installer->update($package);
 
-        // check for dependencies
         $dependencies = $package->getRequires();
         if (!empty($dependencies)) {
             foreach ($dependencies as $name => $requiredVersion) {
@@ -184,7 +187,7 @@ class Bowerphp
                 if (!$this->isPackageInstalled($depPackage)) {
                     $this->installPackage($depPackage, $installer, true);
                 } else {
-                    $this->updatePackage($depPackage, $installer);
+                    $this->updatePackage($depPackage);
                 }
             }
         }
@@ -192,17 +195,13 @@ class Bowerphp
 
     /**
      * Update all dependencies
-     *
-     * @param InstallerInterface $installer
      */
-    public function updateDependencies(InstallerInterface $installer)
+    public function updatePackages()
     {
         $decode = $this->config->getBowerFileContent();
-
         if (!empty($decode['dependencies'])) {
-            foreach ($decode['dependencies'] as $name => $requiredVersion) {
-                $package = new Package($name, $requiredVersion);
-                $this->updatePackage($package, $installer);
+            foreach ($decode['dependencies'] as $packageName => $requiredVersion) {
+                $this->updatePackage(new Package($packageName, $requiredVersion));
             }
         }
     }

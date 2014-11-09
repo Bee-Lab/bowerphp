@@ -231,7 +231,7 @@ EOT;
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updatePackage($package, $installer);
+        $bowerphp->updatePackage($package);
     }
 
     /**
@@ -259,8 +259,8 @@ EOT;
             ->shouldReceive('getBowerFileContent')->andReturn(json_decode($bowerJson, true))
         ;
 
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updatePackage($package, $installer);
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output, $installer);
+        $bowerphp->updatePackage($package);
     }
 
     /**
@@ -292,8 +292,8 @@ EOT;
             ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andThrow(new RequestException('error'))
         ;
 
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updatePackage($package, $installer);
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output, $installer);
+        $bowerphp->updatePackage($package);
     }
 
     /**
@@ -333,8 +333,8 @@ EOT;
             ->shouldReceive('getBody')->andReturn('{invalid')
         ;
 
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updatePackage($package, $installer);
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output, $installer);
+        $bowerphp->updatePackage($package);
     }
 
     /**
@@ -380,8 +380,8 @@ EOT;
             ->shouldReceive('getBower')->andReturn('{invalid')
         ;
 
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updatePackage($package, $installer);
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output, $installer);
+        $bowerphp->updatePackage($package);
     }
 
     public function testUpdateDependenciesWithNewPackageToInstall()
@@ -437,6 +437,7 @@ EOT;
         $this->output
             ->shouldReceive('writelnInfoPackage')
             ->shouldReceive('writelnInstalledPackage')
+            ->shouldReceive('writelnUpdatingPackage')
         ;
         $this->config
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
@@ -464,8 +465,8 @@ EOT;
             ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}')
         ;
 
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updateDependencies($installer);
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output, $installer);
+        $bowerphp->updatePackages();
     }
 
     public function testUpdateDependencies()
@@ -480,7 +481,7 @@ EOT;
         $this->installPackage($package, $installer, array('jquery'), array('2.0.1'), array('*'), true, array('2.0.3'));
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updateDependencies($installer);
+        $bowerphp->updatePackages();
     }
 
     /**
@@ -515,7 +516,7 @@ EOT;
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updatePackage($package, $installer);
+        $bowerphp->updatePackage($package);
     }
 
     /**
@@ -563,7 +564,7 @@ EOT;
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updatePackage($package, $installer);
+        $bowerphp->updatePackage($package);
     }
 
     public function testGetPackageInfo()
@@ -930,7 +931,7 @@ EOT;
             ->shouldReceive('findPackage')->andReturn(null)
         ;
 
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output, $installer);
         $bowerphp->installPackage($package, $installer);
 
     }
@@ -991,6 +992,7 @@ EOT;
         $this->output
             ->shouldReceive('writelnInfoPackage')
             ->shouldReceive('writelnInstalledPackage')
+            ->shouldReceive('writelnUpdatingPackage')
         ;
         $this->config
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
@@ -1001,8 +1003,8 @@ EOT;
             ->shouldReceive('update')
         ;
 
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updatePackage($package, $installer);
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output, $installer);
+        $bowerphp->updatePackage($package);
     }
 
     /**
@@ -1023,7 +1025,7 @@ EOT;
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updatePackage($package, $installer);
+        $bowerphp->updatePackage($package);
     }
 
     public function testUpdateWithDependenciesToInstall()
@@ -1082,6 +1084,7 @@ EOT;
         $this->output
             ->shouldReceive('writelnInfoPackage')
             ->shouldReceive('writelnInstalledPackage')
+            ->shouldReceive('writelnUpdatingPackage')
         ;
         $this->config
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
@@ -1093,8 +1096,8 @@ EOT;
             ->shouldReceive('install')
         ;
 
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updatePackage($package, $installer);
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output, $installer);
+        $bowerphp->updatePackage($package);
     }
 
     /**
