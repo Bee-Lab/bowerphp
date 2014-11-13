@@ -16,6 +16,7 @@ use Bowerphp\Installer\InstallerInterface;
 use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Package\Package;
 use Bowerphp\Package\PackageInterface;
+use Bowerphp\Package\Search;
 use Bowerphp\Repository\RepositoryInterface;
 use Bowerphp\Util\Filesystem;
 use Guzzle\Http\ClientInterface;
@@ -36,12 +37,12 @@ class Bowerphp
     private $installer;
 
     /**
-     * @param ConfigInterface $config
-     * @param Filesystem $filesystem
-     * @param ClientInterface $httpClient
-     * @param RepositoryInterface $repository
+     * @param ConfigInterface       $config
+     * @param Filesystem            $filesystem
+     * @param ClientInterface       $httpClient
+     * @param RepositoryInterface   $repository
      * @param BowerphpConsoleOutput $output
-     * @param InstallerInterface $installer
+     * @param InstallerInterface    $installer
      */
     public function __construct(ConfigInterface $config, Filesystem $filesystem, ClientInterface $httpClient, RepositoryInterface $repository, BowerphpConsoleOutput $output, InstallerInterface $installer = null)
     {
@@ -98,7 +99,7 @@ class Bowerphp
 
         $this->output->writelnInstalledPackage($package);
 
-        $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();
+        $tmpFileName = $this->config->getCacheDir().'/tmp/'.$package->getName();
         $this->filesystem->write($tmpFileName, $file);
 
         $installer->install($package);
@@ -176,7 +177,7 @@ class Bowerphp
         // get release archive from repository
         $file = $this->repository->getRelease();
 
-        $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();
+        $tmpFileName = $this->config->getCacheDir().'/tmp/'.$package->getName();
         $this->filesystem->write($tmpFileName, $file);
 
         $installer->update($package);
@@ -216,7 +217,7 @@ class Bowerphp
     {
         // look for package in bower
         try {
-            $request = $this->httpClient->get($this->config->getBasePackagesUrl() . urlencode($package->getName()));
+            $request = $this->httpClient->get($this->config->getBasePackagesUrl().urlencode($package->getName()));
             $response = $request->send();
         } catch (RequestException $e) {
             throw new RuntimeException(sprintf('Cannot download package %s (%s).', $package->getName(), $e->getMessage()));
@@ -275,22 +276,9 @@ class Bowerphp
      */
     public function searchPackages($name)
     {
-        try {
-            $url = $this->config->getAllPackagesUrl();
-            $request = $this->httpClient->get($url);
-            $response = $request->send();
-        } catch (RequestException $e) {
-            throw new RuntimeException(sprintf('Cannot get package list from %s.', $url));
-        }
-        $decode = json_decode($response->getBody(true), true);
-        $return = array();
-        foreach ($decode as $pkg) {
-            if (false !== strpos($pkg['name'], $name)) {
-                $return[] = $pkg['name'];
-            }
-        }
+        $search = new Search($this->config, $this->httpClient);
 
-        return $return;
+        return $search->package($name);
     }
 
     /**
@@ -313,7 +301,7 @@ class Bowerphp
      */
     public function isPackageInstalled(PackageInterface $package)
     {
-        return $this->filesystem->exists($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json');
+        return $this->filesystem->exists($this->config->getInstallDir().'/'.$package->getName().'/.bower.json');
     }
 
     /**
@@ -366,7 +354,7 @@ class Bowerphp
     {
         // look for package in bower
         try {
-            $request = $this->httpClient->get($this->config->getBasePackagesUrl() . $package->getName());
+            $request = $this->httpClient->get($this->config->getBasePackagesUrl().$package->getName());
             $response = $request->send();
         } catch (RequestException $e) {
             throw new RuntimeException(sprintf('Cannot download package %s (%s).', $package->getName(), $e->getMessage()));

@@ -619,42 +619,28 @@ EOT;
     {
         $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
         $response = Mockery::mock('Guzzle\Http\Message\Response');
-        $packagesJson = '[{"name":"jquery"},{"name":"jquery-ui"},{"name":"less"}]';
+        $packagesJson = '[{"name":"jquery","url":"git://github.com/jquery/jquery.git"},{"name":"jquery-ui","url":"git://github.com/components/jqueryui"}]';
 
-        $this->config
-            ->shouldReceive('getAllPackagesUrl')->andReturn('http://example.com')
-        ;
-
-        $this->httpClient
-            ->shouldReceive('get')->with('http://example.com')->andReturn($request)
-        ;
-        $request
-            ->shouldReceive('send')->andReturn($response)
-        ;
-        $response
-            ->shouldReceive('getBody')->andReturn($packagesJson)
-        ;
+        $this->httpClient->shouldReceive('get')->with('http://bower.herokuapp.com/packages/search/jquery')->andReturn($request);
+        $request->shouldReceive('send')->andReturn($response);
+        $response->shouldReceive('getBody')->andReturn($packagesJson);
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $this->assertEquals(array('jquery', 'jquery-ui'), $bowerphp->searchPackages('jquery'));
+        $this->assertEquals(json_decode($packagesJson, true), $bowerphp->searchPackages('jquery'));
     }
 
     /**
-     * @expectedException        RuntimeException
-     * @expectedExceptionMessage Cannot get package list from http://example.com.
+     * @expectedException RuntimeException
+     * @expectedExceptionMessage Cannot get package list from http://bower.herokuapp.com.
      */
     public function testSearchPackagesException()
     {
-        $this->config
-            ->shouldReceive('getAllPackagesUrl')->andReturn('http://example.com')
-        ;
+        $this->config->shouldReceive('getBasePackagesUrl')->andReturn('http://example.com');
 
-        $this->httpClient
-            ->shouldReceive('get')->with('http://example.com')->andThrow(new RequestException())
-        ;
+        $this->httpClient->shouldReceive('get')->with('http://bower.herokuapp.com/packages/search/jquery')->andThrow(new RequestException());
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->searchPackages($this->httpClient, 'jquery');
+        $bowerphp->searchPackages('jquery');
     }
 
     public function testGetInstalledPackages()
