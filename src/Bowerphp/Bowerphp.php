@@ -393,4 +393,3 @@ class Bowerphp
         return $packageTag;
     }
 }
-

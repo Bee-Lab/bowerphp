@@ -159,7 +159,7 @@ EOT;
 
         $this->config
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(true)
-            ->shouldReceive('updateBowerJsonFile')->with($package)->andThrow(new RuntimeException)
+            ->shouldReceive('updateBowerJsonFile')->with($package)->andThrow(new RuntimeException())
         ;
 
         $this->output
@@ -650,7 +650,7 @@ EOT;
         ;
 
         $this->httpClient
-            ->shouldReceive('get')->with('http://example.com')->andThrow(new RequestException)
+            ->shouldReceive('get')->with('http://example.com')->andThrow(new RequestException())
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
@@ -1267,7 +1267,7 @@ EOT;
         ;
 
         $this->config
-            ->shouldReceive('getBowerFileContent')->andThrow(new RuntimeException)
+            ->shouldReceive('getBowerFileContent')->andThrow(new RuntimeException())
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
