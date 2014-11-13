@@ -14,6 +14,7 @@ namespace Bowerphp;
 use Bowerphp\Config\ConfigInterface;
 use Bowerphp\Installer\InstallerInterface;
 use Bowerphp\Output\BowerphpConsoleOutput;
+use Bowerphp\Package\Lookup;
 use Bowerphp\Package\Package;
 use Bowerphp\Package\PackageInterface;
 use Bowerphp\Package\Search;
@@ -214,29 +215,14 @@ class Bowerphp
      */
     public function getPackageInfo(PackageInterface $package, $info = 'url')
     {
-        // look for package in bower
-        try {
-            $request = $this->httpClient->get($this->config->getBasePackagesUrl().urlencode($package->getName()));
-            $response = $request->send();
-        } catch (RequestException $e) {
-            throw new RuntimeException(sprintf('Cannot download package %s (%s).', $package->getName(), $e->getMessage()));
-        }
-        $decode = json_decode($response->getBody(true), true);
-        if (!is_array($decode) || empty($decode['url'])) {
-            throw new RuntimeException(sprintf('Package %s has malformed json or is missing "url".', $package->getName()));
-        }
+        $decode = $this->lookupPackage($package->getName());
+
         $this->repository->setHttpClient($this->httpClient);
 
         if ($info == 'url') {
             $this->repository->setUrl($decode['url'], false);
 
             return $this->repository->getUrl();
-        }
-
-        if ($info == 'original_url') {
-            $this->repository->setUrl($decode['url'], false);
-
-            return array('name' => $decode['name'], 'url' => $this->repository->getOriginalUrl());
         }
 
         if ($info == 'bower') {
@@ -251,6 +237,13 @@ class Bowerphp
         }
 
         throw new RuntimeException(sprintf('Unsupported info option "%s".', $info));
+    }
+
+    public function lookupPackage($name)
+    {
+        $lookup = new Lookup($this->config, $this->httpClient);
+
+        return $lookup->package($name);
     }
 
     /**
@@ -334,7 +327,7 @@ class Bowerphp
         if (!empty($params['author'])) {
             $authors[] = $params['author'];
         }
-        $structure =  array(
+        $structure = array(
             'name' => $params['name'],
             'authors' => $authors,
             'private' => true,

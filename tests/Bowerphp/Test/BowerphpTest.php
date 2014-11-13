@@ -604,7 +604,49 @@ EOT;
         $this->assertEquals('https://github.com/jackmoore/colorbox', $bowerphp->getPackageInfo($package));
         $this->assertEquals('a json...', $bowerphp->getPackageInfo($package, 'bower'));
         $this->assertEquals(array('1.1.0', '1.0.0'), $bowerphp->getPackageInfo($package, 'versions'));
-        $this->assertEquals(array('name' => 'colorbox', 'url' => 'git://github.com/jackmoore/colorbox.git'), $bowerphp->getPackageInfo($package, 'original_url'));
+    }
+
+    public function testReturnLookupForPackage()
+    {
+        //given
+        //FIXME copy-paste from method BowerphpTest::testGetPackageInfo() extract to method
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
+
+        $package
+            ->shouldReceive('getName')->andReturn('colorbox')
+            ->shouldReceive('getRequiredVersion')->andReturn('1.1')
+        ;
+
+        $this->httpClient
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/colorbox')->andReturn($request)
+        ;
+        $request
+            ->shouldReceive('send')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getBody')->andReturn('{"name":"colorbox","url":"git://github.com/jackmoore/colorbox.git"}')
+        ;
+
+        $this->repository
+            ->shouldReceive('setHttpClient')->with($this->httpClient)
+            ->shouldReceive('getUrl')->andReturn('https://github.com/jackmoore/colorbox')
+            ->shouldReceive('getOriginalUrl')->andReturn('git://github.com/jackmoore/colorbox.git')
+            ->shouldReceive('setUrl')->with('git://github.com/jackmoore/colorbox.git', false)
+            ->shouldReceive('findPackage')->with('1.1')->andReturn('1.1.0')
+            ->shouldReceive('setUrl')->with('https://github.com/jackmoore/colorbox', true)
+            ->shouldReceive('getBower')->with('1.1.0', true, "git://github.com/jackmoore/colorbox.git")->andReturn('a json...')
+            ->shouldReceive('getTags')->andReturn(array('1.1.0', '1.0.0'))
+        ;
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+
+        //when
+        $package = $bowerphp->lookupPackage('colorbox');
+
+        //then
+        $this->assertEquals('colorbox', $package['name']);
+        $this->assertEquals('git://github.com/jackmoore/colorbox.git', $package['url']);
     }
 
     public function testCreateAClearBowerFile()
