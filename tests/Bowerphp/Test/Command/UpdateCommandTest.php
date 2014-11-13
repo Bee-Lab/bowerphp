@@ -1,18 +1,19 @@
 <?php
-
 namespace Bowerphp\Test\Command;
 
-use Bowerphp\Console\Application;
+use Bowerphp\Factory\CommandFactory;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use Symfony\Component\Console\Tester\CommandTester;
 
 /**
  * @group functional
  */
 class UpdateCommandTest extends \PHPUnit_Framework_TestCase
 {
+    private $packageDotBowerFile;
+    private $bowerFile;
+
     public function setUp()
     {
         $dir = getcwd() . '/bower_components/';
@@ -23,39 +24,39 @@ class UpdateCommandTest extends \PHPUnit_Framework_TestCase
             mkdir($dir . 'jquery');
         }
         touch($dir . 'jquery/.bower.json');
-        file_put_contents($dir . 'jquery/.bower.json', '{"name": "jquery", "version": "1.10.1"}');
-        file_put_contents(getcwd() . '/bower.json', '{"name": "test", "dependencies": {"jquery": "1.*"}}');
+        $this->packageDotBowerFile = $dir . 'jquery/.bower.json';
+        $this->bowerFile = getcwd() . '/bower.json';
+
+        file_put_contents($this->packageDotBowerFile, '{"name": "jquery", "version": "1.10.1"}');
+        file_put_contents($this->bowerFile, '{"name": "test", "dependencies": {"jquery": "1.11.1"}}');
     }
 
-    public function testExecute()
+    /**
+     * @test
+     */
+    public function shouldUpdateDependencies()
     {
-        $application = new Application();
-        $commandTester = new CommandTester($command = $application->get('update'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery'), array('decorated' => false));
+        //when
+        CommandFactory::tester('update', array('package' => 'jquery'));
 
+        //then
+        $dotBower = json_decode(file_get_contents($this->packageDotBowerFile), true);
+        $this->assertEquals('1.11.1', $dotBower['version']);
         $this->assertFileExists(getcwd() . '/bower_components/jquery/dist/jquery.js');
-        $dotBower = json_decode(file_get_contents(getcwd() . '/bower_components/jquery/.bower.json'), true);
-        $this->assertEquals('1.10.1', $dotBower['version']);
     }
 
-    public function testExecuteNonexistentPackage()
+    /**
+     * @test
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Package nonexistent-package is not installed
+     */
+    public function shouldThrowExceptionWhenPackageIsNotInstalled()
     {
-        $application = new Application();
-        $commandTester = new CommandTester($command = $application->get('update'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'nonexistent-package'), array('decorated' => false));
+        //when
+        $commandTester = CommandFactory::tester('update', array('package' => 'nonexistent-package'));
 
+        //then
         $this->assertRegExp('/Package nonexistent-package is not installed/', $commandTester->getDisplay());
-    }
-
-    public function testExecuteWithoutPackage()
-    {
-        $application = new Application();
-        $commandTester = new CommandTester($command = $application->get('update'));
-        $commandTester->execute(array('command' => $command->getName()), array('decorated' => false));
-
-        $this->assertFileExists(getcwd() . '/bower_components/jquery/dist/jquery.js');
-        $dotBower = json_decode(file_get_contents(getcwd() . '/bower_components/jquery/.bower.json'), true);
-        $this->assertEquals('1.10.1', $dotBower['version']);
     }
 
     public function tearDown()
