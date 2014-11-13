@@ -11,15 +11,14 @@ namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
 use Bowerphp\Config\Config;
-use Bowerphp\Installer\Installer;
+use Bowerphp\Installer\InstallerInterface;
 use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Package\Package;
-use Bowerphp\Repository\GithubRepository;
+use Bowerphp\Repository\RepositoryInterface;
 use Bowerphp\Util\Filesystem;
-use Bowerphp\Util\ZipArchive;
 use Doctrine\Common\Cache\FilesystemCache;
 use Guzzle\Cache\DoctrineCacheAdapter;
-use Guzzle\Http\Client;
+use Guzzle\Http\ClientInterface;
 use Guzzle\Plugin\Cache\CachePlugin;
 use Guzzle\Plugin\Cache\DefaultCacheStorage;
 use RuntimeException;
@@ -32,6 +31,22 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class UpdateCommand extends Command
 {
+    private $config;
+    private $filesystem;
+    private $httpClient;
+    private $repository;
+    private $installer;
+
+    public function __construct(Config $config, Filesystem $filesystem, ClientInterface $httpClient, RepositoryInterface $repository, InstallerInterface $installer)
+    {
+        parent::__construct();
+        $this->config = $config;
+        $this->filesystem = $filesystem;
+        $this->httpClient = $httpClient;
+        $this->repository = $repository;
+        $this->installer = $installer;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -63,20 +78,17 @@ EOT
     {
         $packageName = $input->getArgument('package');
 
-        $filesystem = new Filesystem();
-        $httpClient = new Client();
-        $config = new Config($filesystem);
-
-        $this->logHttp($httpClient, $output);
+        $this->logHttp($this->httpClient, $output);
 
         // http cache
         $cachePlugin = new CachePlugin(array(
-            'storage' => new DefaultCacheStorage(new DoctrineCacheAdapter(new FilesystemCache($config->getCacheDir())), 'bowerphp', 86400)
+            'storage' => new DefaultCacheStorage(new DoctrineCacheAdapter(new FilesystemCache($this->config->getCacheDir())), 'bowerphp', 86400)
         ));
-        $httpClient->addSubscriber($cachePlugin);
+        $this->httpClient->addSubscriber($cachePlugin);
 
         try {
-            $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), new BowerphpConsoleOutput($output), new Installer($filesystem, new ZipArchive(), $config));
+            $bowerphpConsoleOutput = new BowerphpConsoleOutput($output);
+            $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $bowerphpConsoleOutput, $this->installer);
             if (is_null($packageName)) {
                 $bowerphp->updatePackages();
             } else {

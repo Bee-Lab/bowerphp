@@ -103,7 +103,6 @@ class Application extends BaseApplication
             new Command\ListCommand(),
             new Command\LookupCommand(),
             new Command\SearchCommand(),
-            new Command\UpdateCommand(),
             new Command\UninstallCommand(),
         );
     }

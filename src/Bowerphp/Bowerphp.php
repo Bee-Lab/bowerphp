@@ -36,11 +36,12 @@ class Bowerphp
     private $installer;
 
     /**
-     * @param ConfigInterface       $config
-     * @param Filesystem            $filesystem
-     * @param ClientInterface       $httpClient
-     * @param RepositoryInterface   $repository
+     * @param ConfigInterface $config
+     * @param Filesystem $filesystem
+     * @param ClientInterface $httpClient
+     * @param RepositoryInterface $repository
      * @param BowerphpConsoleOutput $output
+     * @param InstallerInterface $installer
      */
     public function __construct(ConfigInterface $config, Filesystem $filesystem, ClientInterface $httpClient, RepositoryInterface $repository, BowerphpConsoleOutput $output, InstallerInterface $installer = null)
     {

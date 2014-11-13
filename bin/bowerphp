@@ -2,12 +2,20 @@
 <?php
 
 if (PHP_SAPI !== 'cli') {
-    echo 'Warning: Bowerphp should be invoked via the CLI version of PHP, not the '.PHP_SAPI.' SAPI'.PHP_EOL;
+    echo 'Warning: Bowerphp should be invoked via the CLI version of PHP, not the ' . PHP_SAPI . ' SAPI' . PHP_EOL;
 }
 
-require __DIR__.'/../src/bootstrap.php';
+require __DIR__ . '/../src/bootstrap.php';
 
+use Bowerphp\Command\UpdateCommand;
+use Bowerphp\Config\Config;
 use Bowerphp\Console\Application;
+use Bowerphp\Installer\Installer;
+use Bowerphp\Repository\GithubRepository;
+use Bowerphp\Util\Filesystem;
+use Bowerphp\Util\ZipArchive;
+use Guzzle\Http\Client;
+use Pimple\Container;
 
 error_reporting(-1);
 
@@ -16,14 +24,14 @@ if (function_exists('ini_set')) {
 
     $memoryInBytes = function ($value) {
         $unit = strtolower(substr($value, -1, 1));
-        $value = (int) $value;
-        switch($unit) {
+        $value = (int)$value;
+        switch ($unit) {
             case 'g':
                 $value *= 1024;
-                // no break (cumulative multiplier)
+            // no break (cumulative multiplier)
             case 'm':
                 $value *= 1024;
-                // no break (cumulative multiplier)
+            // no break (cumulative multiplier)
             case 'k':
                 $value *= 1024;
         }
@@ -40,5 +48,23 @@ if (function_exists('ini_set')) {
 }
 
 // run the command application
-$application = new Application();
+$container = new Container();
+$container['commands'] = function ($container) {
+    $filesystem = new Filesystem();
+    $httpClient = new Client();
+    $config = new Config($filesystem);
+    $repository = new GithubRepository();
+    $installer = new Installer($filesystem, new ZipArchive(), $config);
+
+    return array(
+        new UpdateCommand($config, $filesystem, $httpClient, $repository, $installer)
+    );
+};
+$container['application'] = function ($container) {
+    $application = new Application();
+    $application->addCommands($container['commands']);
+    return $application;
+};
+
+$application = $container['application'];
 $application->run();
