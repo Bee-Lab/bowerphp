@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5b533fbd9df991613f52405b549a9cf3",
+    "hash": "2ee7c8282efc202318eb4a786ec6b231",
     "packages": [
         {
             "name": "camspiers/json-pretty",
@@ -210,16 +210,16 @@
         },
         {
             "name": "pimple/pimple",
-            "version": "dev-master",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/silexphp/Pimple.git",
-                "reference": "08502c02fc490678847f733e0a0b784628033b3a"
+                "reference": "876bf0899d01feacd2a2e83f04641e51350099ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silexphp/Pimple/zipball/08502c02fc490678847f733e0a0b784628033b3a",
-                "reference": "08502c02fc490678847f733e0a0b784628033b3a",
+                "url": "https://api.github.com/repos/silexphp/Pimple/zipball/876bf0899d01feacd2a2e83f04641e51350099ef",
+                "reference": "876bf0899d01feacd2a2e83f04641e51350099ef",
                 "shasum": ""
             },
             "require": {
@@ -252,7 +252,7 @@
                 "container",
                 "dependency injection"
             ],
-            "time": "2014-11-09 08:04:37"
+            "time": "2014-07-24 09:48:15"
         },
         {
             "name": "symfony/console",
@@ -1270,7 +1270,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "pimple/pimple": 20,
         "mockery/mockery": 20
     },
     "prefer-stable": false,

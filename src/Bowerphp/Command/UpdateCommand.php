@@ -10,15 +10,10 @@
 namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
-use Bowerphp\Config\Config;
-use Bowerphp\Installer\InstallerInterface;
 use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Package\Package;
-use Bowerphp\Repository\RepositoryInterface;
-use Bowerphp\Util\Filesystem;
 use Doctrine\Common\Cache\FilesystemCache;
 use Guzzle\Cache\DoctrineCacheAdapter;
-use Guzzle\Http\ClientInterface;
 use Guzzle\Plugin\Cache\CachePlugin;
 use Guzzle\Plugin\Cache\DefaultCacheStorage;
 use RuntimeException;
@@ -31,22 +26,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class UpdateCommand extends Command
 {
-    private $config;
-    private $filesystem;
-    private $httpClient;
-    private $repository;
-    private $installer;
-
-    public function __construct(Config $config, Filesystem $filesystem, ClientInterface $httpClient, RepositoryInterface $repository, InstallerInterface $installer)
-    {
-        parent::__construct();
-        $this->config = $config;
-        $this->filesystem = $filesystem;
-        $this->httpClient = $httpClient;
-        $this->repository = $repository;
-        $this->installer = $installer;
-    }
-
     /**
      * {@inheritDoc}
      */

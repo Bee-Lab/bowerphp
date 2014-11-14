@@ -28,7 +28,7 @@
         "doctrine/cache": "~1.3",
         "guzzle/guzzle": "~3.8",
         "camspiers/json-pretty": "1.0.*",
-        "pimple/pimple": "dev-master"
+        "pimple/pimple": "3.0.*"
     },
     "require-dev":{
         "ext-phar": "*",
