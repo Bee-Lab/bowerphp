@@ -300,7 +300,7 @@ class GithubRepository implements RepositoryInterface
                         explode('.', trim($matches[1], '.'))
                     )
                 );
-                $preRelease = $matches[2] ? : 'zzzzzz';
+                $preRelease = $matches[2] ?: 'zzzzzz';
 
                 $tag['normal_version'] = $number . $preRelease;
             } else {

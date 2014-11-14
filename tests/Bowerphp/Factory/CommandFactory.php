@@ -13,6 +13,7 @@ class CommandFactory
         $commandTester = new CommandTester($command);
         $input = array_merge($parameters, array('command' => $command->getName()));
         $commandTester->execute($input, $options);
+
         return $commandTester;
     }
 }
