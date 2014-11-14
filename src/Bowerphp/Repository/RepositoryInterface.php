@@ -2,7 +2,7 @@
 
 namespace Bowerphp\Repository;
 
-use Guzzle\Http\ClientInterface;
+use Github\HttpClient\HttpClientInterface as ClientInterface;
 
 /**
  * Repository interface.

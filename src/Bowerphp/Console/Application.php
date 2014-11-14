@@ -32,7 +32,8 @@ class Application extends BaseApplication
      */
     protected $bowerphp;
 
-    private static $logo = '    ____                                __
+    private static $logo =
+'   ____                                __
    / __ )____ _      _____  _________  / /_  ____
   / __  / __ \ | /| / / _ \/ ___/ __ \/ __ \/ __ \
  / /_/ / /_/ / |/ |/ /  __/ /  / /_/ / / / / /_/ /
@@ -46,7 +47,7 @@ class Application extends BaseApplication
     public function __construct()
     {
         ErrorHandler::register();
-        parent::__construct('Bowerphp', '0.1 Powered by BeeLab (bee-lab.net)');
+        parent::__construct('Bowerphp', 'Powered by BeeLab (bee-lab.net)');
     }
 
     /**
