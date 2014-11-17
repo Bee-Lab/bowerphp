@@ -36,7 +36,7 @@ class Config implements ConfigInterface
     public function __construct(Filesystem $filesystem)
     {
         $this->filesystem = $filesystem;
-        $this->cacheDir   = getenv('HOME').'/.cache/bowerphp';
+        $this->cacheDir   = $this->getHomeDir().'/.cache/bowerphp';
         $this->installDir = getcwd().'/bower_components';
         $rc               = getcwd().'/.bowerrc';
 
@@ -52,6 +52,26 @@ class Config implements ConfigInterface
                 $this->cacheDir = $json['storage']['packages'];
             }
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getHomeDir()
+    {
+        if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
+            if (!getenv('APPDATA')) {
+                throw new \RuntimeException('The APPDATA environment variable must be set for bowerphp to run correctly');
+            }
+
+            return strtr(getenv('APPDATA'), '\\', '/');
+        }
+
+        if (!getenv('HOME')) {
+            throw new \RuntimeException('The HOME environment variable must be set for bowerphp to run correctly');
+        }
+
+        return rtrim(getenv('HOME'), '/');
     }
 
     /**

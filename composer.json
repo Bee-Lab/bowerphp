@@ -21,6 +21,7 @@
     "require": {
         "php": ">=5.3.2",
         "ext-zip": "*",
+        "ext-fileinfo": "*",
         "symfony/console": "~2.3",
         "symfony/finder": "~2.2",
         "symfony/filesystem": "~2.1",

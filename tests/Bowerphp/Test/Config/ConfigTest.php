@@ -32,7 +32,7 @@ class ConfigTest extends TestCase
 
         $config = new Config($this->filesystem);
 
-        $this->assertEquals(getenv('HOME') . '/.cache/bowerphp', $config->getCacheDir());
+        $this->assertEquals($config->getHomeDir() . '/.cache/bowerphp', $config->getCacheDir());
         $this->assertEquals(getcwd() . '/bower_components', $config->getInstallDir());
     }
 

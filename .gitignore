@@ -1,5 +1,6 @@
 .bowerrc
 bin/phpunit
+bin/phpunit.bat
 bower.json
 bowerphp.phar
 vendor
