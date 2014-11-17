@@ -40,7 +40,7 @@ class Installer implements InstallerInterface
      */
     public function install(PackageInterface $package)
     {
-        $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();
+        $tmpFileName = $this->config->getCacheDir().'/tmp/'.$package->getName();
         if ($this->zipArchive->open($tmpFileName) !== true) {
             throw new RuntimeException(sprintf('Unable to open zip file %s.', $tmpFileName));
         }
@@ -49,7 +49,7 @@ class Installer implements InstallerInterface
         $files = $this->filterZipFiles($this->zipArchive, isset($info['ignore']) ? $info['ignore'] : array());
         foreach ($files as $i => $file) {
             $stat = $this->zipArchive->statIndex($i);
-            $fileName = $this->config->getInstallDir() . '/' . str_replace($dirName, $package->getName(), $file);
+            $fileName = $this->config->getInstallDir().'/'.str_replace($dirName, $package->getName(), $file);
             if (substr($fileName, -1) != '/') {
                 $fileContent = $this->zipArchive->getStream($file);
                 $this->filesystem->write($fileName, $fileContent);
@@ -59,7 +59,7 @@ class Installer implements InstallerInterface
         // adjust timestamp for directories
         foreach ($files as $i => $file) {
             $stat = $this->zipArchive->statIndex($i);
-            $fileName = $this->config->getInstallDir() . '/' . str_replace($dirName, $package->getName(), $file);
+            $fileName = $this->config->getInstallDir().'/'.str_replace($dirName, $package->getName(), $file);
             if (is_dir($fileName) && substr($fileName, -1) == '/') {
                 $this->filesystem->touch($fileName, $stat['mtime']);
             }
@@ -69,7 +69,7 @@ class Installer implements InstallerInterface
         // create .bower.json metadata file
         // XXX we still need to add some other info...
         $dotBowerJson = Json::encode($package->getInfo());
-        $this->filesystem->write($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json', $dotBowerJson);
+        $this->filesystem->write($this->config->getInstallDir().'/'.$package->getName().'/.bower.json', $dotBowerJson);
     }
 
     /**
@@ -78,7 +78,7 @@ class Installer implements InstallerInterface
     public function update(PackageInterface $package)
     {
         // install files
-        $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();
+        $tmpFileName = $this->config->getCacheDir().'/tmp/'.$package->getName();
         if ($this->zipArchive->open($tmpFileName) !== true) {
             throw new RuntimeException(sprintf('Unable to open zip file %s.', $tmpFileName));
         }
@@ -87,7 +87,7 @@ class Installer implements InstallerInterface
         $files = $this->filterZipFiles($this->zipArchive, isset($info['ignore']) ? $info['ignore'] : array());
         foreach ($files as $i => $file) {
             $stat = $this->zipArchive->statIndex($i);
-            $fileName = $this->config->getInstallDir() . '/' . str_replace($dirName, $package->getName(), $file);
+            $fileName = $this->config->getInstallDir().'/'.str_replace($dirName, $package->getName(), $file);
             if (substr($fileName, -1) != '/') {
                 $fileContent = $this->zipArchive->getStream($file);
                 $this->filesystem->write($fileName, $fileContent);
@@ -97,7 +97,7 @@ class Installer implements InstallerInterface
         // adjust timestamp for directories
         foreach ($files as $i => $file) {
             $stat = $this->zipArchive->statIndex($i);
-            $fileName = $this->config->getInstallDir() . '/' . str_replace($dirName, $package->getName(), $file);
+            $fileName = $this->config->getInstallDir().'/'.str_replace($dirName, $package->getName(), $file);
             if (substr($fileName, -1) == '/' && is_dir($fileName)) {
                 $this->filesystem->touch($fileName, $stat['mtime']);
             }
@@ -108,7 +108,7 @@ class Installer implements InstallerInterface
         // XXX we still need to add some other info...
         $dotBowerContent = array_merge($package->getInfo(), array('version' => $package->getRequiredVersion()));
         $dotBowerJson = Json::encode($dotBowerContent);
-        $this->filesystem->write($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json', $dotBowerJson);
+        $this->filesystem->write($this->config->getInstallDir().'/'.$package->getName().'/.bower.json', $dotBowerJson);
     }
 
     /**
@@ -116,7 +116,7 @@ class Installer implements InstallerInterface
      */
     public function uninstall(PackageInterface $package)
     {
-        $this->removeDir($this->config->getInstallDir() . '/' . $package->getName());
+        $this->removeDir($this->config->getInstallDir().'/'.$package->getName());
     }
 
     /**
@@ -132,8 +132,8 @@ class Installer implements InstallerInterface
         $directories = $finder->directories()->in($this->config->getInstallDir());
 
         foreach ($directories as $packageDirectory) {
-            if ($this->filesystem->exists($packageDirectory . '/.bower.json')) {
-                $bowerJson = $this->filesystem->read($packageDirectory . '/.bower.json');
+            if ($this->filesystem->exists($packageDirectory.'/.bower.json')) {
+                $bowerJson = $this->filesystem->read($packageDirectory.'/.bower.json');
                 $bower = json_decode($bowerJson, true);
                 if (is_null($bower)) {
                     throw new RuntimeException(sprintf('Invalid content in .bower.json for package %s.', $packageDirectory));
@@ -211,10 +211,10 @@ class Installer implements InstallerInterface
             if (strpos($pattern, '**') !== false) {
                 $pattern = str_replace('**', '*', $pattern);
                 if (substr($pattern, 0, 1) == '/') {
-                    $vName = '/'. $vName;
+                    $vName = '/'.$vName;
                 }
                 if (substr($vName, 0, 1) == '.') {
-                    $vName = '/'. $vName;
+                    $vName = '/'.$vName;
                 }
                 if (fnmatch($pattern, $vName, FNM_PATHNAME)) {
                     return true;
@@ -224,22 +224,22 @@ class Installer implements InstallerInterface
                     $pattern = substr($pattern, 1); // remove possible starting slash
                 }
                 $escPattern = str_replace(array('.', '*'), array('\.', '.*'), $pattern);
-                if (preg_match('#^' . $escPattern . '#', $vName) > 0) {
+                if (preg_match('#^'.$escPattern.'#', $vName) > 0) {
                     return true;
                 }
             } elseif (strpos($pattern, '/') === false) { // no slash
                 $escPattern = str_replace(array('.', '*'), array('\.', '.*'), $pattern);
-                if (preg_match('#^' . $escPattern . '#', $vName) > 0) {
+                if (preg_match('#^'.$escPattern.'#', $vName) > 0) {
                     return true;
                 }
             } elseif (substr($pattern, 0, 1) == '/') {    // starting slash
                 $escPattern = str_replace(array('.', '*'), array('\.', '.*'), $pattern);
-                if (preg_match('#^' . $escPattern . '#', '/' . $vName) > 0) {
+                if (preg_match('#^'.$escPattern.'#', '/'.$vName) > 0) {
                     return true;
                 }
             } else {
                 $escPattern = str_replace(array('.', '*'), array('\.', '.*'), $pattern);
-                if (preg_match('#^' . $escPattern . '#', $vName) > 0) {
+                if (preg_match('#^'.$escPattern.'#', $vName) > 0) {
                     return true;
                 }
             }

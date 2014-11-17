@@ -220,7 +220,7 @@ EOF;
             $stub .= "define('BOWERPHP_DEV_WARNING_TIME', $warningTime);\n";
         }
 
-        return $stub . <<<'EOF'
+        return $stub.<<<'EOF'
 require 'phar://bowerphp.phar/bin/bowerphp';
 
 __HALT_COMPILER();

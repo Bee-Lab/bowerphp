@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of Bowerphp.
  *
@@ -8,13 +7,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
 use Bowerphp\Config\Config;
 use Bowerphp\Output\BowerphpConsoleOutput;
-use Bowerphp\Package\Package;
 use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Util\Filesystem;
 use Doctrine\Common\Cache\FilesystemCache;
@@ -22,8 +19,8 @@ use Guzzle\Cache\DoctrineCacheAdapter;
 use Guzzle\Http\Client;
 use Guzzle\Plugin\Cache\CachePlugin;
 use Guzzle\Plugin\Cache\DefaultCacheStorage;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -45,8 +42,7 @@ The <info>%command.name%</info> command searches for a package by name.
 
   <info>php %command.full_name% name</info>
 EOT
-            )
-        ;
+            );
     }
 
     /**
@@ -62,7 +58,7 @@ EOT
 
         // http cache
         $cachePlugin = new CachePlugin(array(
-           'storage' => new DefaultCacheStorage(new DoctrineCacheAdapter(new FilesystemCache($config->getCacheDir())), 'bowerphp', 86400)
+            'storage' => new DefaultCacheStorage(new DoctrineCacheAdapter(new FilesystemCache($config->getCacheDir())), 'bowerphp', 86400),
         ));
         $httpClient->addSubscriber($cachePlugin);
 
@@ -70,19 +66,15 @@ EOT
 
         $consoleOutput = new BowerphpConsoleOutput($output);
         $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), $consoleOutput);
-        $packageNames  =  $bowerphp->searchPackages($name);
+        $packages = $bowerphp->searchPackages($name);
 
-        if (count($packageNames) === 0) {
+        if (empty($packages)) {
             $output->writeln('No results.');
         } else {
-            $output->writeln('Search results:');
-            $output->writeln('');
-            foreach ($packageNames as $packageName) {
-                $package = new Package($packageName);
-                $bower = $bowerphp->getPackageInfo($package, 'original_url');
-
-                $consoleOutput->writelnSearchOrLookup($bower['name'], $bower['url'], 4);
-            }
+            $output->writeln('Search results:'.PHP_EOL);
+            array_walk($packages, function ($package) use ($consoleOutput) {
+                $consoleOutput->writelnSearchOrLookup($package['name'], $package['url'], 4);
+            });
         }
     }
 }

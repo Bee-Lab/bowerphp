@@ -77,7 +77,7 @@ EOT
 
         // http cache
         $cachePlugin = new CachePlugin(array(
-            'storage' => new DefaultCacheStorage(new DoctrineCacheAdapter(new FilesystemCache($config->getCacheDir())), 'bowerphp', 86400)
+            'storage' => new DefaultCacheStorage(new DoctrineCacheAdapter(new FilesystemCache($config->getCacheDir())), 'bowerphp', 86400),
         ));
         $httpClient->addSubscriber($cachePlugin);
 
@@ -103,7 +103,7 @@ EOT
         } catch (\RuntimeException $e) {
             $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
             if ($e->getCode() == GithubRepository::VERSION_NOT_FOUND && !empty($package)) {
-                $output->writeln(sprintf('Available versions: %s', implode(', ' , $bowerphp->getPackageInfo($package, 'versions'))));
+                $output->writeln(sprintf('Available versions: %s', implode(', ', $bowerphp->getPackageInfo($package, 'versions'))));
             }
 
             return $e->getCode();
@@ -111,5 +111,4 @@ EOT
 
         $output->writeln('');
     }
-
 }

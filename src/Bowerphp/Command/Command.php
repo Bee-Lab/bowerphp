@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of Bowerphp.
  *
@@ -8,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Bowerphp\Command;
 
 use Guzzle\Http\ClientInterface;
@@ -37,12 +35,11 @@ abstract class Command extends BaseCommand
             $logger = function ($message) use ($output) {
                 $finfo = new \finfo(FILEINFO_MIME);
                 $msg =  (substr($finfo->buffer($message), 0, 4) == 'text') ? $message : '(binary string)';
-                $output->writeln('<info>Guzzle</info> ' . $msg);
+                $output->writeln('<info>Guzzle</info> '.$msg);
             };
             $logAdapter = new ClosureLogAdapter($logger);
             $logPlugin = new LogPlugin($logAdapter, MessageFormatter::DEBUG_FORMAT);
             $client->addSubscriber($logPlugin);
         }
     }
-
 }
