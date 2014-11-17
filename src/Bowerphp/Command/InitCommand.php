@@ -59,7 +59,7 @@ EOT
 
         // http cache
         $cachePlugin = new CachePlugin(array(
-           'storage' => new DefaultCacheStorage(new DoctrineCacheAdapter(new FilesystemCache($config->getCacheDir())), 'bowerphp', 86400)
+           'storage' => new DefaultCacheStorage(new DoctrineCacheAdapter(new FilesystemCache($config->getCacheDir())), 'bowerphp', 86400),
         ));
         $httpClient->addSubscriber($cachePlugin);
 

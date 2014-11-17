@@ -1,43 +1,47 @@
 <?php
-
 namespace Bowerphp\Test\Command;
 
-use Bowerphp\Console\Application;
-use Symfony\Component\Console\Tester\CommandTester;
+use Bowerphp\Factory\CommandFactory;
+use RuntimeException;
 
 /**
  * @group functional
  */
 class SearchCommandTest extends \PHPUnit_Framework_TestCase
 {
-    public function testExecute()
+    /**
+     * @test
+     */
+    public function shouldExecute()
     {
-        $application = new Application();
-        $commandTester = new CommandTester($command = $application->get('search'));
-        $commandTester->execute(array('command' => $command->getName(), 'name' => 'smart'), array('decorated' => false));
+        //when
+        $commandTester = CommandFactory::tester('search', array('name' => 'smart'));
 
+        //then
         $this->assertRegExp('/Search results/', $commandTester->getDisplay());
         $this->assertRegExp('/jquery.smartbanner.git/', $commandTester->getDisplay());
         $this->assertRegExp('/git:/', $commandTester->getDisplay());
     }
 
-    public function testExecuteNoResults()
+    /**
+     * @test
+     */
+    public function shouldWriteNoResultWhenNoPackageFound()
     {
-        $application = new Application();
-        $commandTester = new CommandTester($command = $application->get('search'));
-        $commandTester->execute(array('command' => $command->getName(), 'name' => 'unexistant'), array('decorated' => false));
+        //when
+        $commandTester = CommandFactory::tester('search', array('name' => 'unexistant'));
 
+        //then
         $this->assertRegExp('/No results/', $commandTester->getDisplay());
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException RuntimeException
      * @expectedExceptionMessage Not enough arguments.
      */
-    public function testExecuteWithoutPackage()
+    public function shouldThrowExceptionWhenNoPackagePass()
     {
-        $application = new Application();
-        $commandTester = new CommandTester($command = $application->get('search'));
-        $commandTester->execute(array(), array('decorated' => false));
+        //when
+        CommandFactory::tester('search');
     }
 }

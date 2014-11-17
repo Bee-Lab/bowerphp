@@ -85,7 +85,7 @@ class Application extends BaseApplication
      */
     public function getHelp()
     {
-        return self::$logo . parent::getHelp();
+        return self::$logo.parent::getHelp();
     }
 
     /**
@@ -103,7 +103,6 @@ class Application extends BaseApplication
             new Command\ListCommand(),
             new Command\LookupCommand(),
             new Command\SearchCommand(),
-            new Command\UpdateCommand(),
             new Command\UninstallCommand(),
         );
     }
