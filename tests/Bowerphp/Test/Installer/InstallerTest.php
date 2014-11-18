@@ -500,4 +500,28 @@ class InstallerTest extends TestCase
             array('twbs-bootstrap-6d03173/less/wells.less'),
         );
     }
+
+    public function providerIgnoreExceptions()
+    {
+        return array (
+            array('zeroclipboard-zeroclipboard-1ec7da6/test/shared/private.tests.js.html', true),
+            array('zeroclipboard-zeroclipboard-1ec7da6/src/meta/composer.json.tmpl', true),
+            array('zeroclipboard-zeroclipboard-1ec7da6/dist/ZeroClipboard.swf', false),
+            array('zeroclipboard-zeroclipboard-1ec7da6/bower.json', false),
+        );
+    }
+
+    /**
+     * @dataProvider providerIgnoreExceptions
+     */
+    public function testIgnoreExceptions($file, $shouldIgnore)
+    {
+        $ignore = array(
+            "*",
+            "!/bower.json",
+            "!/dist/**"
+        );
+        $ignored = $this->installer->isIgnored($file, $ignore, "zeroclipboard-zeroclipboard-1ec7da6/");
+        $this->assertTrue($ignored == $shouldIgnore);
+    }
 }

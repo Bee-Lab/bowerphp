@@ -207,6 +207,15 @@ class Installer implements InstallerInterface
     public function isIgnored($name, array $ignore, $dirName)
     {
         $vName = substr($name, strlen($dirName));
+        //first check if there is line that overrides other lines
+        foreach ($ignore as $pattern) {
+        	if (strpos($pattern, "!") !== 0)
+        		continue;
+        	$pattern = ltrim($pattern, "!");
+        	// the ! negates the line, otherwise the syntax is the same
+        	if ($this->isIgnored($name, array($pattern), $dirName))
+        		return false;
+        }
         foreach ($ignore as $pattern) {
             if (strpos($pattern, '**') !== false) {
                 $pattern = str_replace('**', '*', $pattern);
