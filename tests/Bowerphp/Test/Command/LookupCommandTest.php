@@ -1,5 +1,4 @@
 <?php
-
 namespace Bowerphp\Test\Command;
 
 use Bowerphp\Console\Application;
@@ -22,7 +21,7 @@ class LookupCommandTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException \RuntimeException
      * @expectedExceptionMessage Not enough arguments.
      */
     public function testExecuteWithoutPackage()

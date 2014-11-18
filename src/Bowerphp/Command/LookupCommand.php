@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of Bowerphp.
  *
@@ -8,13 +7,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
 use Bowerphp\Config\Config;
 use Bowerphp\Output\BowerphpConsoleOutput;
-use Bowerphp\Package\Package;
 use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Util\Filesystem;
 use Doctrine\Common\Cache\FilesystemCache;
@@ -22,8 +19,8 @@ use Guzzle\Cache\DoctrineCacheAdapter;
 use Guzzle\Http\Client;
 use Guzzle\Plugin\Cache\CachePlugin;
 use Guzzle\Plugin\Cache\DefaultCacheStorage;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -45,8 +42,7 @@ The <info>%command.name%</info> command is used for search with exact match the 
 
   <info>php %command.full_name% packageName</info>
 EOT
-            )
-        ;
+            );
     }
 
     /**
@@ -62,22 +58,20 @@ EOT
 
         // http cache
         $cachePlugin = new CachePlugin(array(
-           'storage' => new DefaultCacheStorage(new DoctrineCacheAdapter(new FilesystemCache($config->getCacheDir())), 'bowerphp', 86400),
+            'storage' => new DefaultCacheStorage(new DoctrineCacheAdapter(new FilesystemCache($config->getCacheDir())), 'bowerphp', 86400),
         ));
         $httpClient->addSubscriber($cachePlugin);
 
-        $packageName = $input->getArgument('package');
+        $name = $input->getArgument('package');
 
-        $ver = explode('#', $packageName);
-        $packageName   = isset($ver[0]) ? $ver[0] : $packageName;
-        $version       = isset($ver[1]) ? $ver[1] : '*';
+        $ver = explode('#', $name);
+        $name = isset($ver[0]) ? $ver[0] : $name;
 
-        $package       = new Package($packageName, $version);
         $consoleOutput = new BowerphpConsoleOutput($output);
-        $bowerphp      = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), $consoleOutput);
+        $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), $consoleOutput);
 
-        $bower         = $bowerphp->getPackageInfo($package, 'original_url');
+        $package = $bowerphp->lookupPackage($name);
 
-        $consoleOutput->writelnSearchOrLookup($bower['name'], $bower['url']);
+        $consoleOutput->writelnSearchOrLookup($package['name'], $package['url']);
     }
 }
