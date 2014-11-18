@@ -55,6 +55,8 @@ class Config implements ConfigInterface
     }
 
     /**
+     * TODO make this protected (need refactoring on tests)
+     *
      * @return string
      */
     public function getHomeDir()
