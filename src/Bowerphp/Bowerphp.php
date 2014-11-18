@@ -240,13 +240,11 @@ class Bowerphp
 
         if ($info == 'versions') {
             $tags =  $this->repository->getTags();
-            // see https://bugs.php.net/bug.php?id=50688 for suppressing error
-            @usort($tags, function ($a, $b) {
-                try {
-                    return version::rcompare($a, $b);
-                } catch (RuntimeException $e) {
-                    return 0;
-                }
+            usort($tags, function ($a, $b) {
+                $x = $this->normalize($a);
+                $y = $this->normalize($b);
+
+                return version::rcompare($x, $y, true);
             });
 
             return $tags;
@@ -388,5 +386,28 @@ class Bowerphp
         }
 
         return $packageTag;
+    }
+
+    /**
+     * Normalize some nasty version strings, not compatible with semver
+     *
+     * @param  string $version
+     * @return string
+     */
+    private function normalize($version)
+    {
+        $dots = explode('.', $version);
+        if (count($dots) === 3) {
+            return $version;
+        }
+        if (count($dots) === 2) {   // e.g. 1.8rc1
+            if (is_numeric($dots[1])) {
+                return $dots[0] . '.' . $dots[1]. '.0';
+            }
+            list($dot1num, $dot1patch) = preg_split('/[a-z]+/', $dots[1]);
+            $dot1str = preg_replace('/[^a-z]+/', '', $dots[1]);
+
+            return $dots[0] . '.' . $dot1num . '.0-' . $dot1str;
+        }
     }
 }
