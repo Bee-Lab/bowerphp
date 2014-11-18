@@ -1,10 +1,10 @@
 <?php
+
 namespace Bowerphp\Test\Package;
 
 use Bowerphp\Package\Search;
 use Bowerphp\Test\HttpMockedTestCase;
 use Guzzle\Http\Exception\RequestException;
-use Mockery;
 
 class SearchTest extends HttpMockedTestCase
 {
