@@ -1,11 +1,7 @@
 language: php
 
 php:
-  - 5.3.3
-  - 5.3
-  - 5.4
-  - 5.5
-  - 5.6
+    - 5.6
 
 before_script:
     - sudo apt-get install parallel
@@ -15,5 +11,5 @@ before_script:
     - git config --global user.email travis@example.com
 
 script:
-    - ls -d tests/Bowerphp/Test/!(TestCase.php) | parallel --gnu --keep-order 'echo "Running {} tests"; ./bin/phpunit -c tests/complete.phpunit.xml {};'
+    - phpunit --debug
 
