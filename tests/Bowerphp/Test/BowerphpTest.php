@@ -596,14 +596,14 @@ EOT;
             ->shouldReceive('findPackage')->with('1.1')->andReturn('1.1.0')
             ->shouldReceive('setUrl')->with('https://github.com/jackmoore/colorbox', true)
             ->shouldReceive('getBower')->with('1.1.0', true, "git://github.com/jackmoore/colorbox.git")->andReturn('a json...')
-            ->shouldReceive('getTags')->andReturn(array('1.1.0', '1.0.0'))
+            ->shouldReceive('getTags')->andReturn(array('1.1.0', '1.0.0-rc1', '1.0.0', '1.0.0-beta'))
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
 
         $this->assertEquals('https://github.com/jackmoore/colorbox', $bowerphp->getPackageInfo($package));
         $this->assertEquals('a json...', $bowerphp->getPackageInfo($package, 'bower'));
-        $this->assertEquals(array('1.1.0', '1.0.0'), $bowerphp->getPackageInfo($package, 'versions'));
+        $this->assertEquals(array('1.1.0', '1.0.0', '1.0.0-rc1', '1.0.0-beta'), $bowerphp->getPackageInfo($package, 'versions'));
     }
 
     public function testReturnLookupForPackage()

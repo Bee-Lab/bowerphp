@@ -25,13 +25,19 @@ use Guzzle\Http\Exception\RequestException;
 use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Finder\Finder;
+use vierbergenlars\SemVer\version;
 
 /**
  * Main class
  */
 class Bowerphp
 {
-    protected $config, $filesystem, $httpClient, $repository, $output;
+    protected $config;
+    protected $filesystem;
+    protected $httpClient;
+    protected $repository;
+    protected $output;
+
     /**
      * @var InstallerInterface
      */
@@ -233,7 +239,17 @@ class Bowerphp
         }
 
         if ($info == 'versions') {
-            return $this->repository->getTags();
+            $tags =  $this->repository->getTags();
+            // see https://bugs.php.net/bug.php?id=50688 for suppressing error
+            @usort($tags, function ($a, $b) {
+                try {
+                    return version::rcompare($a, $b);
+                } catch (RuntimeException $e) {
+                    return 0;
+                }
+            });
+
+            return $tags;
         }
 
         throw new RuntimeException(sprintf('Unsupported info option "%s".', $info));
