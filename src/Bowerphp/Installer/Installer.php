@@ -32,7 +32,7 @@ class Installer implements InstallerInterface
     {
         $this->filesystem = $filesystem;
         $this->zipArchive = $zipArchive;
-        $this->config     = $config;
+        $this->config = $config;
     }
 
     /**
@@ -177,7 +177,7 @@ class Installer implements InstallerInterface
         for ($i = 0; $i < $numFiles; $i++) {
             $stat = $archive->statIndex($i);
             #if ($stat['size'] > 0) {    // directories have sizes 0
-                $return[] = $stat['name'];
+            $return[] = $stat['name'];
             #}
         }
         $that = $this;

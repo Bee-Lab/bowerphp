@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of Bowerphp.
  *
@@ -8,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
@@ -17,6 +15,7 @@ use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Package\Package;
 use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Util\Filesystem;
+use Bowerphp\Util\PackageNameVersionExtractor;
 use Doctrine\Common\Cache\FilesystemCache;
 use Guzzle\Cache\DoctrineCacheAdapter;
 use Guzzle\Http\Client;
@@ -71,26 +70,25 @@ EOT
         $packageName = $input->getArgument('package');
         $property = $input->getArgument('property');
 
-        $ver = explode('#', $packageName);
-        $packageName = isset($ver[0]) ? $ver[0] : $packageName;
-        $version = isset($ver[1]) ? $ver[1] : '*';
+        $packageNameVersion = PackageNameVersionExtractor::fromString($packageName);
+        $version = $packageNameVersion->version;
 
-        $package = new Package($packageName, $version);
+        $package = new Package($packageNameVersion->name, $version);
         $consoleOutput = new BowerphpConsoleOutput($output);
         $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), $consoleOutput);
 
-        $bower = $bowerphp->getPackageInfo($package, 'bower');
+        $bowerJsonFile = $bowerphp->getPackageBowerFile($package);
         if ($version == '*') {
             $versions = $bowerphp->getPackageInfo($package, 'versions');
         }
         if (!is_null($property)) {
-            $bowerArray = json_decode($bower, true);
+            $bowerArray = json_decode($bowerJsonFile, true);
             $propertyValue = isset($bowerArray[$property]) ? $bowerArray[$property] : '';
             $consoleOutput->writelnJsonText($propertyValue);
 
             return;
         }
-        $consoleOutput->writelnJson($bower);
+        $consoleOutput->writelnJson($bowerJsonFile);
         if ($version != '*') {
             return;
         }

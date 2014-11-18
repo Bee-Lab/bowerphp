@@ -14,6 +14,7 @@ use Bowerphp\Config\Config;
 use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Util\Filesystem;
+use Bowerphp\Util\PackageNameVersionExtractor;
 use Doctrine\Common\Cache\FilesystemCache;
 use Guzzle\Cache\DoctrineCacheAdapter;
 use Guzzle\Http\Client;
@@ -64,13 +65,12 @@ EOT
 
         $name = $input->getArgument('package');
 
-        $ver = explode('#', $name);
-        $name = isset($ver[0]) ? $ver[0] : $name;
+        $packageNameVersion = PackageNameVersionExtractor::fromString($name);
 
         $consoleOutput = new BowerphpConsoleOutput($output);
         $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), $consoleOutput);
 
-        $package = $bowerphp->lookupPackage($name);
+        $package = $bowerphp->lookupPackage($packageNameVersion->name);
 
         $consoleOutput->writelnSearchOrLookup($package['name'], $package['url']);
     }
