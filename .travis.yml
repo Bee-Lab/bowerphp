@@ -11,11 +11,10 @@ env:
     - HOME=/home/travis
 
 before_script:
-    - sudo apt-get install parallel
     - echo '' > ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
     - composer install --dev --prefer-source
     - git config --global user.name travis-ci
     - git config --global user.email travis@example.com
 
 script:
-    - ls -d tests/Bowerphp/Test/!(TestCase.php) | parallel --gnu --keep-order 'echo "Running {} tests"; ./bin/phpunit {};'
+    - phpunit

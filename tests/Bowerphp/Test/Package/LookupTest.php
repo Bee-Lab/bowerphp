@@ -1,4 +1,5 @@
 <?php
+
 namespace Bowerphp\Test\Package;
 
 use Bowerphp\Package\Lookup;
@@ -22,7 +23,7 @@ class LookupTest extends HttpMockedTestCase
     }
 
     /**
-     * @expectedException \RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Package jquery has malformed json or is missing "url".
      */
     public function testThrowExceptionWhenUrlIsEmpty()

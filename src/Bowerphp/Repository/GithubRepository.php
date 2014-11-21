@@ -3,9 +3,7 @@
 namespace Bowerphp\Repository;
 
 use Bowerphp\Util\Json;
-use Guzzle\Http\ClientInterface;
-use Guzzle\Http\Exception\BadResponseException;
-use Guzzle\Http\Exception\RequestException;
+use Github\Client;
 use RuntimeException;
 
 /**
@@ -17,7 +15,7 @@ class GithubRepository implements RepositoryInterface
     protected $url;
     protected $originalUrl;
     protected $tag = array();
-    protected $httpClient;
+    protected $githubClient;
 
     /**
      * {@inheritDoc}
@@ -27,8 +25,8 @@ class GithubRepository implements RepositoryInterface
     public function setUrl($url, $raw = true)
     {
         $this->originalUrl = $url;
-        $this->url         = preg_replace('/\.git$/', '', str_replace('git://', 'https://'.($raw ? 'raw.' : ''), $this->originalUrl));
-        $this->url         = str_replace('raw.github.com', 'raw.githubusercontent.com', $this->url);
+        $this->url = preg_replace('/\.git$/', '', str_replace('git://', 'https://'.($raw ? 'raw.' : ''), $this->originalUrl));
+        $this->url = str_replace('raw.github.com', 'raw.githubusercontent.com', $this->url);
 
         return $this;
     }
@@ -50,12 +48,12 @@ class GithubRepository implements RepositoryInterface
     }
 
     /**
-     * @param  ClientInterface  $httpClient
+     * @param  Client           $githubClient
      * @return GithubRepository
      */
-    public function setHttpClient(ClientInterface $httpClient)
+    public function setHttpClient(Client $githubClient)
     {
-        $this->httpClient = $httpClient;
+        $this->githubClient = $githubClient;
 
         return $this;
     }
@@ -94,25 +92,14 @@ class GithubRepository implements RepositoryInterface
     public function findPackage($version = '*')
     {
         list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
-        try {
-            $githubTagsURL = sprintf('https://api.github.com/repos/%s/%s/tags?per_page=100', $repoUser, $repoName);
-            $request = $this->httpClient->get($githubTagsURL);
-            $response = $request->send();
-            $tags = json_decode($response->getBody(true), true);
-            while ($response->hasHeader('Link') && $response->getHeader('Link')->hasLink('next')) {
-                $link = $response->getHeader('Link')->getLink('next');
-                $response = $this->httpClient->get($link['url'])->send();
-                $tags = array_merge($tags, json_decode($response->getBody(true), true));
-            }
-        } catch (RequestException $e) {
-            throw new RuntimeException(sprintf('Cannot open repo %s/%s (%s).', $repoUser, $repoName, $e->getMessage()));
-        }
+        $tags = $this->githubClient->api('repo')->tags($repoUser, $repoName);
+
         $version = $this->fixVersion($version);
 
         // edge case: package has no tags
         if (count($tags) === 0) {
-            $zipballUrl = sprintf('https://api.github.com/repos/%s/%s/zipball/master', $repoUser, $repoName);
-            $this->tag = array('zipball_url' => $zipballUrl);
+            #$zipballUrl = $this->githubClient->api('repo')->contents()->archive($repoUser, $repoName, 'zipball');
+            #$this->tag = array('zipball_url' => $zipballUrl);
 
             return 'master';
         }
@@ -139,15 +126,9 @@ class GithubRepository implements RepositoryInterface
      */
     public function getRelease($type = 'zip')
     {
-        $file = $this->tag[$type.'ball_url'];
-        try {
-            $request = $this->httpClient->get($file);
-            $response = $request->send();
+        list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
 
-            return $response->getBody();
-        } catch (RequestException $e) {
-            throw new RuntimeException(sprintf('Cannot open file %s (%s).', $file, $e->getMessage()));
-        }
+        return $this->githubClient->api('repo')->contents()->archive($repoUser, $repoName, $type . 'ball', $this->tag['name']);
     }
 
     /**
@@ -156,22 +137,15 @@ class GithubRepository implements RepositoryInterface
     public function getTags()
     {
         list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
-        try {
-            $githubTagsURL = sprintf('https://api.github.com/repos/%s/%s/tags?per_page=100', $repoUser, $repoName);
-            $request = $this->httpClient->get($githubTagsURL);
-            $response = $request->send();
-            $tags = json_decode($response->getBody(true), true);
-            // edge case: no tags
-            if (count($tags) === 0) {
-                return array();
-            }
-
-            return array_map(function ($var) {
-                return $var['name'];
-            }, $tags);
-        } catch (RequestException $e) {
-            throw new RuntimeException(sprintf('Cannot open repo %s/%s (%s).', $repoUser, $repoName, $e->getMessage()));
+        $tags = $this->githubClient->api('repo')->tags($repoUser, $repoName);
+        // edge case: no tags
+        if (count($tags) === 0) {
+            return array();
         }
+
+        return array_map(function ($var) {
+            return $var['name'];
+        }, $tags);
     }
 
     /**
@@ -182,45 +156,29 @@ class GithubRepository implements RepositoryInterface
      */
     private function getDepBowerJson($version)
     {
-        $depBowerJsonURL = $this->url.'/'.$version.'/bower.json';
-        try {
-            $request = $this->httpClient->get($depBowerJsonURL);
-            $response = $request->send();
-            // we need this in case of redirect (e.g. 'less/less' becomes 'less/less.js')
-            $this->setUrl($response->getEffectiveUrl());
-        } catch (BadResponseException $e) {
-            if ($e->getResponse()->getStatusCode() == 404) {
-                // fallback on package.json
-                $depPackageJsonURL = $this->url.'/'.$version.'/package.json';
-                try {
-                    $request = $this->httpClient->get($depPackageJsonURL);
-                    $response = $request->send();
-                    $this->setUrl($response->getEffectiveUrl());
-                } catch (BadResponseException $e) {
-                    if ($version != 'master' && $e->getResponse()->getStatusCode() == 404) {
-                        // fallback on master
-                        return $this->getDepBowerJson('master');
-                    } else {
-                        throw $e;
-                    }
-                } catch (RequestException $e) {
-                    throw new RuntimeException(sprintf('Cannot open package git URL %s nor %s (%s).', $depBowerJsonURL, $depPackageJsonURL, $e->getMessage()));
-                }
-            } else {
-                throw $e;
+        list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
+        $contents = $this->githubClient->api('repo')->contents();
+        if ($contents->exists($repoUser, $repoName, 'bower.json', $version)) {
+            $json = $contents->download($repoUser, $repoName, 'bower.json', $version);
+        } else {
+            $isPackageJson = true;
+            if ($contents->exists($repoUser, $repoName, 'package.json', $version)) {
+#var_dump($repoUser, $repoName, 'package.json', $version);
+                $json = $contents->download($repoUser, $repoName, 'package.json', $version);
+            } elseif ($version != 'master') {
+                return $this->getDepBowerJson('master');
             }
-        } catch (RequestException $e) {
-            throw new RuntimeException(sprintf('Cannot open package git URL %s (%s).', $depBowerJsonURL, $e->getMessage()));
+            // try anyway. E.g. exists() return false for Modernizr, but then it downloads :-|
+            $json = $contents->download($repoUser, $repoName, 'package.json', $version);
+            #throw new RuntimeException(sprintf('Cannot open package bower.json nor package.json for %s (%s).', $repoName, $version));
         }
-        $json = $response->getBody(true);
 
-        // remove BOM if exists
         if (substr($json, 0, 3) == "\xef\xbb\xbf") {
             $json = substr($json, 3);
         }
 
         // for package.json, remove dependencies (see the case of Modernizr)
-        if (isset($depPackageJsonURL)) {
+        if (isset($isPackageJson)) {
             $array = json_decode($json, true);
             if (isset($array['dependencies'])) {
                 unset($array['dependencies']);

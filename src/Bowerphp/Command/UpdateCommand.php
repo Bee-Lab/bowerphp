@@ -17,11 +17,7 @@ use Bowerphp\Package\Package;
 use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Util\Filesystem;
 use Bowerphp\Util\ZipArchive;
-use Doctrine\Common\Cache\FilesystemCache;
-use Guzzle\Cache\DoctrineCacheAdapter;
-use Guzzle\Http\Client;
-use Guzzle\Plugin\Cache\CachePlugin;
-use Guzzle\Plugin\Cache\DefaultCacheStorage;
+use Github\Client;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -64,19 +60,14 @@ EOT
         $packageName = $input->getArgument('package');
 
         $filesystem = new Filesystem();
-        $httpClient = new Client();
+        $githubClient = new Client();
         $config = new Config($filesystem);
 
-        $this->logHttp($httpClient, $output);
-
-        // http cache
-        $cachePlugin = new CachePlugin(array(
-            'storage' => new DefaultCacheStorage(new DoctrineCacheAdapter(new FilesystemCache($config->getCacheDir())), 'bowerphp', 86400),
-        ));
-        $httpClient->addSubscriber($cachePlugin);
+        #$this->logHttp($githubClient, $output);
+        $this->setToken($githubClient);
 
         try {
-            $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), new BowerphpConsoleOutput($output), new Installer($filesystem, new ZipArchive(), $config));
+            $bowerphp = new Bowerphp($config, $filesystem, $githubClient, new GithubRepository(), new BowerphpConsoleOutput($output), new Installer($filesystem, new ZipArchive(), $config));
             if (is_null($packageName)) {
                 $bowerphp->updatePackages();
             } else {

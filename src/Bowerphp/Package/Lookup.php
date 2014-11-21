@@ -2,7 +2,7 @@
 namespace Bowerphp\Package;
 
 use Bowerphp\Config\ConfigInterface;
-use Guzzle\Http\ClientInterface;
+use Github\HttpClient\HttpClientInterface;
 use Guzzle\Http\Exception\RequestException;
 use RuntimeException;
 
@@ -11,17 +11,24 @@ class Lookup
     private $config;
     private $httpClient;
 
-    public function __construct(ConfigInterface $config, ClientInterface $httpClient)
+    /**
+     * @param ConfigInterface     $config
+     * @param HttpClientInterface $httpClient
+     */
+    public function __construct(ConfigInterface $config, HttpClientInterface $httpClient)
     {
         $this->config = $config;
         $this->httpClient = $httpClient;
     }
 
+    /**
+     * @param  string $name
+     * @return array
+     */
     public function package($name)
     {
         try {
-            $request = $this->httpClient->get($this->config->getBasePackagesUrl().urlencode($name));
-            $response = $request->send();
+            $response = $this->httpClient->get($this->config->getBasePackagesUrl().urlencode($name));
         } catch (RequestException $e) {
             throw new RuntimeException(sprintf('Cannot download package %s (%s).', $name, $e->getMessage()));
         }

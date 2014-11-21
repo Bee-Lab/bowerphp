@@ -12,7 +12,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->filesystem = Mockery::mock('Bowerphp\Util\Filesystem');
-        $this->httpClient = Mockery::mock('Guzzle\Http\ClientInterface');
+        $this->httpClient = Mockery::mock('Github\Client');
     }
 
     public function tearDown()

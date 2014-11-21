@@ -20,8 +20,7 @@ use Bowerphp\Package\PackageInterface;
 use Bowerphp\Package\Search;
 use Bowerphp\Repository\RepositoryInterface;
 use Bowerphp\Util\Filesystem;
-use Guzzle\Http\ClientInterface;
-use Guzzle\Http\Exception\RequestException;
+use Github\Client;
 use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Finder\Finder;
@@ -34,7 +33,7 @@ class Bowerphp
 {
     protected $config;
     protected $filesystem;
-    protected $httpClient;
+    protected $githubClient;
     protected $repository;
     protected $output;
 
@@ -46,15 +45,15 @@ class Bowerphp
     /**
      * @param ConfigInterface       $config
      * @param Filesystem            $filesystem
-     * @param ClientInterface       $httpClient
+     * @param Client                $githubClient
      * @param RepositoryInterface   $repository
      * @param BowerphpConsoleOutput $output
      */
-    public function __construct(ConfigInterface $config, Filesystem $filesystem, ClientInterface $httpClient, RepositoryInterface $repository, BowerphpConsoleOutput $output, InstallerInterface $installer = null)
+    public function __construct(ConfigInterface $config, Filesystem $filesystem, Client $githubClient, RepositoryInterface $repository, BowerphpConsoleOutput $output, InstallerInterface $installer = null)
     {
         $this->config = $config;
         $this->filesystem = $filesystem;
-        $this->httpClient = $httpClient;
+        $this->githubClient = $githubClient;
         $this->repository = $repository;
         $this->output = $output;
         $this->installer = $installer;
@@ -223,7 +222,7 @@ class Bowerphp
     {
         $decode = $this->lookupPackage($package->getName());
 
-        $this->repository->setHttpClient($this->httpClient);
+        $this->repository->setHttpClient($this->githubClient);
 
         if ($info == 'url') {
             $this->repository->setUrl($decode['url'], false);
@@ -250,9 +249,12 @@ class Bowerphp
         throw new RuntimeException(sprintf('Unsupported info option "%s".', $info));
     }
 
+    /**
+     * TODO make protected
+     */
     public function lookupPackage($name)
     {
-        $lookup = new Lookup($this->config, $this->httpClient);
+        $lookup = new Lookup($this->config, $this->githubClient->getHttpClient());
 
         return $lookup->package($name);
     }
@@ -279,7 +281,7 @@ class Bowerphp
      */
     public function searchPackages($name)
     {
-        $search = new Search($this->config, $this->httpClient);
+        $search = new Search($this->config, $this->githubClient->getHttpClient());
 
         return $search->package($name);
     }
@@ -355,20 +357,11 @@ class Bowerphp
      */
     protected function getPackageTag(PackageInterface $package, $setInfo = false)
     {
-        // look for package in bower
-        try {
-            $request = $this->httpClient->get($this->config->getBasePackagesUrl().$package->getName());
-            $response = $request->send();
-        } catch (RequestException $e) {
-            throw new RuntimeException(sprintf('Cannot download package %s (%s).', $package->getName(), $e->getMessage()));
-        }
-        $decode = json_decode($response->getBody(true), true);
-        if (!is_array($decode) || empty($decode['url'])) {
-            throw new RuntimeException(sprintf('Package %s has malformed json or is missing "url".', $package->getName()));
-        }
+        $lookup = new Lookup($this->config, $this->githubClient->getHttpClient());
+        $decode = $lookup->package($package->getName());
         // open package repository
         $repoUrl = $decode['url'];
-        $this->repository->setUrl($repoUrl)->setHttpClient($this->httpClient);
+        $this->repository->setUrl($repoUrl)->setHttpClient($this->githubClient);
         $bowerJson = $this->repository->getBower($package->getRequiredVersion());
         $bower = json_decode($bowerJson, true);
         if (!is_array($bower)) {

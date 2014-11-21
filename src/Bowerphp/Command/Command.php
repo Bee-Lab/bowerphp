@@ -9,6 +9,7 @@
  */
 namespace Bowerphp\Command;
 
+use Github\Client;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Log\ClosureLogAdapter;
 use Guzzle\Log\MessageFormatter;
@@ -24,6 +25,7 @@ abstract class Command extends BaseCommand
 {
     /**
      * Debug HTTP interactions
+     * TODO find a way to apply this to Gitub API HttpClient
      *
      * @param ClientInterface $client
      * @param OutputInterface $output
@@ -41,5 +43,16 @@ abstract class Command extends BaseCommand
             $logPlugin = new LogPlugin($logAdapter, MessageFormatter::DEBUG_FORMAT);
             $client->addSubscriber($logPlugin);
         }
+    }
+
+    /**
+     * Set oauth token (to increase API limit to 5000 per hour, instead of default 60)
+     *
+     * @param Client $client
+     */
+    protected function setToken(Client $client)
+    {
+        // TODO fina a way to read this value from somewhere on local system...
+        #$client->authenticate('TODO', null, Client::AUTH_HTTP_TOKEN);
     }
 }

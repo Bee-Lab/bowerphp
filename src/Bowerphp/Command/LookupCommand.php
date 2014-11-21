@@ -14,11 +14,7 @@ use Bowerphp\Config\Config;
 use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Util\Filesystem;
-use Doctrine\Common\Cache\FilesystemCache;
-use Guzzle\Cache\DoctrineCacheAdapter;
-use Guzzle\Http\Client;
-use Guzzle\Plugin\Cache\CachePlugin;
-use Guzzle\Plugin\Cache\DefaultCacheStorage;
+use Github\Client;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -51,16 +47,11 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $filesystem = new Filesystem();
-        $httpClient = new Client();
+        $githubClient = new Client();
         $config = new Config($filesystem);
 
-        $this->logHttp($httpClient, $output);
-
-        // http cache
-        $cachePlugin = new CachePlugin(array(
-            'storage' => new DefaultCacheStorage(new DoctrineCacheAdapter(new FilesystemCache($config->getCacheDir())), 'bowerphp', 86400),
-        ));
-        $httpClient->addSubscriber($cachePlugin);
+        #$this->logHttp($githubClient, $output);
+        $this->setToken($githubClient);
 
         $name = $input->getArgument('package');
 
@@ -68,7 +59,7 @@ EOT
         $name = isset($ver[0]) ? $ver[0] : $name;
 
         $consoleOutput = new BowerphpConsoleOutput($output);
-        $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), $consoleOutput);
+        $bowerphp = new Bowerphp($config, $filesystem, $githubClient, new GithubRepository(), $consoleOutput);
 
         $package = $bowerphp->lookupPackage($name);
 

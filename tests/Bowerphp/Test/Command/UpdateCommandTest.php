@@ -31,10 +31,7 @@ class UpdateCommandTest extends \PHPUnit_Framework_TestCase
         file_put_contents($this->bowerFile, '{"name": "test", "dependencies": {"jquery": "1.11.1"}}');
     }
 
-    /**
-     * @test
-     */
-    public function shouldUpdateDependencies()
+    public function testUpdateDependencies()
     {
         //when
         CommandFactory::tester('update', array('package' => 'jquery'));
@@ -42,15 +39,14 @@ class UpdateCommandTest extends \PHPUnit_Framework_TestCase
         //then
         $dotBower = json_decode(file_get_contents($this->packageDotBowerFile), true);
         $this->assertEquals('1.11.1', $dotBower['version']);
-        $this->assertFileExists(getcwd() . '/bower_components/jquery/dist/jquery.js');
+        $this->assertFileExists(getcwd() . '/bower_components/jquery/src/jquery.js');
     }
 
     /**
-     * @test
      * @expectedException \RuntimeException
      * @expectedExceptionMessage Package nonexistent-package is not installed
      */
-    public function shouldThrowExceptionWhenPackageIsNotInstalled()
+    public function testThrowExceptionWhenPackageIsNotInstalled()
     {
         //when
         $commandTester = CommandFactory::tester('update', array('package' => 'nonexistent-package'));

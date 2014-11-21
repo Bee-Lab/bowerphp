@@ -18,7 +18,7 @@ use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Util\Filesystem;
 use Bowerphp\Util\ZipArchive;
-use Guzzle\Http\Client;
+use Github\Client;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
@@ -54,10 +54,13 @@ EOT
     {
         $filesystem = new Filesystem();
         $config = new Config($filesystem);
-        $httpClient = new Client();
+        $githubClient = new Client();
+
+        $this->setToken($githubClient);
+
         $consoleOutput = new BowerphpConsoleOutput($output);
         $installer = new Installer($filesystem, new ZipArchive(), $config);
-        $bowerphp = new Bowerphp($config, $filesystem, $httpClient, new GithubRepository(), $consoleOutput);
+        $bowerphp = new Bowerphp($config, $filesystem, $githubClient, new GithubRepository(), $consoleOutput);
         $packages = $bowerphp->getInstalledPackages($installer, new Finder());
 
         foreach ($packages as $package) {

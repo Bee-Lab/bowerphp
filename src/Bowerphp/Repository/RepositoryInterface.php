@@ -2,7 +2,7 @@
 
 namespace Bowerphp\Repository;
 
-use Guzzle\Http\ClientInterface;
+use Github\Client;
 
 /**
  * Repository interface.
@@ -19,9 +19,9 @@ interface RepositoryInterface
     public function setUrl($url, $raw = true);
 
     /**
-     * @param ClientInterface $httpClient
+     * @param Client $githubClient
      */
-    public function setHttpClient(ClientInterface $httpClient);
+    public function setHttpClient(Client $githubClient);
 
     /**
      * Get repo bower.json

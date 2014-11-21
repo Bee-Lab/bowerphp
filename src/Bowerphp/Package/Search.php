@@ -2,7 +2,7 @@
 namespace Bowerphp\Package;
 
 use Bowerphp\Config\ConfigInterface;
-use Guzzle\Http\ClientInterface;
+use Github\HttpClient\HttpClientInterface;
 use Guzzle\Http\Exception\RequestException;
 use RuntimeException;
 
@@ -11,18 +11,25 @@ class Search
     private $config;
     private $httpClient;
 
-    public function __construct(ConfigInterface $config, ClientInterface $httpClient)
+    /**
+     * @param  ConfigInterface     $config
+     * @return HttpClientInterface $httpClient
+     */
+    public function __construct(ConfigInterface $config, HttpClientInterface $httpClient)
     {
         $this->config = $config;
         $this->httpClient = $httpClient;
     }
 
+    /**
+     * @param  string $name
+     * @return array
+     */
     public function package($name)
     {
         try {
             $url = $this->prepareUrl($name);
-            $request = $this->httpClient->get($url);
-            $response = $request->send();
+            $response = $this->httpClient->get($url);
 
             return json_decode($response->getBody(true), true);
         } catch (RequestException $e) {
@@ -30,6 +37,10 @@ class Search
         }
     }
 
+    /**
+     * @param  string $name
+     * @return string
+     */
     private function prepareUrl($name)
     {
         $baseUrl = $this->config->getBasePackagesUrl();
