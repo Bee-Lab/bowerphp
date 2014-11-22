@@ -18,6 +18,7 @@ use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Package\Package;
 use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Util\Filesystem;
+use Bowerphp\Util\PackageNameVersionExtractor;
 use Bowerphp\Util\ZipArchive;
 use Github\Client;
 use Symfony\Component\Console\Input\InputInterface;
@@ -83,11 +84,8 @@ EOT
             if (is_null($packageName)) {
                 $bowerphp->installDependencies($installer);
             } else {
-                $ver = explode("#", $packageName);
-                $packageName = isset($ver[0]) ? $ver[0] : $packageName;
-                $version = isset($ver[1]) ? $ver[1] : "*";
-
-                $package = new Package($packageName, $version);
+                $packageNameVersion = PackageNameVersionExtractor::fromString($packageName);
+                $package = new Package($packageNameVersion->name, $packageNameVersion->version);
 
                 $bowerphp->installPackage($package, $installer);
             }
