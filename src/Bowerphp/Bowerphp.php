@@ -250,7 +250,8 @@ class Bowerphp
     }
 
     /**
-     * TODO make protected
+     * @param  string $name
+     * @return array
      */
     public function lookupPackage($name)
     {
