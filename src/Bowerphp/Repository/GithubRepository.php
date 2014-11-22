@@ -128,7 +128,7 @@ class GithubRepository implements RepositoryInterface
     {
         list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
 
-        return $this->githubClient->api('repo')->contents()->archive($repoUser, $repoName, $type . 'ball', $this->tag['name']);
+        return $this->githubClient->api('repo')->contents()->archive($repoUser, $repoName, $type.'ball', $this->tag['name']);
     }
 
     /**
@@ -163,7 +163,7 @@ class GithubRepository implements RepositoryInterface
         } else {
             $isPackageJson = true;
             if ($contents->exists($repoUser, $repoName, 'package.json', $version)) {
-#var_dump($repoUser, $repoName, 'package.json', $version);
+                #var_dump($repoUser, $repoName, 'package.json', $version);
                 $json = $contents->download($repoUser, $repoName, 'package.json', $version);
             } elseif ($version != 'master') {
                 return $this->getDepBowerJson('master');
