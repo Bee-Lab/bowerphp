@@ -119,7 +119,7 @@ class Config implements ConfigInterface
     public function updateBowerJsonFile(PackageInterface $package)
     {
         if (!$this->isSaveToBowerJsonFile()) {
-            return false;
+            return 0;
         }
 
         $decode = $this->getBowerFileContent();

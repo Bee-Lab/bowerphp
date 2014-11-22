@@ -14,13 +14,12 @@ namespace Bowerphp;
 use Bowerphp\Config\ConfigInterface;
 use Bowerphp\Installer\InstallerInterface;
 use Bowerphp\Output\BowerphpConsoleOutput;
-use Bowerphp\Package\Lookup;
 use Bowerphp\Package\Package;
 use Bowerphp\Package\PackageInterface;
-use Bowerphp\Package\Search;
 use Bowerphp\Repository\RepositoryInterface;
 use Bowerphp\Util\Filesystem;
 use Github\Client;
+use Guzzle\Http\Exception\RequestException;
 use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Finder\Finder;
@@ -243,9 +242,7 @@ class Bowerphp
      */
     public function lookupPackage($name)
     {
-        $lookup = new Lookup($this->config, $this->githubClient->getHttpClient());
-
-        return $lookup->package($name);
+        return $this->findPackage($name);
     }
 
     /**
@@ -284,9 +281,14 @@ class Bowerphp
      */
     public function searchPackages($name)
     {
-        $search = new Search($this->config, $this->githubClient->getHttpClient());
+        try {
+            $url = $this->config->getBasePackagesUrl().'search/'.$name;
+            $response = $this->githubClient->getHttpClient()->get($url);
 
-        return $search->package($name);
+            return json_decode($response->getBody(true), true);
+        } catch (RequestException $e) {
+            throw new RuntimeException(sprintf('Cannot get package list from %s.', str_replace('/packages/', '', $this->config->getBasePackagesUrl())));
+        }
     }
 
     /**
@@ -360,8 +362,7 @@ class Bowerphp
      */
     protected function getPackageTag(PackageInterface $package, $setInfo = false)
     {
-        $lookup = new Lookup($this->config, $this->githubClient->getHttpClient());
-        $decode = $lookup->package($package->getName());
+        $decode = $this->findPackage($package->getName());
         // open package repository
         $repoUrl = $decode['url'];
         $this->repository->setUrl($repoUrl)->setHttpClient($this->githubClient);
@@ -379,5 +380,24 @@ class Bowerphp
         }
 
         return $packageTag;
+    }
+
+    /**
+     * @param  string $name
+     * @return array
+     */
+    protected function findPackage($name)
+    {
+        try {
+            $response = $this->githubClient->getHttpClient()->get($this->config->getBasePackagesUrl().urlencode($name));
+        } catch (RequestException $e) {
+            throw new RuntimeException(sprintf('Cannot download package %s (%s).', $name, $e->getMessage()));
+        }
+        $packageInfo = json_decode($response->getBody(true), true);
+        if (!is_array($packageInfo) || empty($packageInfo['url'])) {
+            throw new RuntimeException(sprintf('Package %s has malformed json or is missing "url".', $name));
+        }
+
+        return $packageInfo;
     }
 }

@@ -158,7 +158,7 @@ class ConfigTest extends TestCase
 
         $config = new Config($this->filesystem);
 
-        $this->assertFalse($config->updateBowerJsonFile($package, '*'));
+        $this->assertEquals(0, $config->updateBowerJsonFile($package, '*'));
 
         $config->setSaveToBowerJsonFile(true);
 
