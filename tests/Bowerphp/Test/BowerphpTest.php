@@ -33,7 +33,7 @@ class BowerphpTest extends TestCase
 
     public function testInit()
     {
-        $json =<<<EOT
+        $json = <<<EOT
 {
     "name": "Foo",
     "authors": [
@@ -93,7 +93,7 @@ EOT;
         $package
             ->shouldReceive('getName')->andReturn('jquery')
             ->shouldReceive('getRequiredVersion')->andReturn('*')
-            ->shouldReceive('setInfo')->with(array('name' => 'jquery', 'version' => '2.0.3', 'main'=>'jquery.js'))
+            ->shouldReceive('setInfo')->with(array('name' => 'jquery', 'version' => '2.0.3', 'main' => 'jquery.js'))
         ;
 
         $this->config
@@ -171,7 +171,7 @@ EOT;
         ;
 
         $this->output
-            ->shouldReceive('writelnNoBowerJsonFile');
+            ->shouldReceive('writelnNoBowerJsonFile')
         ;
 
         $this->filesystem
@@ -220,7 +220,7 @@ EOT;
 
         $json = '{"invalid json';
         $this->config
-            ->shouldReceive('getBowerFileContent')->andThrow(new RuntimeException(sprintf('Malformed JSON')));;
+            ->shouldReceive('getBowerFileContent')->andThrow(new RuntimeException(sprintf('Malformed JSON')))
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
@@ -243,7 +243,7 @@ EOT;
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updatePackage($package);
+        $bowerphp->updatePackage($package, $installer);
     }
 
     /**
@@ -271,8 +271,8 @@ EOT;
             ->shouldReceive('getBowerFileContent')->andReturn(json_decode($bowerJson, true))
         ;
 
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output, $installer);
-        $bowerphp->updatePackage($package);
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->updatePackage($package, $installer);
     }
 
     /**
@@ -309,8 +309,8 @@ EOT;
             ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/jquery')->andThrow(new RequestException('error'))
         ;
 
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output, $installer);
-        $bowerphp->updatePackage($package);
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->updatePackage($package, $installer);
     }
 
     /**
@@ -340,8 +340,8 @@ EOT;
             ->shouldReceive('setRequires')->with(null)
         ;
 
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output, $installer);
-        $bowerphp->updatePackage($package);
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->updatePackage($package, $installer);
     }
 
     /**
@@ -352,9 +352,6 @@ EOT;
     {
         $this->mockLookup('colorbox', '{"name":"colorbox","url":"git://github.com/jackmoore/colorbox.git"}');
 
-        #$request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
-        #$response = Mockery::mock('Guzzle\Http\Message\Response');
-        #$guzzle = Mockery::mock('Github\HttpClient\HttpClientInterface');
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
@@ -374,28 +371,14 @@ EOT;
             ->shouldReceive('setRequires')->with(null)
         ;
 
-        #$guzzle
-        #    ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/colorbox')->andReturn($request)
-        #;
-        #
-        #$this->httpClient
-        #    ->shouldReceive('getHttpClient')->andReturn($guzzle)
-        #;
-        #$request
-        #    ->shouldReceive('send')->andReturn($response)
-        #;
-        #$response
-        #    ->shouldReceive('getBody')->andReturn('{"name":"colorbox","url":"git://github.com/jackmoore/colorbox.git"}')
-        #;
-
         $this->repository
             ->shouldReceive('setUrl->setHttpClient');
         $this->repository
             ->shouldReceive('getBower')->andReturn('{invalid')
         ;
 
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output, $installer);
-        $bowerphp->updatePackage($package);
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->updatePackage($package, $installer);
     }
 
     public function testUpdateDependenciesWithNewPackageToInstall()
@@ -469,8 +452,8 @@ EOT;
             ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"2.0.3"}')
         ;
 
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output, $installer);
-        $bowerphp->updatePackages();
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->updatePackages($installer);
     }
 
     public function testUpdateDependencies()
@@ -487,7 +470,7 @@ EOT;
         $this->installPackage($package, $installer, array('jquery'), array('2.0.1'), array('*'), true, array('2.0.3'));
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updatePackages();
+        $bowerphp->updatePackages($installer);
     }
 
     /**
@@ -513,7 +496,7 @@ EOT;
         ;
 
         $this->config
-            ->shouldReceive('getBowerFileContent')->andThrow(new RuntimeException(sprintf('Malformed JSON')));;
+            ->shouldReceive('getBowerFileContent')->andThrow(new RuntimeException(sprintf('Malformed JSON')))
         ;
 
         $this->filesystem
@@ -522,7 +505,7 @@ EOT;
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updatePackage($package);
+        $bowerphp->updatePackage($package, $installer);
     }
 
     /**
@@ -560,7 +543,7 @@ EOT;
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updatePackage($package);
+        $bowerphp->updatePackage($package, $installer);
     }
 
     public function testGetPackageInfo()
@@ -589,8 +572,10 @@ EOT;
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
 
         $this->assertEquals('https://github.com/jackmoore/colorbox', $bowerphp->getPackageInfo($package));
-        $this->assertEquals('a json...', $bowerphp->getPackageInfo($package, 'bower'));
         $this->assertEquals(array('1.1.0', '1.0.0', '1.0.0-rc1', '1.0.0-beta'), $bowerphp->getPackageInfo($package, 'versions'));
+
+        //FIXME extract to another method
+        $this->assertEquals('a json...', $bowerphp->getPackageBowerFile($package));
     }
 
     public function testReturnLookupForPackage()
@@ -964,8 +949,8 @@ EOT;
             ->shouldReceive('update')
         ;
 
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output, $installer);
-        $bowerphp->updatePackage($package);
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->updatePackage($package, $installer);
     }
 
     /**
@@ -986,7 +971,7 @@ EOT;
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $bowerphp->updatePackage($package);
+        $bowerphp->updatePackage($package, $installer);
     }
 
     public function testUpdateWithDependenciesToInstall()
@@ -1045,8 +1030,8 @@ EOT;
             ->shouldReceive('install')
         ;
 
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output, $installer);
-        $bowerphp->updatePackage($package);
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->updatePackage($package, $installer);
     }
 
     /**
@@ -1148,7 +1133,6 @@ EOT;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
         $bowerphp->uninstallPackage($package, $installer);
-
     }
 
     /**

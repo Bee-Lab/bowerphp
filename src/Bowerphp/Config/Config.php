@@ -55,28 +55,6 @@ class Config implements ConfigInterface
     }
 
     /**
-     * TODO make this protected (need refactoring on tests)
-     *
-     * @return string
-     */
-    public function getHomeDir()
-    {
-        if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
-            if (!getenv('APPDATA')) {
-                throw new \RuntimeException('The APPDATA environment variable must be set for bowerphp to run correctly');
-            }
-
-            return strtr(getenv('APPDATA'), '\\', '/');
-        }
-
-        if (!getenv('HOME')) {
-            throw new \RuntimeException('The HOME environment variable must be set for bowerphp to run correctly');
-        }
-
-        return rtrim(getenv('HOME'), '/');
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function getBasePackagesUrl()
@@ -222,5 +200,26 @@ class Config implements ConfigInterface
         );
 
         return $structure;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getHomeDir()
+    {
+        if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
+            $appData = getenv('APPDATA');
+            if (empty($appData)) {
+                throw new \RuntimeException('The APPDATA environment variable must be set for bowerphp to run correctly');
+            }
+
+            return strtr($appData, '\\', '/');
+        }
+        $home = getenv('HOME');
+        if (empty($home)) {
+            throw new \RuntimeException('The HOME environment variable must be set for bowerphp to run correctly');
+        }
+
+        return rtrim($home, '/');
     }
 }

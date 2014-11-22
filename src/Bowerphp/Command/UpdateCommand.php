@@ -62,16 +62,17 @@ EOT
         $filesystem = new Filesystem();
         $githubClient = new Client();
         $config = new Config($filesystem);
+        $installer = new Installer($filesystem, new ZipArchive(), $config);
 
-        #$this->logHttp($githubClient, $output);
+        $this->logHttp($githubClient, $output);
         $this->setToken($githubClient);
 
         try {
-            $bowerphp = new Bowerphp($config, $filesystem, $githubClient, new GithubRepository(), new BowerphpConsoleOutput($output), new Installer($filesystem, new ZipArchive(), $config));
+            $bowerphp = new Bowerphp($config, $filesystem, $githubClient, new GithubRepository(), new BowerphpConsoleOutput($output));
             if (is_null($packageName)) {
-                $bowerphp->updatePackages();
+                $bowerphp->updatePackages($installer);
             } else {
-                $bowerphp->updatePackage(new Package($packageName));
+                $bowerphp->updatePackage(new Package($packageName), $installer);
             }
         } catch (RuntimeException $e) {
             throw new RuntimeException($e->getMessage());

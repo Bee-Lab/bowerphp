@@ -17,7 +17,6 @@ class LookupCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->assertRegExp('/jquery.git/', $commandTester->getDisplay());
         $this->assertRegExp('/git:/', $commandTester->getDisplay());
-
     }
 
     /**

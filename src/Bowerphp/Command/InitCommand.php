@@ -52,7 +52,7 @@ EOT
         $config = new Config($filesystem);
         $githubClient = new Client();
 
-        #$this->logHttp($githubClient, $output);
+        $this->logHttp($githubClient, $output);
         $this->setToken($githubClient);
 
         $author = sprintf('%s <%s>', $this->getGitInfo('user.name'), $this->getGitInfo('user.email'));

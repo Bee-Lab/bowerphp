@@ -46,7 +46,7 @@ class Application extends BaseApplication
     public function __construct()
     {
         ErrorHandler::register();
-        parent::__construct('Bowerphp', '0.1 Powered by BeeLab (bee-lab.net)');
+        parent::__construct('Bowerphp', '0.2 Powered by BeeLab (bee-lab.net)');
     }
 
     /**

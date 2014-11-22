@@ -159,7 +159,7 @@ class InstallerTest extends TestCase
             'dir/foo',
             'dir/bar/anotherdir',
             'dir/okfile',
-            'dir/zzdir/subdir/file'
+            'dir/zzdir/subdir/file',
         );
         $this->assertEquals($expect, $filterZipFiles->invokeArgs($this->installer, array($archive, $ignore)));
     }
@@ -186,7 +186,6 @@ class InstallerTest extends TestCase
 
         $finder
             ->shouldReceive('directories->in')->andReturn(array('package1', 'package2'));
-        ;
 
         $this->filesystem
             ->shouldReceive('exists')->with(getcwd() . '/bower_components')->andReturn(true)
@@ -220,7 +219,6 @@ class InstallerTest extends TestCase
 
         $finder
             ->shouldReceive('directories->in')->andReturn(array('package1'));
-        ;
 
         $this->filesystem
             ->shouldReceive('exists')->with(getcwd() . '/bower_components')->andReturn(true)
@@ -242,7 +240,6 @@ class InstallerTest extends TestCase
 
         $finder
             ->shouldReceive('directories->in')->andReturn(array('package1', 'package2'));
-        ;
 
         $this->filesystem
             ->shouldReceive('exists')->with(getcwd() . '/bower_components')->andReturn(true)
@@ -312,7 +309,7 @@ class InstallerTest extends TestCase
 
     public function providerIgnored()
     {
-        return array (
+        return array(
             array('twbs-bootstrap-6d03173/.editorconfig'),
             array('twbs-bootstrap-6d03173/.gitattributes'),
             array('twbs-bootstrap-6d03173/.gitignore'),
@@ -430,7 +427,7 @@ class InstallerTest extends TestCase
 
     public function providerNotIgnored()
     {
-        return array (
+        return array(
             array('twbs-bootstrap-6d03173/DOCS-LICENSE'),
             array('twbs-bootstrap-6d03173/LICENSE'),
             array('twbs-bootstrap-6d03173/LICENSE-MIT'),
@@ -503,7 +500,7 @@ class InstallerTest extends TestCase
 
     public function providerIgnoreExceptions()
     {
-        return array (
+        return array(
             array('zeroclipboard-zeroclipboard-1ec7da6/test/shared/private.tests.js.html', true),
             array('zeroclipboard-zeroclipboard-1ec7da6/src/meta/composer.json.tmpl', true),
             array('zeroclipboard-zeroclipboard-1ec7da6/dist/ZeroClipboard.swf', false),
@@ -519,7 +516,7 @@ class InstallerTest extends TestCase
         $ignore = array(
             "*",
             "!/bower.json",
-            "!/dist/**"
+            "!/dist/**",
         );
         $ignored = $this->installer->isIgnored($file, $ignore, "zeroclipboard-zeroclipboard-1ec7da6/");
         $this->assertTrue($ignored == $shouldIgnore);

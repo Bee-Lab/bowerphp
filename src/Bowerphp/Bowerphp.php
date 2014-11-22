@@ -24,7 +24,6 @@ use Github\Client;
 use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Finder\Finder;
-use vierbergenlars\SemVer\version;
 
 /**
  * Main class
@@ -38,25 +37,19 @@ class Bowerphp
     protected $output;
 
     /**
-     * @var InstallerInterface
-     */
-    private $installer;
-
-    /**
      * @param ConfigInterface       $config
      * @param Filesystem            $filesystem
      * @param Client                $githubClient
      * @param RepositoryInterface   $repository
      * @param BowerphpConsoleOutput $output
      */
-    public function __construct(ConfigInterface $config, Filesystem $filesystem, Client $githubClient, RepositoryInterface $repository, BowerphpConsoleOutput $output, InstallerInterface $installer = null)
+    public function __construct(ConfigInterface $config, Filesystem $filesystem, Client $githubClient, RepositoryInterface $repository, BowerphpConsoleOutput $output)
     {
         $this->config = $config;
         $this->filesystem = $filesystem;
         $this->githubClient = $githubClient;
         $this->repository = $repository;
         $this->output = $output;
-        $this->installer = $installer;
     }
 
     /**
@@ -123,7 +116,7 @@ class Bowerphp
                 if (!$this->isPackageInstalled($depPackage)) {
                     $this->installPackage($depPackage, $installer, true);
                 } else {
-                    $this->updatePackage($depPackage);
+                    $this->updatePackage($depPackage, $installer);
                 }
             }
         }
@@ -148,11 +141,11 @@ class Bowerphp
     /**
      * Update a single package
      *
-     * @param PackageInterface $package
+     * @param PackageInterface   $package
+     * @param InstallerInterface $installer
      */
-    public function updatePackage(PackageInterface $package)
+    public function updatePackage(PackageInterface $package, InstallerInterface $installer)
     {
-        $installer = $this->installer;
         if (!$this->isPackageInstalled($package)) {
             throw new RuntimeException(sprintf('Package %s is not installed.', $package->getName()));
         }
@@ -194,7 +187,7 @@ class Bowerphp
                 if (!$this->isPackageInstalled($depPackage)) {
                     $this->installPackage($depPackage, $installer, true);
                 } else {
-                    $this->updatePackage($depPackage);
+                    $this->updatePackage($depPackage, $installer);
                 }
             }
         }
@@ -202,13 +195,15 @@ class Bowerphp
 
     /**
      * Update all dependencies
+     *
+     * @param InstallerInterface $installer
      */
-    public function updatePackages()
+    public function updatePackages(InstallerInterface $installer)
     {
         $decode = $this->config->getBowerFileContent();
         if (!empty($decode['dependencies'])) {
             foreach ($decode['dependencies'] as $packageName => $requiredVersion) {
-                $this->updatePackage(new Package($packageName, $requiredVersion));
+                $this->updatePackage(new Package($packageName, $requiredVersion), $installer);
             }
         }
     }
@@ -230,17 +225,10 @@ class Bowerphp
             return $this->repository->getUrl();
         }
 
-        if ($info == 'bower') {
-            $this->repository->setUrl($decode['url'], false);
-            $tag = $this->repository->findPackage($package->getRequiredVersion());
-
-            return $this->repository->getBower($tag, true, $decode['url']);
-        }
-
         if ($info == 'versions') {
-            $tags =  $this->repository->getTags();
+            $tags = $this->repository->getTags();
             usort($tags, function ($a, $b) {
-                return version_compare($a, $b, '<=');
+                return version_compare($b, $a);
             });
 
             return $tags;
@@ -258,6 +246,20 @@ class Bowerphp
         $lookup = new Lookup($this->config, $this->githubClient->getHttpClient());
 
         return $lookup->package($name);
+    }
+
+    /**
+     * @param  PackageInterface $package
+     * @return string
+     */
+    public function getPackageBowerFile(PackageInterface $package)
+    {
+        $this->repository->setHttpClient($this->githubClient);
+        $lookupPackage = $this->lookupPackage($package->getName());
+        $this->repository->setUrl($lookupPackage['url'], false);
+        $tag = $this->repository->findPackage($package->getRequiredVersion());
+
+        return $this->repository->getBower($tag, true, $lookupPackage['url']);
     }
 
     /**

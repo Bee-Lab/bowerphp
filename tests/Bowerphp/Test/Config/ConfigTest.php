@@ -32,8 +32,39 @@ class ConfigTest extends TestCase
 
         $config = new Config($this->filesystem);
 
-        $this->assertEquals($config->getHomeDir() . '/.cache/bowerphp', $config->getCacheDir());
         $this->assertEquals(getcwd() . '/bower_components', $config->getInstallDir());
+    }
+
+    public function testGetHomeDirUnix()
+    {
+        if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
+            $this->markTestSkipped('Only on Unix/Linux systems');
+        }
+
+        $this->filesystem
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(false)
+        ;
+
+        $config = new Config($this->filesystem);
+
+        $method = $this->getMethod('Bowerphp\Config\Config', 'getHomeDir');
+        $this->assertStringMatchesFormat('/home/%s', $method->invokeArgs($config, array()));
+    }
+
+    public function testGetHomeDirWindows()
+    {
+        if (!defined('PHP_WINDOWS_VERSION_MAJOR')) {
+            $this->markTestSkipped('Only on Windows systems');
+        }
+
+        $this->filesystem
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(false)
+        ;
+
+        $config = new Config($this->filesystem);
+
+        $method = $this->getMethod('Bowerphp\Config\Config', 'getHomeDir');
+        $this->assertContains('AppData', $method->invokeArgs($config, array()));
     }
 
     /**
@@ -63,8 +94,7 @@ class ConfigTest extends TestCase
 
         $config = new Config($this->filesystem);
 
-        $this->assertEquals(json_decode($json,true), $config->getBowerFileContent());
-
+        $this->assertEquals(json_decode($json, true), $config->getBowerFileContent());
     }
 
     /**

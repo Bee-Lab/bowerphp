@@ -57,7 +57,7 @@ EOT
         $githubClient = new Client();
         $config = new Config($filesystem);
 
-        #$this->logHttp($githubClient, $output);
+        $this->logHttp($githubClient, $output);
         $this->setToken($githubClient);
 
         $packageName = $input->getArgument('package');
@@ -69,19 +69,21 @@ EOT
         $consoleOutput = new BowerphpConsoleOutput($output);
         $bowerphp = new Bowerphp($config, $filesystem, $githubClient, new GithubRepository(), $consoleOutput);
 
-        $bower = $bowerphp->getPackageInfo($package, 'bower');
+        $bowerJsonFile = $bowerphp->getPackageBowerFile($package);
         if ($packageNameVersion->version == '*') {
             $versions = $bowerphp->getPackageInfo($package, 'versions');
         }
         if (!is_null($property)) {
-            $bowerArray = json_decode($bower, true);
+            $bowerArray = json_decode($bowerJsonFile, true);
             $propertyValue = isset($bowerArray[$property]) ? $bowerArray[$property] : '';
             $consoleOutput->writelnJsonText($propertyValue);
 
             return;
         }
-        $consoleOutput->writelnJson($bower);
+        $consoleOutput->writelnJson($bowerJsonFile);
         if ($packageNameVersion->version != '*') {
+            $consoleOutput->writelnJson($bowerJsonFile);
+
             return;
         }
         $output->writeln('');

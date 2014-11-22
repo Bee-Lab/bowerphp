@@ -10,7 +10,6 @@
 namespace Bowerphp\Command;
 
 use Github\Client;
-use Guzzle\Http\ClientInterface;
 use Guzzle\Log\ClosureLogAdapter;
 use Guzzle\Log\MessageFormatter;
 use Guzzle\Plugin\Log\LogPlugin;
@@ -25,14 +24,13 @@ abstract class Command extends BaseCommand
 {
     /**
      * Debug HTTP interactions
-     * TODO find a way to apply this to Gitub API HttpClient
      *
-     * @param ClientInterface $client
+     * @param Client          $client
      * @param OutputInterface $output
      */
-    protected function logHttp(ClientInterface $client, OutputInterface $output)
+    protected function logHttp(Client $client, OutputInterface $output)
     {
-        // debug http interactions
+        $guzzle = $client->getHttpClient();
         if (OutputInterface::VERBOSITY_DEBUG <= $output->getVerbosity()) {
             $logger = function ($message) use ($output) {
                 $finfo = new \finfo(FILEINFO_MIME);
@@ -41,7 +39,7 @@ abstract class Command extends BaseCommand
             };
             $logAdapter = new ClosureLogAdapter($logger);
             $logPlugin = new LogPlugin($logAdapter, MessageFormatter::DEBUG_FORMAT);
-            $client->addSubscriber($logPlugin);
+            $guzzle->addSubscriber($logPlugin);
         }
     }
 
@@ -52,7 +50,9 @@ abstract class Command extends BaseCommand
      */
     protected function setToken(Client $client)
     {
-        // TODO fina a way to read this value from somewhere on local system...
-        #$client->authenticate('TODO', null, Client::AUTH_HTTP_TOKEN);
+        $token = getenv('BOWERPHP_TOKEN');
+        if (!empty($token)) {
+            $client->authenticate($token, null, Client::AUTH_HTTP_TOKEN);
+        }
     }
 }

@@ -70,7 +70,7 @@ EOT
         $config         = new Config($filesystem);
         $config->setSaveToBowerJsonFile($input->getOption('save'));
 
-        #$this->logHttp($githubClient, $output);
+        $this->logHttp($githubClient, $output);
         $this->setToken($githubClient);
 
         $packageName = $input->getArgument('package');

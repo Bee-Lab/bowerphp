@@ -56,7 +56,7 @@ EOT
         $githubClient = new Client();
         $config = new Config($filesystem);
 
-        #$this->logHttp($githubClient, $output);
+        $this->logHttp($githubClient, $output);
         $this->setToken($githubClient);
 
         $packageName = $input->getArgument('package');
