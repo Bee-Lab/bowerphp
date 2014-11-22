@@ -70,18 +70,18 @@ EOT
         $consoleOutput = new BowerphpConsoleOutput($output);
         $bowerphp = new Bowerphp($config, $filesystem, $githubClient, new GithubRepository(), $consoleOutput);
 
-        $bower = $bowerphp->getPackageInfo($package, 'bower');
+        $bowerJsonFile = $bowerphp->getPackageBowerFile($package);
         if ($version == '*') {
             $versions = $bowerphp->getPackageInfo($package, 'versions');
         }
         if (!is_null($property)) {
-            $bowerArray = json_decode($bower, true);
+            $bowerArray = json_decode($bowerJsonFile, true);
             $propertyValue = isset($bowerArray[$property]) ? $bowerArray[$property] : '';
             $consoleOutput->writelnJsonText($propertyValue);
 
             return;
         }
-        $consoleOutput->writelnJson($bower);
+        $consoleOutput->writelnJson($bowerJsonFile);
         if ($version != '*') {
             return;
         }

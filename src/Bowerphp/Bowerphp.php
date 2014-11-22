@@ -24,7 +24,6 @@ use Github\Client;
 use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Finder\Finder;
-use vierbergenlars\SemVer\version;
 
 /**
  * Main class
@@ -230,17 +229,10 @@ class Bowerphp
             return $this->repository->getUrl();
         }
 
-        if ($info == 'bower') {
-            $this->repository->setUrl($decode['url'], false);
-            $tag = $this->repository->findPackage($package->getRequiredVersion());
-
-            return $this->repository->getBower($tag, true, $decode['url']);
-        }
-
         if ($info == 'versions') {
-            $tags =  $this->repository->getTags();
+            $tags = $this->repository->getTags();
             usort($tags, function ($a, $b) {
-                return version_compare($a, $b, '<=');
+                return version_compare($b, $a);
             });
 
             return $tags;
@@ -257,6 +249,16 @@ class Bowerphp
         $lookup = new Lookup($this->config, $this->githubClient->getHttpClient());
 
         return $lookup->package($name);
+    }
+
+    public function getPackageBowerFile(PackageInterface $package)
+    {
+        $this->repository->setHttpClient($this->githubClient);
+        $lookupPackage = $this->lookupPackage($package->getName());
+        $this->repository->setUrl($lookupPackage['url'], false);
+        $tag = $this->repository->findPackage($package->getRequiredVersion());
+
+        return $this->repository->getBower($tag, true, $lookupPackage['url']);
     }
 
     /**
