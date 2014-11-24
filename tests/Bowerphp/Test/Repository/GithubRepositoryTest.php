@@ -5,7 +5,6 @@ namespace Bowerphp\Test\Repository;
 use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Repository\RepositoryInterface;
 use Bowerphp\Test\TestCase;
-use Guzzle\Http\Exception\RequestException;
 use Mockery;
 use ReflectionClass;
 
@@ -72,30 +71,6 @@ class GithubRepositoryTest extends TestCase
         $this->assertEquals($bowerJson, $this->repository->getBower());
     }
 
-    /**
-     * #expectedException Guzzle\Http\Exception\BadResponseException
-     *
-    public function testGetBowerWithBadReponse()
-    {
-        $response = Mockery::mock('Guzzle\Http\Message\Response');
-        $badResponseException = Mockery::mock('Guzzle\Http\Exception\BadResponseException');
-
-        $badResponseException
-            ->shouldReceive('getResponse')->andReturn($response)
-        ;
-
-        $this->httpClient
-            ->shouldReceive('get')->andThrow($badResponseException)
-        ;
-
-        $response
-            ->shouldReceive('hasHeader')->andReturn(false)
-            ->shouldReceive('getStatusCode')->andReturn(500)
-        ;
-
-        $this->repository->getBower();
-    }*/
-
     public function testGetBowerWithoutBowerJsonButWithPackageJson()
     {
         $this->markTestIncomplete('TODO to be fixed, second expectation on "exists" does not work');
@@ -128,29 +103,6 @@ class GithubRepositoryTest extends TestCase
     }
 
     /**
-     * #expectedException Guzzle\Http\Exception\BadResponseException
-     *
-    public function testGetBowerWithoutBowerJsonButWithPackageJsonAndBadResponse()
-    {
-        $response = Mockery::mock('Guzzle\Http\Message\Response');
-        $badResponseException = Mockery::mock('Guzzle\Http\Exception\BadResponseException');
-
-        $badResponseException
-            ->shouldReceive('getResponse')->andReturn($response)
-        ;
-
-        $this->httpClient
-            ->shouldReceive('get')->twice()->andThrow($badResponseException)
-        ;
-
-        $response
-            ->shouldReceive('getStatusCode')->andReturn(404, 500)
-        ;
-
-        $this->repository->getBower('1.0.0');
-    }*/
-
-    /**
      * @expectedException RuntimeException
      */
     public function testGetBowerWithoutBowerJsonNorPackageJson()
@@ -174,21 +126,6 @@ class GithubRepositoryTest extends TestCase
 
         $this->repository->getBower();
     }
-
-    /**
-     * #expectedException        RuntimeException
-     * #expectedExceptionMessage Cannot open package git URL https://raw.githubusercontent.com/components/jquery/master/bower.json (request error).
-     *
-    public function testGetBowerPackageNotFound()
-    {
-        $url = 'https://raw.githubusercontent.com/components/jquery/master/bower.json';
-
-        $this->httpClient
-            ->shouldReceive('get')->with($url)->andThrow(new RequestException('request error'))
-        ;
-
-        $this->repository->getBower();
-    }*/
 
     /**
      * See issue https://github.com/Bee-Lab/bowerphp/issues/33
@@ -293,11 +230,11 @@ class GithubRepositoryTest extends TestCase
     public function testFindPackageWithVersionWithTilde()
     {
         $response = '[{"name": "2.1.4", "zipball_url": "", "tarball_url": ""}, '
-            . '{"name": "2.0.5", "zipball_url": "", "tarball_url": ""}, '
-            . '{"name": "2.0.4", "zipball_url": "", "tarball_url": ""}, '
-            . '{"name": "2.0.3-beta3", "zipball_url": "", "tarball_url": ""}, '
-            . '{"name": "2.0.3b1", "zipball_url": "", "tarball_url": ""}, '
-            . '{"name": "2.0.3", "zipball_url": "", "tarball_url": ""}]';
+            .'{"name": "2.0.5", "zipball_url": "", "tarball_url": ""}, '
+            .'{"name": "2.0.4", "zipball_url": "", "tarball_url": ""}, '
+            .'{"name": "2.0.3-beta3", "zipball_url": "", "tarball_url": ""}, '
+            .'{"name": "2.0.3b1", "zipball_url": "", "tarball_url": ""}, '
+            .'{"name": "2.0.3", "zipball_url": "", "tarball_url": ""}]';
         $this->mockTagsRequest($response);
 
         $tag = $this->repository->findPackage('~2.0.3');
@@ -317,20 +254,6 @@ class GithubRepositoryTest extends TestCase
 
         $tag = $this->repository->findPackage('3');
     }
-
-    /**
-     * #expectedException RuntimeException
-     *
-    public function testFindPackageRepoNotFound()
-    {
-        $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
-
-        $this->httpClient
-            ->shouldReceive('get')->with('https://api.github.com/repos/components/jquery/tags?per_page=100')->andThrow(new RequestException())
-        ;
-
-        $tag = $this->repository->findPackage('3');
-    }*/
 
     public function testGetRelease()
     {
@@ -399,11 +322,6 @@ class GithubRepositoryTest extends TestCase
         $this->assertEquals(array(), $this->repository->getTags());
     }
 
-    public function testGetOriginalUrl()
-    {
-        $this->assertEquals('https://raw.githubusercontent.com/components/jquery', $this->repository->getOriginalUrl());
-    }
-
     /**
      * Set value for protected property $tag
      *
@@ -419,7 +337,7 @@ class GithubRepositoryTest extends TestCase
     }
 
     /**
-     * @param $responseJson
+     * @param string $responseJson
      */
     private function mockTagsRequest($responseJson)
     {

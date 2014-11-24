@@ -6,11 +6,15 @@ use Bowerphp\Repository\RepositoryInterface;
 
 /**
  * Package
- *
  */
 class Package implements PackageInterface
 {
-    protected $name, $repository, $requiredVersion, $version, $requires = array(), $info = array();
+    protected $name;
+    protected $repository;
+    protected $requiredVersion;
+    protected $version;
+    protected $requires = array();
+    protected $info = array();
 
     /**
      * All descendants' constructors should call this parent constructor
@@ -35,7 +39,7 @@ class Package implements PackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -43,7 +47,7 @@ class Package implements PackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getVersion()
     {
@@ -51,7 +55,7 @@ class Package implements PackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setVersion($version)
     {
@@ -59,7 +63,7 @@ class Package implements PackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getRequiredVersion()
     {
@@ -67,7 +71,7 @@ class Package implements PackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setRequiredVersion($version)
     {
@@ -75,7 +79,7 @@ class Package implements PackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setRepository(RepositoryInterface $repository)
     {
@@ -86,7 +90,7 @@ class Package implements PackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getRepository()
     {
@@ -114,7 +118,7 @@ class Package implements PackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getRequires()
     {
@@ -132,7 +136,7 @@ class Package implements PackageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getInfo()
     {
@@ -149,6 +153,9 @@ class Package implements PackageInterface
         return $this->getUniqueName();
     }
 
+    /**
+     * Magic method for cloning object
+     */
     public function __clone()
     {
         $this->repository = null;

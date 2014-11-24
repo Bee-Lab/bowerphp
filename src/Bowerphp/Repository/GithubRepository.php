@@ -13,7 +13,6 @@ use RuntimeException;
 class GithubRepository implements RepositoryInterface
 {
     protected $url;
-    protected $originalUrl;
     protected $tag = array();
     protected $githubClient;
 
@@ -24,9 +23,8 @@ class GithubRepository implements RepositoryInterface
      */
     public function setUrl($url, $raw = true)
     {
-        $this->originalUrl = $url;
-        $this->url = preg_replace('/\.git$/', '', str_replace('git://', 'https://'.($raw ? 'raw.' : ''), $this->originalUrl));
-        $this->url = str_replace('raw.github.com', 'raw.githubusercontent.com', $this->url);
+        $url = preg_replace('/\.git$/', '', str_replace('git://', 'https://'.($raw ? 'raw.' : ''), $url));
+        $this->url = str_replace('raw.github.com', 'raw.githubusercontent.com', $url);
 
         return $this;
     }
@@ -37,14 +35,6 @@ class GithubRepository implements RepositoryInterface
     public function getUrl()
     {
         return $this->url;
-    }
-
-    /**
-     * @return string
-     */
-    public function getOriginalUrl()
-    {
-        return $this->originalUrl;
     }
 
     /**
@@ -98,9 +88,6 @@ class GithubRepository implements RepositoryInterface
 
         // edge case: package has no tags
         if (count($tags) === 0) {
-            #$zipballUrl = $this->githubClient->api('repo')->contents()->archive($repoUser, $repoName, 'zipball');
-            #$this->tag = array('zipball_url' => $zipballUrl);
-
             return 'master';
         }
 
@@ -163,7 +150,6 @@ class GithubRepository implements RepositoryInterface
         } else {
             $isPackageJson = true;
             if ($contents->exists($repoUser, $repoName, 'package.json', $version)) {
-                #var_dump($repoUser, $repoName, 'package.json', $version);
                 $json = $contents->download($repoUser, $repoName, 'package.json', $version);
             } elseif ($version != 'master') {
                 return $this->getDepBowerJson('master');
