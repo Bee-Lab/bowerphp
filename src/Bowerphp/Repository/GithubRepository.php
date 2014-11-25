@@ -4,6 +4,7 @@ namespace Bowerphp\Repository;
 
 use Bowerphp\Util\Json;
 use Github\Client;
+use Github\ResultPager;
 use RuntimeException;
 
 /**
@@ -82,7 +83,8 @@ class GithubRepository implements RepositoryInterface
     public function findPackage($version = '*')
     {
         list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
-        $tags = $this->githubClient->api('repo')->tags($repoUser, $repoName);
+        $paginator = new ResultPager($this->githubClient);
+        $tags = $paginator->fetchAll($this->githubClient->api('repo'), 'tags', array($repoUser, $repoName));
 
         $version = $this->fixVersion($version);
 
@@ -124,7 +126,8 @@ class GithubRepository implements RepositoryInterface
     public function getTags()
     {
         list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
-        $tags = $this->githubClient->api('repo')->tags($repoUser, $repoName);
+        $paginator = new ResultPager($this->githubClient);
+        $tags = $paginator->fetchAll($this->githubClient->api('repo'), 'tags', array($repoUser, $repoName));
         // edge case: no tags
         if (count($tags) === 0) {
             return array();

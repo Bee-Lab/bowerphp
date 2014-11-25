@@ -341,8 +341,25 @@ class GithubRepositoryTest extends TestCase
      */
     private function mockTagsRequest($responseJson)
     {
+        $guzzle = Mockery::mock('Github\HttpClient\HttpClientInterface');
+        $response = Mockery::mock('Guzzle\Http\Message\Response');
         $repo = Mockery::mock('Github\Api\Repo');
-        $this->httpClient->shouldReceive('api')->with('repo')->andReturn($repo);
-        $repo->shouldReceive('tags')->with('components', 'jquery')->andReturn(json_decode($responseJson, true));
+
+        $repo
+            ->shouldReceive('setPerPage')
+            ->shouldReceive('getPerPage')->andReturn(30)
+            ->shouldReceive('tags')->with('components', 'jquery')->andReturn(json_decode($responseJson, true))
+        ;
+        $this->httpClient
+            ->shouldReceive('getHttpClient')->andReturn($guzzle)
+            ->shouldReceive('api')->with('repo')->andReturn($repo)
+        ;
+        $guzzle
+            ->shouldReceive('getLastResponse')->andReturn($response)
+        ;
+        $response
+            ->shouldReceive('getLastHeader')
+            ->shouldReceive('getHeader')
+        ;
     }
 }
