@@ -226,7 +226,6 @@ class Bowerphp
 
         if ($info == 'versions') {
             $tags = $this->repository->getTags();
-#var_dump($tags);die;
             usort($tags, function ($a, $b) {
                 return version_compare($b, $a);
             });

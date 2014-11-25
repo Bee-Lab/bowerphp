@@ -82,8 +82,6 @@ EOT
         }
         $consoleOutput->writelnJson($bowerJsonFile);
         if ($packageNameVersion->version != '*') {
-            $consoleOutput->writelnJson($bowerJsonFile);
-
             return;
         }
         $output->writeln('');
