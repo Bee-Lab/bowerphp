@@ -23,7 +23,7 @@ Configuration
 
 Currently, you can configure your bower directory in ``.bowerrc`` file, just like the original Bower.
 
-If you need many dependencies, you'll likely hit the Githup API limit (currently 60 requests per hour).
+If you need many dependencies, you'll likely hit the Github API limit (currently 60 requests per hour).
 To increase your limit to 5000 requests per hour, you can use a token.
 See [Github help](https://help.github.com/articles/creating-an-access-token-for-command-line-use/).
 Once you created your token, just store it in the ``BOWERPHP_TOKEN`` environment variable.

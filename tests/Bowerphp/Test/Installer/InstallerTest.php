@@ -519,6 +519,6 @@ class InstallerTest extends TestCase
             "!/dist/**",
         );
         $ignored = $this->installer->isIgnored($file, $ignore, "zeroclipboard-zeroclipboard-1ec7da6/");
-        $this->assertTrue($ignored == $shouldIgnore);
+        $this->assertEquals($ignored, $shouldIgnore);
     }
 }

@@ -48,7 +48,7 @@ class ConfigTest extends TestCase
         $config = new Config($this->filesystem);
 
         $method = $this->getMethod('Bowerphp\Config\Config', 'getHomeDir');
-        $this->assertStringMatchesFormat('/home/%s', $method->invokeArgs($config, array()));
+        $this->assertContains('/', $method->invokeArgs($config, array()));
     }
 
     public function testGetHomeDirWindows()

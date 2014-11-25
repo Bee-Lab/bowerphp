@@ -91,7 +91,7 @@ class Compiler
             ->in(__DIR__.'/../../vendor/symfony/')
             ->in(__DIR__.'/../../vendor/guzzle/guzzle/src/')
             ->in(__DIR__.'/../../vendor/camspiers/json-pretty/src/')
-            ->in(__DIR__.'/../../vendor/doctrine/cache/lib/')
+            ->in(__DIR__.'/../../vendor/knplabs/github-api/lib/')
         ;
 
         foreach ($finder as $file) {
