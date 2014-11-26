@@ -12,14 +12,14 @@ class ListCommandTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        if (!is_dir(getcwd().'/bower_components/')) {
-            mkdir(getcwd().'/bower_components/');
+        if (!is_dir(getcwd() . '/bower_components/')) {
+            mkdir(getcwd() . '/bower_components/');
         }
-        mkdir(getcwd().'/bower_components/bootstrap/');
-        mkdir(getcwd().'/bower_components/jquery/');
-        file_put_contents(getcwd().'/bower.json', '{"name":"project","requirements":{"jquery":"*"}}');
-        file_put_contents(getcwd().'/bower_components/bootstrap/.bower.json', '{"name":"bootstrap","version":"3"}');
-        file_put_contents(getcwd().'/bower_components/jquery/.bower.json', '{"name":"jquery","version":"1"}');
+        mkdir(getcwd() . '/bower_components/bootstrap/');
+        mkdir(getcwd() . '/bower_components/jquery/');
+        file_put_contents(getcwd() . '/bower.json', '{"name":"project","requirements":{"jquery":"*"}}');
+        file_put_contents(getcwd() . '/bower_components/bootstrap/.bower.json', '{"name":"bootstrap","version":"3"}');
+        file_put_contents(getcwd() . '/bower_components/jquery/.bower.json', '{"name":"jquery","version":"1"}');
     }
 
     public function testExecute()
@@ -33,11 +33,11 @@ class ListCommandTest extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        unlink(getcwd().'/bower.json');
-        unlink(getcwd().'/bower_components/bootstrap/.bower.json');
-        unlink(getcwd().'/bower_components/jquery/.bower.json');
-        rmdir(getcwd().'/bower_components/bootstrap/');
-        rmdir(getcwd().'/bower_components/jquery/');
-        rmdir(getcwd().'/bower_components/');
+        unlink(getcwd() . '/bower.json');
+        unlink(getcwd() . '/bower_components/bootstrap/.bower.json');
+        unlink(getcwd() . '/bower_components/jquery/.bower.json');
+        rmdir(getcwd() . '/bower_components/bootstrap/');
+        rmdir(getcwd() . '/bower_components/jquery/');
+        rmdir(getcwd() . '/bower_components/');
     }
 }

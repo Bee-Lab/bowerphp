@@ -104,7 +104,7 @@ class Package implements PackageInterface
      */
     public function getUniqueName()
     {
-        return $this->getName().'-'.$this->getVersion();
+        return $this->getName() . '-' . $this->getVersion();
     }
 
     /**

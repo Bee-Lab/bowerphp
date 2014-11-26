@@ -16,7 +16,7 @@ class InitCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command = $application->get('init'));
         $commandTester->execute(array('command' => $command->getName()), array('interactive' => false, 'decorated' => false));
 
-        $json = json_decode(file_get_contents(getcwd().'/bower.json'), true);
+        $json = json_decode(file_get_contents(getcwd() . '/bower.json'), true);
         $this->assertArrayHasKey('name', $json);
         $this->assertArrayHasKey('authors', $json);
         $this->assertArrayHasKey('dependencies', $json);
@@ -24,7 +24,7 @@ class InitCommandTest extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        $file = getcwd().'/bower.json';
+        $file = getcwd() . '/bower.json';
         if (is_file($file)) {
             unlink($file);
         }

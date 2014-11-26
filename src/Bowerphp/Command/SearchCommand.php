@@ -62,7 +62,7 @@ EOT
         if (empty($packages)) {
             $output->writeln('No results.');
         } else {
-            $output->writeln('Search results:'.PHP_EOL);
+            $output->writeln('Search results:' . PHP_EOL);
             array_walk($packages, function ($package) use ($consoleOutput) {
                 $consoleOutput->writelnSearchOrLookup($package['name'], $package['url'], 4);
             });
