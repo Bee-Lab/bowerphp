@@ -53,7 +53,7 @@ class GithubRepositoryTest extends TestCase
         $contents = Mockery::mock('Github\Api\Repository\Contents');
 
         $bowerJson = '{"name": "jquery", "version": "2.0.3", "main": "jquery.js"}';
-        $bowerJsonWithBOM = "\xef\xbb\xbf" . $bowerJson;
+        $bowerJsonWithBOM = "\xef\xbb\xbf".$bowerJson;
 
         $this->httpClient
             ->shouldReceive('api')->with('repo')->andReturn($repo)
@@ -230,11 +230,11 @@ class GithubRepositoryTest extends TestCase
     public function testFindPackageWithVersionWithTilde()
     {
         $response = '[{"name": "2.1.4", "zipball_url": "", "tarball_url": ""}, '
-            . '{"name": "2.0.5", "zipball_url": "", "tarball_url": ""}, '
-            . '{"name": "2.0.4", "zipball_url": "", "tarball_url": ""}, '
-            . '{"name": "2.0.3-beta3", "zipball_url": "", "tarball_url": ""}, '
-            . '{"name": "2.0.3b1", "zipball_url": "", "tarball_url": ""}, '
-            . '{"name": "2.0.3", "zipball_url": "", "tarball_url": ""}]';
+            .'{"name": "2.0.5", "zipball_url": "", "tarball_url": ""}, '
+            .'{"name": "2.0.4", "zipball_url": "", "tarball_url": ""}, '
+            .'{"name": "2.0.3-beta3", "zipball_url": "", "tarball_url": ""}, '
+            .'{"name": "2.0.3b1", "zipball_url": "", "tarball_url": ""}, '
+            .'{"name": "2.0.3", "zipball_url": "", "tarball_url": ""}]';
         $this->mockTagsRequest($response);
 
         $tag = $this->repository->findPackage('~2.0.3');

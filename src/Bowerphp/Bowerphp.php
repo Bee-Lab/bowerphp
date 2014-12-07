@@ -96,7 +96,7 @@ class Bowerphp
 
         $this->output->writelnInstalledPackage($package);
 
-        $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();
+        $tmpFileName = $this->config->getCacheDir().'/tmp/'.$package->getName();
         $this->filesystem->write($tmpFileName, $file);
 
         $installer->install($package);
@@ -109,8 +109,10 @@ class Bowerphp
             }
         }
 
-        if (!empty($bower['dependencies'])) {
-            foreach ($bower['dependencies'] as $name => $version) {
+        // TODO here we couldn't get the requires. Need to find a way to force reading them from bower.json
+        $dependencies = $package->getRequires();
+        if (!empty($dependencies)) {
+            foreach ($dependencies as $name => $version) {
                 $depPackage = new Package($name, $version);
                 if (!$this->isPackageInstalled($depPackage)) {
                     $this->installPackage($depPackage, $installer, true);
@@ -174,7 +176,7 @@ class Bowerphp
         // get release archive from repository
         $file = $this->repository->getRelease();
 
-        $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();
+        $tmpFileName = $this->config->getCacheDir().'/tmp/'.$package->getName();
         $this->filesystem->write($tmpFileName, $file);
 
         $installer->update($package);
@@ -282,7 +284,7 @@ class Bowerphp
     public function searchPackages($name)
     {
         try {
-            $url = $this->config->getBasePackagesUrl() . 'search/' . $name;
+            $url = $this->config->getBasePackagesUrl().'search/'.$name;
             $response = $this->githubClient->getHttpClient()->get($url);
 
             return json_decode($response->getBody(true), true);
@@ -311,7 +313,7 @@ class Bowerphp
      */
     public function isPackageInstalled(PackageInterface $package)
     {
-        return $this->filesystem->exists($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json');
+        return $this->filesystem->exists($this->config->getInstallDir().'/'.$package->getName().'/.bower.json');
     }
 
     /**
@@ -389,7 +391,7 @@ class Bowerphp
     protected function findPackage($name)
     {
         try {
-            $response = $this->githubClient->getHttpClient()->get($this->config->getBasePackagesUrl() . urlencode($name));
+            $response = $this->githubClient->getHttpClient()->get($this->config->getBasePackagesUrl().urlencode($name));
         } catch (RequestException $e) {
             throw new RuntimeException(sprintf('Cannot download package %s (%s).', $name, $e->getMessage()));
         }

@@ -11,6 +11,6 @@
 
 error_reporting(E_ALL);
 
-$loader = require __DIR__ . '/../src/bootstrap.php';
+$loader = require __DIR__.'/../src/bootstrap.php';
 $loader->add('Bowerphp\Test', __DIR__);
 $loader->add('Bowerphp\Factory', __DIR__);

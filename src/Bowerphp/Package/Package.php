@@ -104,7 +104,7 @@ class Package implements PackageInterface
      */
     public function getUniqueName()
     {
-        return $this->getName() . '-' . $this->getVersion();
+        return $this->getName().'-'.$this->getVersion();
     }
 
     /**
@@ -122,6 +122,11 @@ class Package implements PackageInterface
      */
     public function getRequires()
     {
+        // see if there is some inside $this->info (e.g. from bower.json)
+        if (empty($this->requires) && isset($this->info['dependencies'])) {
+            $this->requires = $this->info['dependencies'];
+        }
+
         return $this->requires;
     }
 

@@ -21,8 +21,8 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery'), array('decorated' => false));
 
         $this->assertRegExp('/jquery#2/m', $commandTester->getDisplay());
-        $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
-        $this->assertFileExists(getcwd() . '/bower_components/jquery/src/jquery.js');
+        $this->assertFileExists(getcwd().'/bower_components/jquery/.bower.json');
+        $this->assertFileExists(getcwd().'/bower_components/jquery/src/jquery.js');
     }
 
     public function testExecuteVerbose()
@@ -32,8 +32,8 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery'), array('decorated' => false, 'verbosity' => OutputInterface::VERBOSITY_DEBUG));
 
         $this->assertRegExp('/jquery#2/', $commandTester->getDisplay());
-        $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
-        $this->assertFileExists(getcwd() . '/bower_components/jquery/src/jquery.js');
+        $this->assertFileExists(getcwd().'/bower_components/jquery/.bower.json');
+        $this->assertFileExists(getcwd().'/bower_components/jquery/src/jquery.js');
     }
 
     public function testExecuteWithoutPackage()
@@ -54,9 +54,20 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertRegExp('/Available versions/', $commandTester->getDisplay());
     }
 
+    public function testExecuteInstallPackageWithDependencies()
+    {
+        $application = new Application();
+        $commandTester = new CommandTester($command = $application->get('install'));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery-ui'), array('decorated' => false));
+
+        $this->assertRegExp('/jquery#/m', $commandTester->getDisplay());
+        $this->assertFileExists(getcwd().'/bower_components/jquery-ui/.bower.json');
+        $this->assertFileExists(getcwd().'/bower_components/jquery/.bower.json');
+    }
+
     public function tearDown()
     {
-        $dir = getcwd() . '/bower_components/';
+        $dir = getcwd().'/bower_components/';
         if (is_dir($dir)) {
             // see http://stackoverflow.com/a/15111679/369194
             foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $path) {

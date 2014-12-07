@@ -74,7 +74,7 @@ class Compiler
             ->name('*.php')
             ->notName('Compiler.php')
             ->notName('ClassLoader.php')
-            ->in(__DIR__ . '/..')
+            ->in(__DIR__.'/..')
         ;
 
         foreach ($finder as $file) {
@@ -88,25 +88,25 @@ class Compiler
             ->name('*.pem')
             ->name('*.pem.md5')
             ->exclude('Tests')
-            ->in(__DIR__ . '/../../vendor/symfony/')
-            ->in(__DIR__ . '/../../vendor/guzzle/guzzle/src/')
-            ->in(__DIR__ . '/../../vendor/camspiers/json-pretty/src/')
-            ->in(__DIR__ . '/../../vendor/knplabs/github-api/lib/')
+            ->in(__DIR__.'/../../vendor/symfony/')
+            ->in(__DIR__.'/../../vendor/guzzle/guzzle/src/')
+            ->in(__DIR__.'/../../vendor/camspiers/json-pretty/src/')
+            ->in(__DIR__.'/../../vendor/knplabs/github-api/lib/')
         ;
 
         foreach ($finder as $file) {
             $this->addFile($phar, $file);
         }
 
-        $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../vendor/autoload.php'));
-        $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../vendor/composer/autoload_psr4.php'));
-        $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../vendor/composer/autoload_namespaces.php'));
-        $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../vendor/composer/autoload_classmap.php'));
-        $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../vendor/composer/autoload_real.php'));
-        if (file_exists(__DIR__ . '/../../vendor/composer/include_paths.php')) {
-            $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../vendor/composer/include_paths.php'));
+        $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../vendor/autoload.php'));
+        $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../vendor/composer/autoload_psr4.php'));
+        $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../vendor/composer/autoload_namespaces.php'));
+        $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../vendor/composer/autoload_classmap.php'));
+        $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../vendor/composer/autoload_real.php'));
+        if (file_exists(__DIR__.'/../../vendor/composer/include_paths.php')) {
+            $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../vendor/composer/include_paths.php'));
         }
-        $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../vendor/composer/ClassLoader.php'));
+        $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../vendor/composer/ClassLoader.php'));
         $this->addComposerBin($phar);
 
         // Stubs
@@ -118,7 +118,7 @@ class Compiler
             $phar->compressFiles(\Phar::GZ);
         }
 
-        $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../LICENSE'), false);
+        $this->addFile($phar, new \SplFileInfo(__DIR__.'/../../LICENSE'), false);
 
         unset($phar);
         chmod("bowerphp.phar", 0700);
@@ -131,13 +131,13 @@ class Compiler
      */
     private function addFile(\Phar $phar, \SplFileInfo $file, $strip = true)
     {
-        $path = strtr(str_replace(dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR, '', $file->getRealPath()), '\\', '/');
+        $path = strtr(str_replace(dirname(dirname(__DIR__)).DIRECTORY_SEPARATOR, '', $file->getRealPath()), '\\', '/');
 
         $content = file_get_contents($file);
         if ($strip) {
             $content = $this->stripWhitespace($content);
         } elseif ('LICENSE' === basename($file)) {
-            $content = "\n" . $content . "\n";
+            $content = "\n".$content."\n";
         }
 
         if ($path === 'src/Bowerphp/Bowerphp.php') {
@@ -153,7 +153,7 @@ class Compiler
      */
     private function addComposerBin(\Phar $phar)
     {
-        $content = file_get_contents(__DIR__ . '/../../bin/bowerphp');
+        $content = file_get_contents(__DIR__.'/../../bin/bowerphp');
         $content = preg_replace('{^#!/usr/bin/env php\s*}', '', $content);
         $phar->addFromString('bin/bowerphp', $content);
     }
@@ -220,7 +220,7 @@ EOF;
             $stub .= "define('BOWERPHP_DEV_WARNING_TIME', $warningTime);\n";
         }
 
-        return $stub . <<<'EOF'
+        return $stub.<<<'EOF'
 require 'phar://bowerphp.phar/bin/bowerphp';
 
 __HALT_COMPILER();

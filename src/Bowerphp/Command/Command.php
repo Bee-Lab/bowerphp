@@ -35,7 +35,7 @@ abstract class Command extends BaseCommand
             $logger = function ($message) use ($output) {
                 $finfo = new \finfo(FILEINFO_MIME);
                 $msg =  (substr($finfo->buffer($message), 0, 4) == 'text') ? $message : '(binary string)';
-                $output->writeln('<info>Guzzle</info> ' . $msg);
+                $output->writeln('<info>Guzzle</info> '.$msg);
             };
             $logAdapter = new ClosureLogAdapter($logger);
             $logPlugin = new LogPlugin($logAdapter, MessageFormatter::DEBUG_FORMAT);

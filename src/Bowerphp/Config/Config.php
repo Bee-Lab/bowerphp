@@ -36,9 +36,9 @@ class Config implements ConfigInterface
     public function __construct(Filesystem $filesystem)
     {
         $this->filesystem = $filesystem;
-        $this->cacheDir   = $this->getHomeDir() . '/.cache/bowerphp';
-        $this->installDir = getcwd() . '/bower_components';
-        $rc               = getcwd() . '/.bowerrc';
+        $this->cacheDir   = $this->getHomeDir().'/.cache/bowerphp';
+        $this->installDir = getcwd().'/bower_components';
+        $rc               = getcwd().'/.bowerrc';
 
         if ($this->filesystem->exists($rc)) {
             $json = json_decode($this->filesystem->read($rc), true);
@@ -46,7 +46,7 @@ class Config implements ConfigInterface
                 throw new RuntimeException('Invalid .bowerrc file.');
             }
             if (isset($json['directory'])) {
-                $this->installDir = getcwd() . '/' . $json['directory'];
+                $this->installDir = getcwd().'/'.$json['directory'];
             }
             if (isset($json['storage']) && isset($json['storage']['packages'])) {
                 $this->cacheDir = $json['storage']['packages'];
@@ -107,7 +107,7 @@ class Config implements ConfigInterface
      */
     public function initBowerJsonFile(array $params)
     {
-        $file = getcwd() . '/' . $this->stdBowerFileName;
+        $file = getcwd().'/'.$this->stdBowerFileName;
         $json = Json::encode($this->createAClearBowerFile($params));
 
         return $this->filesystem->write($file, $json);
@@ -124,7 +124,7 @@ class Config implements ConfigInterface
 
         $decode = $this->getBowerFileContent();
         $decode['dependencies'][$package->getName()] = $package->getRequiredVersion();
-        $file = getcwd() . '/' . $this->stdBowerFileName;
+        $file = getcwd().'/'.$this->stdBowerFileName;
         $json = Json::encode($decode);
 
         return $this->filesystem->write($file, $json);
@@ -136,7 +136,7 @@ class Config implements ConfigInterface
     public function updateBowerJsonFile2(array $old, array $new)
     {
         $json = Json::encode(array_merge($old, $new));
-        $file = getcwd() . '/' . $this->stdBowerFileName;
+        $file = getcwd().'/'.$this->stdBowerFileName;
 
         return $this->filesystem->write($file, $json);
     }
@@ -146,10 +146,10 @@ class Config implements ConfigInterface
      */
     public function getBowerFileContent()
     {
-        if (!$this->filesystem->exists(getcwd() . '/' . $this->stdBowerFileName)) {
-            throw new RuntimeException('No ' . $this->stdBowerFileName . ' found. You can run "init" command to create it.');
+        if (!$this->filesystem->exists(getcwd().'/'.$this->stdBowerFileName)) {
+            throw new RuntimeException('No '.$this->stdBowerFileName.' found. You can run "init" command to create it.');
         }
-        $bowerJson = $this->filesystem->read(getcwd() . '/' . $this->stdBowerFileName);
+        $bowerJson = $this->filesystem->read(getcwd().'/'.$this->stdBowerFileName);
         if (empty($bowerJson) || !is_array($decode = json_decode($bowerJson, true))) {
             throw new RuntimeException(sprintf('Malformed JSON %s.', $bowerJson));
         }
@@ -162,7 +162,7 @@ class Config implements ConfigInterface
      */
     public function getPackageBowerFileContent(PackageInterface $package)
     {
-        $file = $this->getInstallDir() . '/' . $package->getName() . '/.bower.json';
+        $file = $this->getInstallDir().'/'.$package->getName().'/.bower.json';
         if (!$this->filesystem->exists($file)) {
             throw new RuntimeException(sprintf('Could not find .bower.json file for package %s.', $package->getName()));
         }
@@ -180,7 +180,7 @@ class Config implements ConfigInterface
      */
     public function bowerFileExists()
     {
-        return $this->filesystem->exists(getcwd() . '/' . $this->stdBowerFileName);
+        return $this->filesystem->exists(getcwd().'/'.$this->stdBowerFileName);
     }
 
     /**

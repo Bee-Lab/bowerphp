@@ -21,7 +21,7 @@ class InfoCommandTest extends \PHPUnit_Framework_TestCase
 
         $commandTester->execute(array('command' => $command->getName(), 'package' => 'colorbox', 'property' => 'main'), array('decorated' => false));
 
-        $this->assertEquals('"jquery.colorbox.js"' . PHP_EOL, $commandTester->getDisplay());
+        $this->assertEquals('"jquery.colorbox.js"'.PHP_EOL, $commandTester->getDisplay());
     }
 
     public function testExecuteNoVersionsFound()
