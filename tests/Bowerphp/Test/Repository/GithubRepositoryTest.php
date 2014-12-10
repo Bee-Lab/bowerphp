@@ -245,6 +245,38 @@ class GithubRepositoryTest extends TestCase
     }
 
     /**
+     * "version with any wildcard" = something like "1.2.x" or "1.2.X" or "1.2.*"
+     */
+    public function testFindPackageWithVersionWithWildcard()
+    {
+        $response = '[{"name": "2.1.4", "zipball_url": "", "tarball_url": ""}, '
+            .'{"name": "2.0.5", "zipball_url": "", "tarball_url": ""}, '
+            .'{"name": "2.0.4", "zipball_url": "", "tarball_url": ""}, '
+            .'{"name": "2.0.3-beta3", "zipball_url": "", "tarball_url": ""}, '
+            .'{"name": "2.0.3b1", "zipball_url": "", "tarball_url": ""}, '
+            .'{"name": "2.0.3", "zipball_url": "", "tarball_url": ""},'
+            .'{"name": "2.0.2", "zipball_url": "", "tarball_url": ""},'
+            .'{"name": "2.0.1", "zipball_url": "", "tarball_url": ""},'
+            .'{"name": "2.0.0", "zipball_url": "", "tarball_url": ""}]'
+        ;
+        $this->mockTagsRequest($response);
+
+        $wildcards = array(
+            'x',
+            'X',
+            '*'
+        );
+
+        foreach($wildcards as $wildcard) {
+            $tag = $this->repository->findPackage('2.0.' . $wildcard);
+            $this->assertEquals('2.0.5', $tag);
+
+            $tag = $this->repository->findPackage('2.x' . $wildcard);
+            $this->assertEquals('2.1.4', $tag);
+        }
+    }
+
+    /**
      * @expectedException RuntimeException
      */
     public function testFindPackageVersionNotFound()
@@ -294,6 +326,15 @@ class GithubRepositoryTest extends TestCase
     public function testFixVersion()
     {
         $fixVersion = $this->getMethod('Bowerphp\Repository\GithubRepository', 'fixVersion');
+        $wildcards = array(
+            '*',
+            'x',
+            'X'
+        );
+        foreach($wildcards as $wilcard) {
+            $this->assertEquals('1.*.*', $fixVersion->invokeArgs($this->repository, array('1.' . $wilcard)));
+            $this->assertEquals('1.5.*', $fixVersion->invokeArgs($this->repository, array('1.5.' . $wilcard)));
+        }
         $this->assertEquals('1.9.*', $fixVersion->invokeArgs($this->repository, array('>=1.9')));
         $this->assertEquals('1.9.*', $fixVersion->invokeArgs($this->repository, array('>=1.9.0')));
         $this->assertEquals('1.9.*', $fixVersion->invokeArgs($this->repository, array('>= 1.9.0')));
