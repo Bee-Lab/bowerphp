@@ -187,6 +187,8 @@ class GithubRepository implements RepositoryInterface
         if (is_null($version)) {
             return '*';
         }
+        //Replace the x and X wildcard by the * one to simplify the rest of the logic.
+        $version = str_replace(array('x', 'X'), '*', $version);
         $bits = explode('.', $version);
         if (substr($version, 0, 1) == '~') {
             $version = substr($version, 1).'*';
