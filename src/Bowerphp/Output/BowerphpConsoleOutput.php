@@ -36,7 +36,7 @@ class BowerphpConsoleOutput
     public function writelnInfoPackage(PackageInterface $package)
     {
         $this->output->writeln(sprintf('bower <info>%s</info>',
-            str_pad($package->getName().'#'.$package->getRequiredVersion(), 21, ' ', STR_PAD_RIGHT)
+            str_pad($package->getName() . '#' . $package->getRequiredVersion(), 21, ' ', STR_PAD_RIGHT)
         ));
     }
 
@@ -48,7 +48,7 @@ class BowerphpConsoleOutput
     public function writelnInstalledPackage(PackageInterface $package)
     {
         $this->output->writeln(sprintf('bower <info>%s</info> <fg=cyan>%s</fg=cyan>',
-            str_pad($package->getName().'#'.$package->getVersion(), 21, ' ', STR_PAD_RIGHT),
+            str_pad($package->getName() . '#' . $package->getVersion(), 21, ' ', STR_PAD_RIGHT),
             str_pad('install', 10, ' ', STR_PAD_LEFT)
         ));
     }
@@ -116,7 +116,7 @@ class BowerphpConsoleOutput
     public function writelnUpdatingPackage(PackageInterface $package)
     {
         $this->output->writeln(sprintf('bower <info>%s</info> <fg=cyan>%s</fg=cyan>',
-            str_pad($package->getName().'#'.$package->getRequiredVersion(), 21, ' ', STR_PAD_RIGHT),
+            str_pad($package->getName() . '#' . $package->getRequiredVersion(), 21, ' ', STR_PAD_RIGHT),
             str_pad('install', 10, ' ', STR_PAD_LEFT)
         ));
     }

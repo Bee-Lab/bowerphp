@@ -24,7 +24,7 @@ class InstallerTest extends TestCase
 
         $this->config
             ->shouldReceive('getBasePackagesUrl')->andReturn('http://bower.herokuapp.com/packages/')
-            ->shouldReceive('getInstallDir')->andReturn(getcwd().'/bower_components')
+            ->shouldReceive('getInstallDir')->andReturn(getcwd() . '/bower_components')
             ->shouldReceive('getCacheDir')->andReturn('.')
         ;
     }
@@ -54,9 +54,9 @@ class InstallerTest extends TestCase
 }';
 
         $this->filesystem
-            ->shouldReceive('write')->with(getcwd().'/bower_components/jquery/foo', 'foo content')
-            ->shouldReceive('write')->with(getcwd().'/bower_components/jquery/.bower.json', $json)
-            ->shouldReceive('touch')->with(getcwd().'/bower_components/jquery/foo', 1396303200)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/foo', 'foo content')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', $json)
+            ->shouldReceive('touch')->with(getcwd() . '/bower_components/jquery/foo', 1396303200)
         ;
 
         $this->installer->install($package);
@@ -87,9 +87,9 @@ class InstallerTest extends TestCase
 }';
 
         $this->filesystem
-            ->shouldReceive('write')->with(getcwd().'/bower_components/jquery/foo', 'foo content')
-            ->shouldReceive('write')->with(getcwd().'/bower_components/jquery/.bower.json', $json)
-            ->shouldReceive('touch')->with(getcwd().'/bower_components/jquery/foo', 1396303200)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/foo', 'foo content')
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', $json)
+            ->shouldReceive('touch')->with(getcwd() . '/bower_components/jquery/foo', 1396303200)
         ;
 
         $this->installer->update($package);
@@ -173,8 +173,8 @@ class InstallerTest extends TestCase
         ;
 
         $this->filesystem
-            ->shouldReceive('exists')->with(getcwd().'/bower_components/jquery/.bower.json')->andReturn(true)
-            ->shouldReceive('remove')->with(getcwd().'/bower_components/jquery')
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(true)
+            ->shouldReceive('remove')->with(getcwd() . '/bower_components/jquery')
         ;
 
         $this->installer->uninstall($package);
@@ -188,7 +188,7 @@ class InstallerTest extends TestCase
             ->shouldReceive('directories->in')->andReturn(array('package1', 'package2'));
 
         $this->filesystem
-            ->shouldReceive('exists')->with(getcwd().'/bower_components')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components')->andReturn(true)
             ->shouldReceive('exists')->with('package1/.bower.json')->andReturn(true)
             ->shouldReceive('exists')->with('package2/.bower.json')->andReturn(true)
             ->shouldReceive('read')->with('package1/.bower.json')->andReturn('{"name":"package1","version":"1.0.0"}')
@@ -203,7 +203,7 @@ class InstallerTest extends TestCase
         $finder = Mockery::mock('Symfony\Component\Finder\Finder');
 
         $this->filesystem
-            ->shouldReceive('exists')->with(getcwd().'/bower_components')->andReturn(false)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components')->andReturn(false)
         ;
 
         $this->assertEquals(array(), $this->installer->getInstalled($finder));
@@ -221,7 +221,7 @@ class InstallerTest extends TestCase
             ->shouldReceive('directories->in')->andReturn(array('package1'));
 
         $this->filesystem
-            ->shouldReceive('exists')->with(getcwd().'/bower_components')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components')->andReturn(true)
             ->shouldReceive('exists')->with('package1/.bower.json')->andReturn(true)
             ->shouldReceive('read')->with('package1/.bower.json')->andReturn(null)
         ;
@@ -242,7 +242,7 @@ class InstallerTest extends TestCase
             ->shouldReceive('directories->in')->andReturn(array('package1', 'package2'));
 
         $this->filesystem
-            ->shouldReceive('exists')->with(getcwd().'/bower_components')->andReturn(true)
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components')->andReturn(true)
             ->shouldReceive('exists')->with('package1/.bower.json')->andReturn(true)
             ->shouldReceive('exists')->with('package2/.bower.json')->andReturn(true)
             ->shouldReceive('read')->with('package1/.bower.json')->andReturn('{"name":"package1","version":"1.0.0","dependencies":{"jquery": ">=1.3.2"}}')

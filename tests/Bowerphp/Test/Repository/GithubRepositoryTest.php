@@ -53,7 +53,7 @@ class GithubRepositoryTest extends TestCase
         $contents = Mockery::mock('Github\Api\Repository\Contents');
 
         $bowerJson = '{"name": "jquery", "version": "2.0.3", "main": "jquery.js"}';
-        $bowerJsonWithBOM = "\xef\xbb\xbf".$bowerJson;
+        $bowerJsonWithBOM = "\xef\xbb\xbf" . $bowerJson;
 
         $this->httpClient
             ->shouldReceive('api')->with('repo')->andReturn($repo)
@@ -230,11 +230,11 @@ class GithubRepositoryTest extends TestCase
     public function testFindPackageWithVersionWithTilde()
     {
         $response = '[{"name": "2.1.4", "zipball_url": "", "tarball_url": ""}, '
-            .'{"name": "2.0.5", "zipball_url": "", "tarball_url": ""}, '
-            .'{"name": "2.0.4", "zipball_url": "", "tarball_url": ""}, '
-            .'{"name": "2.0.3-beta3", "zipball_url": "", "tarball_url": ""}, '
-            .'{"name": "2.0.3b1", "zipball_url": "", "tarball_url": ""}, '
-            .'{"name": "2.0.3", "zipball_url": "", "tarball_url": ""}]';
+            . '{"name": "2.0.5", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.4", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.3-beta3", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.3b1", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.3", "zipball_url": "", "tarball_url": ""}]';
         $this->mockTagsRequest($response);
 
         $tag = $this->repository->findPackage('~2.0.3');
@@ -250,24 +250,24 @@ class GithubRepositoryTest extends TestCase
     public function testFindPackageWithVersionWithWildcard()
     {
         $response = '[{"name": "2.1.4", "zipball_url": "", "tarball_url": ""}, '
-            .'{"name": "2.0.5", "zipball_url": "", "tarball_url": ""}, '
-            .'{"name": "2.0.4", "zipball_url": "", "tarball_url": ""}, '
-            .'{"name": "2.0.3-beta3", "zipball_url": "", "tarball_url": ""}, '
-            .'{"name": "2.0.3b1", "zipball_url": "", "tarball_url": ""}, '
-            .'{"name": "2.0.3", "zipball_url": "", "tarball_url": ""},'
-            .'{"name": "2.0.2", "zipball_url": "", "tarball_url": ""},'
-            .'{"name": "2.0.1", "zipball_url": "", "tarball_url": ""},'
-            .'{"name": "2.0.0", "zipball_url": "", "tarball_url": ""}]'
+            . '{"name": "2.0.5", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.4", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.3-beta3", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.3b1", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.3", "zipball_url": "", "tarball_url": ""},'
+            . '{"name": "2.0.2", "zipball_url": "", "tarball_url": ""},'
+            . '{"name": "2.0.1", "zipball_url": "", "tarball_url": ""},'
+            . '{"name": "2.0.0", "zipball_url": "", "tarball_url": ""}]'
         ;
         $this->mockTagsRequest($response);
 
         $wildcards = array(
             'x',
             'X',
-            '*'
+            '*',
         );
 
-        foreach($wildcards as $wildcard) {
+        foreach ($wildcards as $wildcard) {
             $tag = $this->repository->findPackage('2.0.' . $wildcard);
             $this->assertEquals('2.0.5', $tag);
 
@@ -329,9 +329,9 @@ class GithubRepositoryTest extends TestCase
         $wildcards = array(
             '*',
             'x',
-            'X'
+            'X',
         );
-        foreach($wildcards as $wilcard) {
+        foreach ($wildcards as $wilcard) {
             $this->assertEquals('1.*.*', $fixVersion->invokeArgs($this->repository, array('1.' . $wilcard)));
             $this->assertEquals('1.5.*', $fixVersion->invokeArgs($this->repository, array('1.5.' . $wilcard)));
         }

@@ -24,7 +24,7 @@ class GithubRepository implements RepositoryInterface
      */
     public function setUrl($url, $raw = true)
     {
-        $url = preg_replace('/\.git$/', '', str_replace('git://', 'https://'.($raw ? 'raw.' : ''), $url));
+        $url = preg_replace('/\.git$/', '', str_replace('git://', 'https://' . ($raw ? 'raw.' : ''), $url));
         $this->url = str_replace('raw.github.com', 'raw.githubusercontent.com', $url);
 
         return $this;
@@ -94,7 +94,7 @@ class GithubRepository implements RepositoryInterface
         }
 
         foreach ($this->sortTags($tags) as $tag) {
-            if (fnmatch($version, $tag['name']) || fnmatch('v'.$version, $tag['name'])) {
+            if (fnmatch($version, $tag['name']) || fnmatch('v' . $version, $tag['name'])) {
                 $this->tag = $tag;
 
                 return $tag['name'];
@@ -117,7 +117,7 @@ class GithubRepository implements RepositoryInterface
     {
         list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
 
-        return $this->githubClient->api('repo')->contents()->archive($repoUser, $repoName, $type.'ball', $this->tag['name']);
+        return $this->githubClient->api('repo')->contents()->archive($repoUser, $repoName, $type . 'ball', $this->tag['name']);
     }
 
     /**
@@ -191,20 +191,20 @@ class GithubRepository implements RepositoryInterface
         $version = str_replace(array('x', 'X'), '*', $version);
         $bits = explode('.', $version);
         if (substr($version, 0, 1) == '~') {
-            $version = substr($version, 1).'*';
+            $version = substr($version, 1) . '*';
         } elseif (substr($version, 0, 2) == '>=') {
             if (count($bits) == 3) {
                 array_pop($bits);
                 $version = implode('.', $bits);
-                $version = substr($version, 2).'.*';
+                $version = substr($version, 2) . '.*';
             } else {
-                $version = substr($version, 2).'.*';
+                $version = substr($version, 2) . '.*';
             }
         } else {
             if (count($bits) == 1) {
-                $version = $version.'.*.*';
+                $version = $version . '.*.*';
             } elseif (count($bits) == 2) {
-                $version = $version.'.*';
+                $version = $version . '.*';
             }
         }
 
@@ -251,7 +251,7 @@ class GithubRepository implements RepositoryInterface
                 );
                 $preRelease = $matches[2] ?: 'zzzzzz';
 
-                $tag['normal_version'] = $number.$preRelease;
+                $tag['normal_version'] = $number . $preRelease;
             } else {
                 $tag['normal_version'] = 'zzzzzz';
             }

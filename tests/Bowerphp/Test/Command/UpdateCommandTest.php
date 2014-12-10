@@ -16,16 +16,16 @@ class UpdateCommandTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $dir = getcwd().'/bower_components/';
+        $dir = getcwd() . '/bower_components/';
         if (!is_dir($dir)) {
             mkdir($dir);
         }
-        if (!is_dir($dir.'jquery')) {
-            mkdir($dir.'jquery');
+        if (!is_dir($dir . 'jquery')) {
+            mkdir($dir . 'jquery');
         }
-        touch($dir.'jquery/.bower.json');
-        $this->packageDotBowerFile = $dir.'jquery/.bower.json';
-        $this->bowerFile = getcwd().'/bower.json';
+        touch($dir . 'jquery/.bower.json');
+        $this->packageDotBowerFile = $dir . 'jquery/.bower.json';
+        $this->bowerFile = getcwd() . '/bower.json';
 
         file_put_contents($this->packageDotBowerFile, '{"name": "jquery", "version": "1.10.1"}');
         file_put_contents($this->bowerFile, '{"name": "test", "dependencies": {"jquery": "1.11.1"}}');
@@ -39,7 +39,7 @@ class UpdateCommandTest extends \PHPUnit_Framework_TestCase
         //then
         $dotBower = json_decode(file_get_contents($this->packageDotBowerFile), true);
         $this->assertEquals('1.11.1', $dotBower['version']);
-        $this->assertFileExists(getcwd().'/bower_components/jquery/src/jquery.js');
+        $this->assertFileExists(getcwd() . '/bower_components/jquery/src/jquery.js');
     }
 
     /**
@@ -57,7 +57,7 @@ class UpdateCommandTest extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        $dir = getcwd().'/bower_components/';
+        $dir = getcwd() . '/bower_components/';
         if (is_dir($dir)) {
             // see http://stackoverflow.com/a/15111679/369194
             foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $path) {
@@ -65,6 +65,6 @@ class UpdateCommandTest extends \PHPUnit_Framework_TestCase
             }
             rmdir($dir);
         }
-        unlink(getcwd().'/bower.json');
+        unlink(getcwd() . '/bower.json');
     }
 }

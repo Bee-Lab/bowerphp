@@ -27,7 +27,7 @@ abstract class HttpMockedTestCase extends PHPUnit_Framework_TestCase
     protected function prepareRequest($query, $packageJson)
     {
         $this->httpClient
-            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/'.$query)->andReturn($this->response)
+            ->shouldReceive('get')->with('http://bower.herokuapp.com/packages/' . $query)->andReturn($this->response)
         ;
         $this->response
             ->shouldReceive('getBody')->andReturn($packageJson)

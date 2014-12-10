@@ -55,7 +55,7 @@ class Application extends BaseApplication
     public function doRun(InputInterface $input, OutputInterface $output)
     {
         if (version_compare(PHP_VERSION, '5.3.2', '<')) {
-            $output->writeln('<warning>Bowerphp only officially supports PHP 5.3.2 and above, you will most likely encounter problems with your PHP '.PHP_VERSION.', upgrading is strongly recommended.</warning>');
+            $output->writeln('<warning>Bowerphp only officially supports PHP 5.3.2 and above, you will most likely encounter problems with your PHP ' . PHP_VERSION . ', upgrading is strongly recommended.</warning>');
         }
 
         if ($input->hasParameterOption('--profile')) {
@@ -74,7 +74,7 @@ class Application extends BaseApplication
         }
 
         if (isset($startTime)) {
-            $output->writeln('<info>Memory usage: '.round(memory_get_usage() / 1024 / 1024, 2).'MB (peak: '.round(memory_get_peak_usage() / 1024 / 1024, 2).'MB), time: '.round(microtime(true) - $startTime, 2).'s');
+            $output->writeln('<info>Memory usage: ' . round(memory_get_usage() / 1024 / 1024, 2) . 'MB (peak: ' . round(memory_get_peak_usage() / 1024 / 1024, 2) . 'MB), time: ' . round(microtime(true) - $startTime, 2) . 's');
         }
 
         return $result;
@@ -85,7 +85,7 @@ class Application extends BaseApplication
      */
     public function getHelp()
     {
-        return self::$logo.parent::getHelp();
+        return self::$logo . parent::getHelp();
     }
 
     /**
