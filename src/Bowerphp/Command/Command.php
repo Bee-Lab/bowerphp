@@ -15,6 +15,8 @@ use Guzzle\Log\MessageFormatter;
 use Guzzle\Plugin\Log\LogPlugin;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Console\Output\OutputInterface;
+use Bowerphp\Config\Config;
+use Bowerphp\Util\Filesystem;
 
 /**
  * Base class for Bowerphp commands
@@ -22,6 +24,13 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 abstract class Command extends BaseCommand
 {
+
+    protected $filesystem;
+
+    protected $config;
+
+    protected $githubClient;
+
     /**
      * Debug HTTP interactions
      *
@@ -55,4 +64,17 @@ abstract class Command extends BaseCommand
             $client->authenticate($token, null, Client::AUTH_HTTP_TOKEN);
         }
     }
+
+    /**
+     * @param OutputInterface $output
+     */
+    protected function setGithubToken(OutputInterface $output)
+    {
+        $this->filesystem = new Filesystem();
+        $this->githubClient = new Client();
+        $this->config = new Config($this->filesystem);
+        $this->logHttp($this->githubClient, $output);
+        $this->setToken($this->githubClient);
+    }
+
 }

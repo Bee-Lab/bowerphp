@@ -48,12 +48,7 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $filesystem = new Filesystem();
-        $config = new Config($filesystem);
-        $githubClient = new Client();
-
-        $this->logHttp($githubClient, $output);
-        $this->setToken($githubClient);
+        $this->setGithubToken($output);
 
         $author = sprintf('%s <%s>', $this->getGitInfo('user.name'), $this->getGitInfo('user.email'));
 
@@ -77,7 +72,7 @@ EOT
         }
         // @codeCoverageIgnoreEnd
         $consoleOutput = new BowerphpConsoleOutput($output);
-        $bowerphp = new Bowerphp($config, $filesystem, $githubClient, new GithubRepository(), $consoleOutput);
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->githubClient, new GithubRepository(), $consoleOutput);
         $bowerphp->init($params);
 
         $output->writeln('');

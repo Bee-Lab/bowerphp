@@ -52,15 +52,11 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $filesystem = new Filesystem();
-        $config = new Config($filesystem);
-        $githubClient = new Client();
-
-        $this->setToken($githubClient);
+        $this->setGithubToken($output);
 
         $consoleOutput = new BowerphpConsoleOutput($output);
-        $installer = new Installer($filesystem, new ZipArchive(), $config);
-        $bowerphp = new Bowerphp($config, $filesystem, $githubClient, new GithubRepository(), $consoleOutput);
+        $installer = new Installer($this->filesystem, new ZipArchive(), $this->config);
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->githubClient, new GithubRepository(), $consoleOutput);
         $packages = $bowerphp->getInstalledPackages($installer, new Finder());
 
         foreach ($packages as $package) {

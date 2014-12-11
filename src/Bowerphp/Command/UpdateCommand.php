@@ -57,18 +57,13 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->setGithubToken($output);
+
         $packageName = $input->getArgument('package');
-
-        $filesystem = new Filesystem();
-        $githubClient = new Client();
-        $config = new Config($filesystem);
-        $installer = new Installer($filesystem, new ZipArchive(), $config);
-
-        $this->logHttp($githubClient, $output);
-        $this->setToken($githubClient);
+        $installer = new Installer($this->filesystem, new ZipArchive(), $this->config);
 
         try {
-            $bowerphp = new Bowerphp($config, $filesystem, $githubClient, new GithubRepository(), new BowerphpConsoleOutput($output));
+            $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->githubClient, new GithubRepository(), new BowerphpConsoleOutput($output));
             if (is_null($packageName)) {
                 $bowerphp->updatePackages($installer);
             } else {
