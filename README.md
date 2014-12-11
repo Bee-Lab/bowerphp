@@ -34,3 +34,35 @@ Status
 This project is in alpha status.
 
 See currently open [issues](https://github.com/Bee-Lab/bowerphp/issues).
+
+Building the phar
+-----------------
+
+One of the method to build the phar is to use the [box command line utility](https://github.com/box-project/box2)
+If you add this config in a box.json file you only just need to run the two commands bellow to have a working phar.
+
+###the commands
+
+```sh
+$ box build
+$ chmod +x bower.phar
+```
+
+### the box.json config
+
+```json
+{
+    "directories": ["src"],
+    "files": ["LICENSE"],
+    "finder": [
+        {
+            "name": "*.php",
+            "exclude": ["Tests", "phpunit", "mockery"],
+            "in": "vendor"
+        }
+    ],
+    "main": "bin/bowerphp",
+    "output": "bower.phar",
+    "stub": true
+}
+```
