@@ -12,9 +12,7 @@ namespace Bowerphp\Command;
 use Bowerphp\Bowerphp;
 use Bowerphp\Config\Config;
 use Bowerphp\Installer\Installer;
-use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Package\Package;
-use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Util\Filesystem;
 use Bowerphp\Util\ZipArchive;
 use RuntimeException;
@@ -62,7 +60,7 @@ EOT
         $installer = new Installer($this->filesystem, new ZipArchive(), $this->config);
 
         try {
-            $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->githubClient, new GithubRepository(), new BowerphpConsoleOutput($output));
+            $bowerphp = $this->getBowerphp($output);
             if (is_null($packageName)) {
                 $bowerphp->updatePackages($installer);
             } else {

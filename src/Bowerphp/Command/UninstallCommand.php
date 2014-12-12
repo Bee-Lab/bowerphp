@@ -14,9 +14,7 @@ namespace Bowerphp\Command;
 use Bowerphp\Bowerphp;
 use Bowerphp\Config\Config;
 use Bowerphp\Installer\Installer;
-use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Package\Package;
-use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Util\Filesystem;
 use Bowerphp\Util\PackageNameVersionExtractor;
 use Bowerphp\Util\ZipArchive;
@@ -56,8 +54,7 @@ EOT
 
         $packageName = $input->getArgument('package');
 
-        $consoleOutput = new BowerphpConsoleOutput($output);
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->githubClient, new GithubRepository(), $consoleOutput);
+        $bowerphp = $this->getBowerphp($output);
 
         try {
             $installer = new Installer($this->filesystem, new ZipArchive(), $this->config);

@@ -10,10 +10,6 @@
 namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
-use Bowerphp\Config\Config;
-use Bowerphp\Output\BowerphpConsoleOutput;
-use Bowerphp\Repository\GithubRepository;
-use Bowerphp\Util\Filesystem;
 use Bowerphp\Util\PackageNameVersionExtractor;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -52,11 +48,10 @@ EOT
 
         $packageNameVersion = PackageNameVersionExtractor::fromString($name);
 
-        $consoleOutput = new BowerphpConsoleOutput($output);
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->githubClient, new GithubRepository(), $consoleOutput);
+        $bowerphp = $this->getBowerphp($output);
 
         $package = $bowerphp->lookupPackage($packageNameVersion->name);
 
-        $consoleOutput->writelnSearchOrLookup($package['name'], $package['url']);
+        $this->consoleOutput->writelnSearchOrLookup($package['name'], $package['url']);
     }
 }

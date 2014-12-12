@@ -13,9 +13,6 @@ namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
 use Bowerphp\Config\Config;
-use Bowerphp\Output\BowerphpConsoleOutput;
-use Bowerphp\Repository\GithubRepository;
-use Bowerphp\Util\Filesystem;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -70,8 +67,7 @@ EOT
             );
         }
         // @codeCoverageIgnoreEnd
-        $consoleOutput = new BowerphpConsoleOutput($output);
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->githubClient, new GithubRepository(), $consoleOutput);
+        $bowerphp = $this->getBowerphp($output);
         $bowerphp->init($params);
 
         $output->writeln('');
