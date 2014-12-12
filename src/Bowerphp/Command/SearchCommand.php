@@ -46,17 +46,12 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $filesystem = new Filesystem();
-        $githubClient = new Client();
-        $config = new Config($filesystem);
-
-        $this->logHttp($githubClient, $output);
-        $this->setToken($githubClient);
+        $this->setGithubToken($output);
 
         $name = $input->getArgument('name');
 
         $consoleOutput = new BowerphpConsoleOutput($output);
-        $bowerphp = new Bowerphp($config, $filesystem, $githubClient, new GithubRepository(), $consoleOutput);
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->githubClient, new GithubRepository(), $consoleOutput);
         $packages = $bowerphp->searchPackages($name);
 
         if (empty($packages)) {
