@@ -68,7 +68,8 @@ class Installer implements InstallerInterface
 
         // create .bower.json metadata file
         // XXX we still need to add some other info...
-        $dotBowerJson = Json::encode($package->getInfo());
+        $dotBowerContent = array_merge($package->getInfo(), array('version' => $package->getRequiredVersion()));
+        $dotBowerJson = Json::encode($dotBowerContent);
         $this->filesystem->write($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json', $dotBowerJson);
     }
 
@@ -77,38 +78,7 @@ class Installer implements InstallerInterface
      */
     public function update(PackageInterface $package)
     {
-        // install files
-        $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();
-        if ($this->zipArchive->open($tmpFileName) !== true) {
-            throw new RuntimeException(sprintf('Unable to open zip file %s.', $tmpFileName));
-        }
-        $dirName = trim($this->zipArchive->getNameIndex(0), '/');
-        $info = $package->getInfo();
-        $files = $this->filterZipFiles($this->zipArchive, isset($info['ignore']) ? $info['ignore'] : array());
-        foreach ($files as $i => $file) {
-            $stat = $this->zipArchive->statIndex($i);
-            $fileName = $this->config->getInstallDir() . '/' . str_replace($dirName, $package->getName(), $file);
-            if (substr($fileName, -1) != '/') {
-                $fileContent = $this->zipArchive->getStream($file);
-                $this->filesystem->write($fileName, $fileContent);
-                $this->filesystem->touch($fileName, $stat['mtime']);
-            }
-        }
-        // adjust timestamp for directories
-        foreach ($files as $i => $file) {
-            $stat = $this->zipArchive->statIndex($i);
-            $fileName = $this->config->getInstallDir() . '/' . str_replace($dirName, $package->getName(), $file);
-            if (substr($fileName, -1) == '/' && is_dir($fileName)) {
-                $this->filesystem->touch($fileName, $stat['mtime']);
-            }
-        }
-        $this->zipArchive->close();
-
-        // update .bower.json metadata file
-        // XXX we still need to add some other info...
-        $dotBowerContent = array_merge($package->getInfo(), array('version' => $package->getRequiredVersion()));
-        $dotBowerJson = Json::encode($dotBowerContent);
-        $this->filesystem->write($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json', $dotBowerJson);
+        $this->install($package);
     }
 
     /**
