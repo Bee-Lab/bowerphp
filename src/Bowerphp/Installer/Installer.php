@@ -138,7 +138,12 @@ class Installer implements InstallerInterface
                 if (is_null($bower)) {
                     throw new RuntimeException(sprintf('Invalid content in .bower.json for package %s.', $packageDirectory));
                 }
-                $packages[] = new Package($bower['name'], null, $bower['version'], isset($bower['dependencies']) ? $bower['dependencies'] : null);
+                $packages[] = new Package(
+                    $bower['name'],
+                    null,
+                    isset($bower['version']) ? $bower['version'] : null,
+                    isset($bower['dependencies']) ? $bower['dependencies'] : null
+                );
             }
         }
 
