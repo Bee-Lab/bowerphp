@@ -10,10 +10,6 @@
 namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
-use Bowerphp\Config\Config;
-use Bowerphp\Output\BowerphpConsoleOutput;
-use Bowerphp\Repository\GithubRepository;
-use Bowerphp\Util\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -49,14 +45,14 @@ EOT
 
         $name = $input->getArgument('name');
 
-        $consoleOutput = new BowerphpConsoleOutput($output);
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->githubClient, new GithubRepository(), $consoleOutput);
+        $bowerphp = $this->getBowerphp($output);
         $packages = $bowerphp->searchPackages($name);
 
         if (empty($packages)) {
             $output->writeln('No results.');
         } else {
             $output->writeln('Search results:' . PHP_EOL);
+            $consoleOutput = $this->consoleOutput;
             array_walk($packages, function ($package) use ($consoleOutput) {
                 $consoleOutput->writelnSearchOrLookup($package['name'], $package['url'], 4);
             });

@@ -17,6 +17,9 @@ use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Console\Output\OutputInterface;
 use Bowerphp\Config\Config;
 use Bowerphp\Util\Filesystem;
+use Bowerphp\Bowerphp;
+use Bowerphp\Repository\GithubRepository;
+use Bowerphp\Output\BowerphpConsoleOutput;
 
 /**
  * Base class for Bowerphp commands
@@ -29,6 +32,8 @@ abstract class Command extends BaseCommand
     protected $config;
 
     protected $githubClient;
+
+    protected $consoleOutput;
 
     /**
      * Debug HTTP interactions
@@ -75,4 +80,16 @@ abstract class Command extends BaseCommand
         $this->logHttp($this->githubClient, $output);
         $this->setToken($this->githubClient);
     }
+
+    /**
+     * @param  OutputInterface $output
+     * @return Bowerphp
+     */
+    protected function getBowerphp(OutputInterface $output)
+    {
+        $this->consoleOutput = new BowerphpConsoleOutput($output);
+
+        return new Bowerphp($this->config, $this->filesystem, $this->githubClient, new GithubRepository(), $this->consoleOutput);
+    }
+    
 }

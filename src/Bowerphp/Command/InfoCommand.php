@@ -12,11 +12,7 @@
 namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
-use Bowerphp\Config\Config;
-use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Package\Package;
-use Bowerphp\Repository\GithubRepository;
-use Bowerphp\Util\Filesystem;
 use Bowerphp\Util\PackageNameVersionExtractor;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -60,8 +56,7 @@ EOT
         $packageNameVersion = PackageNameVersionExtractor::fromString($packageName);
 
         $package = new Package($packageNameVersion->name, $packageNameVersion->version);
-        $consoleOutput = new BowerphpConsoleOutput($output);
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->githubClient, new GithubRepository(), $consoleOutput);
+        $bowerphp = $this->getBowerphp($output);
 
         $bowerJsonFile = $bowerphp->getPackageBowerFile($package);
         if ($packageNameVersion->version == '*') {
@@ -70,11 +65,11 @@ EOT
         if (!is_null($property)) {
             $bowerArray = json_decode($bowerJsonFile, true);
             $propertyValue = isset($bowerArray[$property]) ? $bowerArray[$property] : '';
-            $consoleOutput->writelnJsonText($propertyValue);
+            $this->consoleOutput->writelnJsonText($propertyValue);
 
             return;
         }
-        $consoleOutput->writelnJson($bowerJsonFile);
+        $this->consoleOutput->writelnJson($bowerJsonFile);
         if ($packageNameVersion->version != '*') {
             return;
         }

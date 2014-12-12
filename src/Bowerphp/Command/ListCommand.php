@@ -14,8 +14,6 @@ namespace Bowerphp\Command;
 use Bowerphp\Bowerphp;
 use Bowerphp\Config\Config;
 use Bowerphp\Installer\Installer;
-use Bowerphp\Output\BowerphpConsoleOutput;
-use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Util\Filesystem;
 use Bowerphp\Util\ZipArchive;
 use Symfony\Component\Console\Input\InputInterface;
@@ -53,13 +51,12 @@ EOT
     {
         $this->setGithubToken($output);
 
-        $consoleOutput = new BowerphpConsoleOutput($output);
         $installer = new Installer($this->filesystem, new ZipArchive(), $this->config);
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->githubClient, new GithubRepository(), $consoleOutput);
+        $bowerphp = $this->getBowerphp($output);
         $packages = $bowerphp->getInstalledPackages($installer, new Finder());
 
         foreach ($packages as $package) {
-            $consoleOutput->writelnListPackage($package, $bowerphp);
+            $this->consoleOutput->writelnListPackage($package, $bowerphp);
         }
     }
 }
