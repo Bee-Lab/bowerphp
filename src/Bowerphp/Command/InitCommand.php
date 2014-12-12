@@ -16,7 +16,6 @@ use Bowerphp\Config\Config;
 use Bowerphp\Output\BowerphpConsoleOutput;
 use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Util\Filesystem;
-use Github\Client;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 

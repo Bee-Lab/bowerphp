@@ -24,7 +24,6 @@ use Bowerphp\Util\Filesystem;
  */
 abstract class Command extends BaseCommand
 {
-
     protected $filesystem;
 
     protected $config;
@@ -76,5 +75,4 @@ abstract class Command extends BaseCommand
         $this->logHttp($this->githubClient, $output);
         $this->setToken($this->githubClient);
     }
-
 }
