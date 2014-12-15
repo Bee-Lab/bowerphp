@@ -210,18 +210,17 @@ class GithubRepository implements RepositoryInterface
      */
     private function clearGitURL($url)
     {
-        $url = str_replace('git@github.com:', 'github.com/', $url);
-        if (substr($url, 0, 6) == 'git://') {
-            $url = substr($url, 6);
+        $partsToClean = array(
+            'git://',
+            'git@github.com:',
+            'https://',
+            'github.com/',
+            'raw.githubusercontent.com/',
+        );
+        foreach ($partsToClean as $part) {
+            $url = str_replace($part, '', $url);
         }
-        if (substr($url, 0, 8) == 'https://') {
-            $url = substr($url, 8);
-        }
-        if (substr($url, 0, 11) == 'github.com/') {
-            $url = substr($url, 11);
-        } elseif (substr($url, 0, 26) == 'raw.githubusercontent.com/') {
-            $url = substr($url, 26);
-        }
+
         if (substr($url, -4) == '.git') {
             $url = substr($url, 0, -4);
         }

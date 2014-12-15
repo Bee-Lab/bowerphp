@@ -376,6 +376,9 @@ class GithubRepositoryTest extends TestCase
         $this->assertEquals('components/jquery', $clearGitURL->invokeArgs($this->repository, array('git://github.com/components/jquery.git')));
         $this->assertEquals('components/jqueryui', $clearGitURL->invokeArgs($this->repository, array('git://github.com/components/jqueryui')));
         $this->assertEquals('MAXakaWIZARD/jquery.appear', $clearGitURL->invokeArgs($this->repository, array('git@github.com:MAXakaWIZARD/jquery.appear.git')));
+        $this->assertEquals('components/jqueryui', $clearGitURL->invokeArgs($this->repository, array('https://github.com/components/jqueryui.git')));
+        $this->assertEquals('components/jqueryui', $clearGitURL->invokeArgs($this->repository, array('https://github.com/components/jqueryui')));
+        $this->assertEquals('components/jqueryui/master/jquery-ui.min.js', $clearGitURL->invokeArgs($this->repository, array('https://raw.githubusercontent.com/components/jqueryui/master/jquery-ui.min.js')));
     }
 
     public function testGetTags()
