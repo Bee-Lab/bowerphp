@@ -9,11 +9,8 @@
  */
 namespace Bowerphp\Command;
 
-use Bowerphp\Bowerphp;
-use Bowerphp\Config\Config;
 use Bowerphp\Installer\Installer;
 use Bowerphp\Package\Package;
-use Bowerphp\Util\Filesystem;
 use Bowerphp\Util\ZipArchive;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
@@ -26,7 +23,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class UpdateCommand extends Command
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -50,7 +47,7 @@ EOT
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

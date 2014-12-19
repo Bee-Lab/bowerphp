@@ -11,8 +11,6 @@
 
 namespace Bowerphp\Command;
 
-use Bowerphp\Bowerphp;
-use Bowerphp\Config\Config;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -22,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class InitCommand extends Command
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -40,7 +38,7 @@ EOT
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

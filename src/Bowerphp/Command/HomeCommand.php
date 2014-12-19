@@ -11,7 +11,6 @@
 
 namespace Bowerphp\Command;
 
-use Bowerphp\Bowerphp;
 use Bowerphp\Package\Package;
 use Bowerphp\Util\PackageNameVersionExtractor;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,7 +24,7 @@ use Symfony\Component\Process\Process;
 class HomeCommand extends Command
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -43,7 +42,7 @@ EOT
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

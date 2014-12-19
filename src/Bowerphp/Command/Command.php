@@ -91,5 +91,4 @@ abstract class Command extends BaseCommand
 
         return new Bowerphp($this->config, $this->filesystem, $this->githubClient, new GithubRepository(), $this->consoleOutput);
     }
-    
 }

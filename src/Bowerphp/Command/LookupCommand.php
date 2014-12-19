@@ -9,7 +9,6 @@
  */
 namespace Bowerphp\Command;
 
-use Bowerphp\Bowerphp;
 use Bowerphp\Util\PackageNameVersionExtractor;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class LookupCommand extends Command
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -38,7 +37,7 @@ EOT
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

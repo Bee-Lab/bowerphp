@@ -36,7 +36,7 @@ class Installer implements InstallerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function install(PackageInterface $package)
     {
@@ -74,7 +74,7 @@ class Installer implements InstallerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function update(PackageInterface $package)
     {
@@ -82,7 +82,7 @@ class Installer implements InstallerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function uninstall(PackageInterface $package)
     {
@@ -90,7 +90,7 @@ class Installer implements InstallerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getInstalled(Finder $finder)
     {
@@ -116,7 +116,7 @@ class Installer implements InstallerInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function findDependentPackages(PackageInterface $package, Finder $finder)
     {

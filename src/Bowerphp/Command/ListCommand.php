@@ -8,13 +8,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Bowerphp\Command;
 
-use Bowerphp\Bowerphp;
-use Bowerphp\Config\Config;
 use Bowerphp\Installer\Installer;
-use Bowerphp\Util\Filesystem;
 use Bowerphp\Util\ZipArchive;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -28,7 +24,7 @@ use Symfony\Component\Finder\Finder;
 class ListCommand extends Command
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -45,7 +41,7 @@ EOT
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

@@ -55,7 +55,7 @@ class Config implements ConfigInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getBasePackagesUrl()
     {
@@ -63,7 +63,7 @@ class Config implements ConfigInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getAllPackagesUrl()
     {
@@ -71,7 +71,7 @@ class Config implements ConfigInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getCacheDir()
     {
@@ -79,7 +79,7 @@ class Config implements ConfigInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getInstallDir()
     {
@@ -87,7 +87,7 @@ class Config implements ConfigInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isSaveToBowerJsonFile()
     {
@@ -95,7 +95,7 @@ class Config implements ConfigInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setSaveToBowerJsonFile($flag = true)
     {
@@ -103,7 +103,7 @@ class Config implements ConfigInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function initBowerJsonFile(array $params)
     {
@@ -114,7 +114,7 @@ class Config implements ConfigInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function updateBowerJsonFile(PackageInterface $package)
     {
@@ -131,7 +131,7 @@ class Config implements ConfigInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function updateBowerJsonFile2(array $old, array $new)
     {
@@ -142,7 +142,7 @@ class Config implements ConfigInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getBowerFileContent()
     {
@@ -158,7 +158,7 @@ class Config implements ConfigInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getPackageBowerFileContent(PackageInterface $package)
     {
@@ -176,7 +176,7 @@ class Config implements ConfigInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function bowerFileExists()
     {
@@ -190,12 +190,12 @@ class Config implements ConfigInterface
     protected function createAClearBowerFile(array $params)
     {
         $structure =  array(
-            'name' => $params['name'],
+            'name'    => $params['name'],
             'authors' => array(
                 0 => 'Beelab <info@bee-lab.net>',
                 1 => $params['author'],
             ),
-            'private' => true,
+            'private'      => true,
             'dependencies' => new \StdClass(),
         );
 

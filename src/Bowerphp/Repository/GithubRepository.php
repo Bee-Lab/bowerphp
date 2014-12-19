@@ -18,7 +18,7 @@ class GithubRepository implements RepositoryInterface
     protected $githubClient;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @return GithubRepository
      */
@@ -50,7 +50,7 @@ class GithubRepository implements RepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getBower($version = 'master', $includeHomepage = false, $url = '')
     {
@@ -78,7 +78,7 @@ class GithubRepository implements RepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function findPackage($version = '*')
     {
@@ -111,7 +111,7 @@ class GithubRepository implements RepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getRelease($type = 'zip')
     {
@@ -121,7 +121,7 @@ class GithubRepository implements RepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getTags()
     {
@@ -159,7 +159,6 @@ class GithubRepository implements RepositoryInterface
             }
             // try anyway. E.g. exists() return false for Modernizr, but then it downloads :-|
             $json = $contents->download($repoUser, $repoName, 'package.json', $version);
-            #throw new RuntimeException(sprintf('Cannot open package bower.json nor package.json for %s (%s).', $repoName, $version));
         }
 
         if (substr($json, 0, 3) == "\xef\xbb\xbf") {

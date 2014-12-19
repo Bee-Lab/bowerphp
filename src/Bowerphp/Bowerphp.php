@@ -109,7 +109,6 @@ class Bowerphp
             }
         }
 
-        // TODO here we couldn't get the requires. Need to find a way to force reading them from bower.json
         $dependencies = $package->getRequires();
         if (!empty($dependencies)) {
             foreach ($dependencies as $name => $version) {
@@ -317,7 +316,7 @@ class Bowerphp
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isPackageExtraneous(PackageInterface $package, $checkInstall = false)
     {
@@ -348,9 +347,9 @@ class Bowerphp
             $authors[] = $params['author'];
         }
         $structure = array(
-            'name' => $params['name'],
-            'authors' => $authors,
-            'private' => true,
+            'name'         => $params['name'],
+            'authors'      => $authors,
+            'private'      => true,
             'dependencies' => new \StdClass(),
         );
 

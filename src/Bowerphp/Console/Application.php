@@ -50,7 +50,7 @@ class Application extends BaseApplication
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function doRun(InputInterface $input, OutputInterface $output)
     {
@@ -81,7 +81,7 @@ class Application extends BaseApplication
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getHelp()
     {
@@ -89,7 +89,7 @@ class Application extends BaseApplication
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function getDefaultCommands()
     {
@@ -109,7 +109,7 @@ class Application extends BaseApplication
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function getDefaultInputDefinition()
     {
@@ -121,7 +121,7 @@ class Application extends BaseApplication
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function getDefaultHelperSet()
     {
