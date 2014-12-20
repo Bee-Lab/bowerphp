@@ -75,6 +75,44 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertFileExists(getcwd() . '/bower_components/select2/.bower.json');
     }
 
+    public function testExecuteInstallFromLocalFile()
+    {
+        $file = getcwd() . '/tests/Bowerphp/Test/bower.json';
+        file_put_contents($file, '{"name": "test", "dependencies": {"jquery": "1.11.1"}}');
+
+        $application = new Application();
+        $commandTester = new CommandTester($command = $application->get('install'));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => $file), array('decorated' => false));
+
+        $this->assertRegExp('/jquery#1.11.1/m', $commandTester->getDisplay());
+        $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
+
+        unlink($file);
+    }
+
+    public function testExecuteInstallFromLocalUnreadableFile()
+    {
+        $application = new Application();
+        $commandTester = new CommandTester($command = $application->get('install'));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => 'doesnotexist/bower.json'), array('decorated' => false));
+
+        $this->assertRegExp('/Cannot read/m', $commandTester->getDisplay());
+    }
+
+    public function testExecuteInstallFromLocalFileWithoutDependencies()
+    {
+        $file = getcwd() . '/tests/Bowerphp/Test/bower.json';
+        file_put_contents($file, '{"name": "test"}');
+
+        $application = new Application();
+        $commandTester = new CommandTester($command = $application->get('install'));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => $file), array('decorated' => false));
+
+        $this->assertRegExp('/Nothing to install/m', $commandTester->getDisplay());
+
+        unlink($file);
+    }
+
     public function tearDown()
     {
         $dir = getcwd() . '/bower_components/';

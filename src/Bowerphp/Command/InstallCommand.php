@@ -73,10 +73,27 @@ EOT
             if (is_null($packageName)) {
                 $bowerphp->installDependencies($installer);
             } else {
-                $packageNameVersion = PackageNameVersionExtractor::fromString($packageName);
-                $package = new Package($packageNameVersion->name, $packageNameVersion->version);
+                if (substr($packageName, -10) === 'bower.json') {
+                    if (!is_readable($packageName)) {
+                        $output->writeln(sprintf('<error>Cannot read file %s</error>', $packageName));
 
-                $bowerphp->installPackage($package, $installer);
+                        return 1;
+                    }
+                    $json = json_decode($this->filesystem->read($packageName), true);
+                    if (empty($json['dependencies'])) {
+                        $output->writeln(sprintf('<error>Nothing to install in %s</error>', $packageName));
+
+                        return 1;
+                    }
+                    foreach ($json['dependencies'] as $name => $version) {
+                        $package = new Package($name, $version);
+                        $bowerphp->installPackage($package, $installer);
+                    }
+                } else {
+                    $packageNameVersion = PackageNameVersionExtractor::fromString($packageName);
+                    $package = new Package($packageNameVersion->name, $packageNameVersion->version);
+                    $bowerphp->installPackage($package, $installer);
+                }
             }
         } catch (\RuntimeException $e) {
             $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));

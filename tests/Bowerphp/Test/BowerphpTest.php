@@ -1288,8 +1288,8 @@ EOT;
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
 
         $jsons = array(
-            '{"name":"dummyPackageDependentFromJqueryUI","dependencis":{"jquery-ui":"*"}}',
-            '{"name":"jquery-ui","dependencis":{"jquery":"*"}}',
+            '{"name":"dummyPackageDependentFromJqueryUI","dependencies":{"jquery-ui":"*"}}',
+            '{"name":"jquery-ui","dependencies":{"jquery":"*"}}',
         );
 
         $package
