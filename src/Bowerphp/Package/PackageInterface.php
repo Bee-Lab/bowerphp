@@ -68,13 +68,6 @@ interface PackageInterface
     public function setRepository(RepositoryInterface $repository);
 
     /**
-     * Returns a reference to the repository that owns the package
-     *
-     * @return RepositoryInterface
-     */
-    public function getRepository();
-
-    /**
      * Converts the package into a readable and unique string
      *
      * @return string

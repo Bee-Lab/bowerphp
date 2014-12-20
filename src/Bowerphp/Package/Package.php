@@ -28,7 +28,7 @@ class Package implements PackageInterface
     public function __construct($name, $requiredVersion = null, $version = null, $requires = array(), $info = array())
     {
         $this->name = $name;
-        $this->requiredVersion = $requiredVersion;
+        $this->requiredVersion = $requiredVersion === 'master' ? '*' : $requiredVersion;
         $this->version = $version;
         if (!empty($requires)) {
             $this->requires = $requires;
@@ -90,14 +90,6 @@ class Package implements PackageInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getRepository()
-    {
-        return $this->repository;
-    }
-
-    /**
      * Returns package unique name, constructed from name, version and release type.
      *
      * @return string
@@ -156,13 +148,5 @@ class Package implements PackageInterface
     public function __toString()
     {
         return $this->getUniqueName();
-    }
-
-    /**
-     * Magic method for cloning object
-     */
-    public function __clone()
-    {
-        $this->repository = null;
     }
 }

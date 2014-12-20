@@ -1,4 +1,5 @@
 <?php
+
 namespace Bowerphp\Test\Util;
 
 use Bowerphp\Util\PackageNameVersionExtractor;

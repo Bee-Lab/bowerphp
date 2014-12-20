@@ -78,6 +78,77 @@ EOT;
         $bowerphp->installPackage($package, $installer);
     }
 
+    public function testInstallPackageFromGithubEndPoint()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+
+        $package
+            ->shouldReceive('getName')->andReturn('https://github.com/ivaynberg/select2.git')
+            ->shouldReceive('getRequiredVersion')->andReturn('3.5.1')
+            ->shouldReceive('setRepository')->with($this->repository)
+            ->shouldReceive('setInfo')
+            ->shouldReceive('setVersion')
+            ->shouldReceive('getRequires')
+        ;
+
+        $this->repository
+            ->shouldReceive('setUrl->setHttpClient')
+        ;
+        $this->repository
+            ->shouldReceive('findPackage')->with('3.5.1')->andReturn('3.5.1')
+            ->shouldReceive('getRelease')->andReturn('fileAsString...')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/select2/.bower.json')->andReturn(false)
+            ->shouldReceive('write')->with('./tmp/select2', "fileAsString...")
+        ;
+
+        $this->output
+            ->shouldReceive('writelnInfoPackage')
+            ->shouldReceive('writelnInstalledPackage')
+        ;
+        $this->config
+            ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
+        ;
+
+        $installer
+            ->shouldReceive('install')
+        ;
+
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->installPackage($package, $installer);
+    }
+
+    /**
+     * @expectedException        RuntimeException
+     * @expectedExceptionMessage Cannot find package select2 version 3.4.5.
+     */
+    public function testInstallPackageFromGithubEndPointVersionNotFound()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+
+        $package
+            ->shouldReceive('getName')->andReturn('https://github.com/ivaynberg/select2.git')
+            ->shouldReceive('getRequiredVersion')->andReturn('3.4.5')
+            ->shouldReceive('setRepository')->with($this->repository)
+            ->shouldReceive('setInfo')
+            ->shouldReceive('setVersion')
+        ;
+
+        $this->repository
+            ->shouldReceive('setUrl->setHttpClient')
+        ;
+        $this->repository
+            ->shouldReceive('findPackage')->with('3.4.5')->andReturn(null)
+        ;
+
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->installPackage($package, $installer);
+    }
+
     public function testDoNotInstallAlreadyInstalledPackage()
     {
         $this->mockLookup();
@@ -93,6 +164,8 @@ EOT;
         $package
             ->shouldReceive('getName')->andReturn('jquery')
             ->shouldReceive('getRequiredVersion')->andReturn('*')
+            ->shouldReceive('setRepository')->with($this->repository)
+            ->shouldReceive('setVersion')->with('2.0.3')
             ->shouldReceive('setInfo')->with(array('name' => 'jquery', 'version' => '2.0.3', 'main' => 'jquery.js'))
         ;
 
@@ -192,9 +265,6 @@ EOT;
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
-        #$this->installPackage($package, $installer, array('jquery-ui', 'jquery'), array('1.10.1', '2.0.3'), array('>=1.6', '*'));
-        #$json = array('name' => 'jquery-ui', 'dependencies' => array('jquery' => '>=1.6'));
-
         $this->installPackage($package, $installer, array('jquery'), array('2.0.1'), array('>=1.6'));
         $json = array('name' => 'pippo', 'dependencies' => array('jquery' => '>=1.6'));
 
@@ -205,6 +275,55 @@ EOT;
         $this->filesystem
             ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
             ->shouldReceive('write')->with('./tmp/jquery', "fileAsString...")
+        ;
+
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $bowerphp->installDependencies($installer);
+    }
+
+    public function testInstallDependenciesWithGithubEndpoint()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+        $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
+
+        $package
+            ->shouldReceive('getName')->andReturn('https://github.com/ivaynberg/select2.git')
+            ->shouldReceive('getRequiredVersion')->andReturn('3.5.1')
+            ->shouldReceive('setRepository')->with($this->repository)
+            ->shouldReceive('setInfo')
+            ->shouldReceive('setVersion')
+            ->shouldReceive('getRequires')
+        ;
+
+        $this->repository
+            ->shouldReceive('setUrl->setHttpClient')
+        ;
+        $this->repository
+            ->shouldReceive('findPackage')->with('3.5.1')->andReturn('3.5.1')
+            ->shouldReceive('getRelease')->andReturn('fileAsString...')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/select2/.bower.json')->andReturn(false)
+            ->shouldReceive('write')->with('./tmp/select2', "fileAsString...")
+        ;
+
+        $this->output
+            ->shouldReceive('writelnInfoPackage')
+            ->shouldReceive('writelnInstalledPackage')
+        ;
+
+        $json = array(
+            'name' => 'pippo',
+            'dependencies' => array('select2' => 'https://github.com/ivaynberg/select2.git#3.5.1'),
+        );
+        $this->config
+            ->shouldReceive('getBowerFileContent')->andReturn($json)
+            ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
+        ;
+
+        $installer
+            ->shouldReceive('install')
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);

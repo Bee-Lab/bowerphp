@@ -16,13 +16,6 @@ class PackageTest extends TestCase
         $this->assertEquals('1.1.0', $package->getVersion());
     }
 
-    public function testGetRepository()
-    {
-        $package = new Package('foo', null, '1.0.0');
-
-        $this->assertEquals('', $package->getRepository());
-    }
-
     public function testSetRepository()
     {
         $repository = Mockery::mock('Bowerphp\Repository\RepositoryInterface');
@@ -70,13 +63,5 @@ class PackageTest extends TestCase
 
         $package->setInfo(array('url' => 'baz'));
         $this->assertEquals(array('url' => 'baz'), $package->getInfo());
-    }
-
-    public function testClone()
-    {
-        $package = new Package('foo', null, '1.0.0');
-
-        $p2 = clone $package;
-        $this->assertNull($p2->getRepository());
     }
 }

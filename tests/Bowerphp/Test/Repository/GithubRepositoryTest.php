@@ -321,6 +321,7 @@ class GithubRepositoryTest extends TestCase
         $clearGitURL = $this->getMethod('Bowerphp\Repository\GithubRepository', 'clearGitURL');
         $this->assertEquals('components/jquery', $clearGitURL->invokeArgs($this->repository, array('git://github.com/components/jquery.git')));
         $this->assertEquals('components/jqueryui', $clearGitURL->invokeArgs($this->repository, array('git://github.com/components/jqueryui')));
+        $this->assertEquals('MAXakaWIZARD/jquery.appear', $clearGitURL->invokeArgs($this->repository, array('git@github.com:MAXakaWIZARD/jquery.appear.git')));
     }
 
     public function testFixVersion()

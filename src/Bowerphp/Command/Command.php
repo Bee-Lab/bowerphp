@@ -9,17 +9,17 @@
  */
 namespace Bowerphp\Command;
 
+use Bowerphp\Bowerphp;
+use Bowerphp\Config\Config;
+use Bowerphp\Output\BowerphpConsoleOutput;
+use Bowerphp\Repository\GithubRepository;
+use Bowerphp\Util\Filesystem;
 use Github\Client;
 use Guzzle\Log\ClosureLogAdapter;
 use Guzzle\Log\MessageFormatter;
 use Guzzle\Plugin\Log\LogPlugin;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Console\Output\OutputInterface;
-use Bowerphp\Config\Config;
-use Bowerphp\Util\Filesystem;
-use Bowerphp\Bowerphp;
-use Bowerphp\Repository\GithubRepository;
-use Bowerphp\Output\BowerphpConsoleOutput;
 
 /**
  * Base class for Bowerphp commands
@@ -28,11 +28,8 @@ use Bowerphp\Output\BowerphpConsoleOutput;
 abstract class Command extends BaseCommand
 {
     protected $filesystem;
-
     protected $config;
-
     protected $githubClient;
-
     protected $consoleOutput;
 
     /**

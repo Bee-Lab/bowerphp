@@ -65,6 +65,16 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
     }
 
+    public function testExecuteInstallFromGithubEndpoint()
+    {
+        $application = new Application();
+        $commandTester = new CommandTester($command = $application->get('install'));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => 'https://github.com/ivaynberg/select2.git#3.5.1'), array('decorated' => false));
+
+        $this->assertRegExp('/select2#/m', $commandTester->getDisplay());
+        $this->assertFileExists(getcwd() . '/bower_components/select2/.bower.json');
+    }
+
     public function tearDown()
     {
         $dir = getcwd() . '/bower_components/';

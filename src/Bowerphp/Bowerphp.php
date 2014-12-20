@@ -76,7 +76,22 @@ class Bowerphp
      */
     public function installPackage(PackageInterface $package, InstallerInterface $installer, $isDependency = false)
     {
-        $packageTag = $this->getPackageTag($package, true);
+        if (strpos($package->getName(), 'github') !== false) {
+            $name = basename($package->getName(), '.git');
+            $repoUrl = $package->getName();
+            $package = new Package($name, $package->getRequiredVersion());
+            $this->repository->setUrl($repoUrl)->setHttpClient($this->githubClient);
+            $package->setRepository($this->repository);
+            $packageTag = $this->repository->findPackage($package->getRequiredVersion());
+            if (is_null($packageTag)) {
+                throw new RuntimeException(sprintf('Cannot find package %s version %s.', $package->getName(), $package->getRequiredVersion()));
+            }
+        } else {
+            $packageTag = $this->getPackageTag($package, true);
+            $package->setRepository($this->repository);
+        }
+
+        $package->setVersion($packageTag);
 
         // if package is already installed, match current version with latest available version
         if ($this->isPackageInstalled($package)) {
@@ -86,9 +101,6 @@ class Bowerphp
                 return;
             }
         }
-
-        $package->setRepository($this->repository);
-        $package->setVersion($packageTag);
 
         $this->output->writelnInfoPackage($package);
 
@@ -132,6 +144,9 @@ class Bowerphp
         $decode = $this->config->getBowerFileContent();
         if (!empty($decode['dependencies'])) {
             foreach ($decode['dependencies'] as $name => $requiredVersion) {
+                if (strpos($requiredVersion, 'github') !== false) {
+                    list($name, $requiredVersion) = explode('#', $requiredVersion);
+                }
                 $package = new Package($name, $requiredVersion);
                 $this->installPackage($package, $installer);
             }

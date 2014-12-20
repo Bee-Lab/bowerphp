@@ -216,6 +216,7 @@ class GithubRepository implements RepositoryInterface
      */
     private function clearGitURL($url)
     {
+        $url = str_replace('git@github.com:', 'github.com/', $url);
         if (substr($url, 0, 6) == 'git://') {
             $url = substr($url, 6);
         }
