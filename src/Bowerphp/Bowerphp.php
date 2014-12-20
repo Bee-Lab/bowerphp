@@ -179,11 +179,11 @@ class Bowerphp
 
         $packageTag = $this->getPackageTag($package);
         $package->setRepository($this->repository);
-
         if ($packageTag == $package->getVersion()) {
             // if version is fully matching, there's no need to update
             return;
         }
+        $package->setVersion($packageTag);
 
         $this->output->writelnUpdatingPackage($package);
 
@@ -341,14 +341,33 @@ class Bowerphp
         try {
             $bower = $this->config->getBowerFileContent();
         } catch (RuntimeException $e) { // no bower.json file, package is extraneous
-
             return true;
         }
         if (!isset($bower['dependencies'])) {
             return true;
         }
+        // package is a direct dependencies
+        if (isset($bower['dependencies'][$package->getName()])) {
+            return false;
+        }
+        // look for dependencies of dependencies
+        foreach ($bower['dependencies'] as $name => $version) {
+            $dotBowerJson = $this->filesystem->read($this->config->getInstallDir() . '/' . $name . '/.bower.json');
+            $depDeps = json_decode($dotBowerJson, true);
+            if (isset($bower['dependencies'][$name])) {
+                return false;
+            }
+            // look for dependencies of dependencies of dependencies
+            foreach ($bower['dependencies'][$name] as $name1 => $version1) {
+                $dotBowerJson = $this->filesystem->read($this->config->getInstallDir() . '/' . $name1 . '/.bower.json');
+                $depDeps = json_decode($dotBowerJson, true);
+                if (isset($bower['dependencies'][$name1])) {
+                    return false;
+                }
+            }
+        }
 
-        return !isset($bower['dependencies'][$package->getName()]);
+        return true;
     }
 
     /**

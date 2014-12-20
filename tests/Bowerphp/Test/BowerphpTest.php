@@ -1283,6 +1283,31 @@ EOT;
         $this->assertFalse($bowerphp->isPackageExtraneous($package, true));
     }
 
+    public function testIsPackageExtraneousThirdLevelDeep()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+
+        $jsons = array(
+            '{"name":"dummyPackageDependentFromJqueryUI","dependencis":{"jquery-ui":"*"}}',
+            '{"name":"jquery-ui","dependencis":{"jquery":"*"}}',
+        );
+
+        $package
+            ->shouldReceive('getName')->andReturn('jquery')
+        ;
+
+        $this->filesystem
+            ->shouldReceive('read')->andReturnValues($jsons)
+        ;
+
+        $this->config
+            ->shouldReceive('getBowerFileContent')->andReturn(array('dependencies' => array('dummyPackageDependentFromJqueryUI' => '*')))
+        ;
+
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
+        $this->assertFalse($bowerphp->isPackageExtraneous($package));
+    }
+
     /**
      * Set expectations for installation of packages
      * Note: all array parameters must match counts
