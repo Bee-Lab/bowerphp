@@ -92,6 +92,8 @@ class Compiler
             ->in(__DIR__ . '/../../vendor/guzzle/guzzle/src/')
             ->in(__DIR__ . '/../../vendor/camspiers/json-pretty/src/')
             ->in(__DIR__ . '/../../vendor/knplabs/github-api/lib/')
+            ->in(__DIR__ . '/../../vendor/vierbergenlars/php-semver/src/vierbergenlars/LibJs/')
+            ->in(__DIR__ . '/../../vendor/vierbergenlars/php-semver/src/vierbergenlars/SemVer/')
         ;
 
         foreach ($finder as $file) {

@@ -53,6 +53,8 @@ EOT;
             ->shouldReceive('bowerFileExists')->andReturn(false, true)
             ->shouldReceive('getBowerFileContent')->andReturn(array('name' => 'Bar'))
             ->shouldReceive('setSaveToBowerJsonFile')->with(true)
+            ->shouldReceive('getOverridesSection')->andReturn(array())
+            ->shouldReceive('getOverrideFor')->andReturn(array())
             ->shouldReceive('updateBowerJsonFile2')->with(array('name' => 'Bar'), $params)->andReturn(456)
         ;
 
@@ -110,6 +112,8 @@ EOT;
             ->shouldReceive('writelnInstalledPackage')
         ;
         $this->config
+            ->shouldReceive('getOverridesSection')->andReturn(array())
+            ->shouldReceive('getOverrideFor')->andReturn(array())
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
         ;
 
@@ -318,6 +322,8 @@ EOT;
             'dependencies' => array('select2' => 'https://github.com/ivaynberg/select2.git#3.5.1'),
         );
         $this->config
+            ->shouldReceive('getOverridesSection')->andReturn(array())
+            ->shouldReceive('getOverrideFor')->andReturn(array())
             ->shouldReceive('getBowerFileContent')->andReturn($json)
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
         ;
@@ -367,7 +373,7 @@ EOT;
 
     /**
      * @expectedException        InvalidArgumentException
-     * @expectedExceptionMessage Package notinbowerjson not found in bower.json.
+     * @expectedExceptionMessage Package notinbowerjson not found in bower.json
      */
     public function testUpdatePackageNotFoundInBowerJson()
     {
@@ -546,6 +552,8 @@ EOT;
             ->shouldReceive('writelnUpdatingPackage')
         ;
         $this->config
+            ->shouldReceive('getOverridesSection')->andReturn(array())
+            ->shouldReceive('getOverrideFor')->andReturn(array())
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
             ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery-ui', 'version' => '1.10.0'))
         ;
@@ -843,6 +851,8 @@ EOT;
             ->shouldReceive('writelnInstalledPackage')
         ;
         $this->config
+            ->shouldReceive('getOverridesSection')->andReturn(array())
+            ->shouldReceive('getOverrideFor')->andReturn(array())
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
         ;
 
@@ -903,6 +913,8 @@ EOT;
         ;
 
         $this->config
+            ->shouldReceive('getOverridesSection')->andReturn(array())
+            ->shouldReceive('getOverrideFor')->andReturn(array())
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
             ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery', 'version' => '1.0.0'))
             ->shouldReceive('getBowerFileContent')->andReturn(array())
@@ -1039,6 +1051,8 @@ EOT;
             ->shouldReceive('writelnUpdatingPackage')
         ;
         $this->config
+            ->shouldReceive('getOverridesSection')->andReturn(array())
+            ->shouldReceive('getOverrideFor')->andReturn(array())
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
             ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery-ui', 'version' => '1.10.0'), array('name' => 'jquery', 'version' => '2.0.1'))
         ;
@@ -1119,6 +1133,8 @@ EOT;
             ->shouldReceive('writelnUpdatingPackage')
         ;
         $this->config
+            ->shouldReceive('getOverridesSection')->andReturn(array())
+            ->shouldReceive('getOverrideFor')->andReturn(array())
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
             ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery-ui', 'version' => '1.10.0'), array('name' => 'jquery', 'version' => '2.0.1'))
         ;
@@ -1375,6 +1391,8 @@ EOT;
             ->shouldReceive('writelnInstalledPackage')
         ;
         $this->config
+            ->shouldReceive('getOverridesSection')->andReturn(array())
+            ->shouldReceive('getOverrideFor')->andReturn(array())
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
         ;
 

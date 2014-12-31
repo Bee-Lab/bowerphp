@@ -10,6 +10,7 @@ use ReflectionClass;
 
 class GithubRepositoryTest extends TestCase
 {
+
     /**
      * @var RepositoryInterface
      */
@@ -212,9 +213,10 @@ class GithubRepositoryTest extends TestCase
         $tagsJson = '[{"name": "v2.0.3", "zipball_url": "", "tarball_url": ""}, {"name": "v2.0.2", "zipball_url": "", "tarball_url": ""}]';
         $this->mockTagsRequest($tagsJson);
 
-        $tag = $this->repository->findPackage('2.0.2');
+        $tag = $this->repository->findPackage('v2.0.2');
         $this->assertEquals('v2.0.2', $tag);
     }
+
     public function testLatestPackage()
     {
         $tagsJson = '[{"name": "v2.0.3", "zipball_url": "", "tarball_url": ""}, {"name": "v2.0.2", "zipball_url": "", "tarball_url": ""}]';
@@ -238,10 +240,36 @@ class GithubRepositoryTest extends TestCase
         $this->mockTagsRequest($response);
 
         $tag = $this->repository->findPackage('~2.0.3');
-        $this->assertEquals('2.0.3', $tag);
+        $this->assertEquals('2.0.5', $tag);
 
         $tag = $this->repository->findPackage('~2.0');
         $this->assertEquals('2.0.5', $tag);
+
+        $tag = $this->repository->findPackage('~2.1');
+        $this->assertEquals('2.1.4', $tag);
+    }
+
+    /**
+     * >1.2.3 AND <2.3.4
+     */
+    public function testFindPackageWithVersionWithCompund()
+    {
+        $response = '[{"name": "2.1.4", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.5", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.4", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.3-beta3", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.3b1", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.3", "zipball_url": "", "tarball_url": ""}]';
+        $this->mockTagsRequest($response);
+
+        $tag = $this->repository->findPackage('>=2.0.3 <2.0.4');
+        $this->assertEquals('2.0.3', $tag);
+
+        $tag = $this->repository->findPackage('>2.0 <2.1.5');
+        $this->assertEquals('2.1.4', $tag);
+
+        $tag = $this->repository->findPackage('>2.0.3 <=2.0.4');
+        $this->assertEquals('2.0.4', $tag);
     }
 
     /**
@@ -267,14 +295,40 @@ class GithubRepositoryTest extends TestCase
             '*',
         );
 
-        foreach ($wildcards as $wildcard) {
+        foreach ($wildcards as $wildcard)
+        {
             $tag = $this->repository->findPackage('2.0.' . $wildcard);
             $this->assertEquals('2.0.5', $tag);
 
-            $tag = $this->repository->findPackage('2.x' . $wildcard);
+            $tag = $this->repository->findPackage('2.x.' . $wildcard);
             $this->assertEquals('2.1.4', $tag);
         }
     }
+
+    /**
+     * Add non-allowed characters, e.g., jquery's wonderful 1.8.3+1
+     */
+    public function testFindPackageWithVersionWithJunk()
+    {
+        $response = '[{"name": "2.1.4", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.5", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.4", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.3+1", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.3+3", "zipball_url": "", "tarball_url": ""}, '
+            . '{"name": "2.0.3", "zipball_url": "", "tarball_url": ""},'
+            . '{"name": "2.0.2", "zipball_url": "", "tarball_url": ""},'
+            . '{"name": "2.0.1", "zipball_url": "", "tarball_url": ""},'
+            . '{"name": "2.0.0", "zipball_url": "", "tarball_url": ""}]'
+        ;
+        $this->mockTagsRequest($response);
+
+        $tag = $this->repository->findPackage('2.0.*');
+        $this->assertEquals('2.0.5', $tag);
+
+        $tag = $this->repository->findPackage('2.0.3');
+        $this->assertEquals('2.0.3', $tag);
+    }
+
 
     /**
      * @expectedException RuntimeException
@@ -324,37 +378,14 @@ class GithubRepositoryTest extends TestCase
         $this->assertEquals('MAXakaWIZARD/jquery.appear', $clearGitURL->invokeArgs($this->repository, array('git@github.com:MAXakaWIZARD/jquery.appear.git')));
     }
 
-    public function testFixVersion()
-    {
-        $fixVersion = $this->getMethod('Bowerphp\Repository\GithubRepository', 'fixVersion');
-        $wildcards = array(
-            '*',
-            'x',
-            'X',
-        );
-        foreach ($wildcards as $wilcard) {
-            $this->assertEquals('1.*.*', $fixVersion->invokeArgs($this->repository, array('1.' . $wilcard)));
-            $this->assertEquals('1.5.*', $fixVersion->invokeArgs($this->repository, array('1.5.' . $wilcard)));
-        }
-        $this->assertEquals('1.9.*', $fixVersion->invokeArgs($this->repository, array('>=1.9')));
-        $this->assertEquals('1.9.*', $fixVersion->invokeArgs($this->repository, array('>=1.9.0')));
-        $this->assertEquals('1.9.*', $fixVersion->invokeArgs($this->repository, array('>= 1.9.0')));
-        $this->assertEquals('1.9.0*', $fixVersion->invokeArgs($this->repository, array('~1.9.0')));
-        $this->assertEquals('1.9*', $fixVersion->invokeArgs($this->repository, array('~1.9')));
-        $this->assertEquals('1.*.*', $fixVersion->invokeArgs($this->repository, array('1')));
-        $this->assertEquals('1.*.*', $fixVersion->invokeArgs($this->repository, array('1.*')));
-        $this->assertEquals('1.5.*', $fixVersion->invokeArgs($this->repository, array('1.5')));
-        $this->assertEquals('1.5.*', $fixVersion->invokeArgs($this->repository, array('1.5.*')));
-        $this->assertEquals('*', $fixVersion->invokeArgs($this->repository, array(null)));
-    }
-
     public function testGetTags()
     {
         $tagJson = '[{"name": "2.0.3", "zipball_url": "https://api.github.com/repos/components/jquery/zipball/2.0.3"},
+            {"name": "2.0.3+1", "zipball_url": "https://api.github.com/repos/components/jquery/zipball/2.0.3+1"},
             {"name": "2.0.2", "zipball_url": "https://api.github.com/repos/components/jquery/zipball/2.0.2"}]';
         $this->mockTagsRequest($tagJson);
 
-        $this->assertEquals(array('2.0.3', '2.0.2'), $this->repository->getTags());
+        $this->assertEquals(array('2.0.2', '2.0.3'), $this->repository->getTags());
     }
 
     public function testGetTagsWithoutTags()
@@ -404,4 +435,5 @@ class GithubRepositoryTest extends TestCase
             ->shouldReceive('getHeader')
         ;
     }
+
 }
