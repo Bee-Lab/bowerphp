@@ -6,6 +6,9 @@ use Bowerphp\Util\Json;
 use Github\Client;
 use Github\ResultPager;
 use RuntimeException;
+use vierbergenlars\SemVer\version;
+use vierbergenlars\SemVer\expression;
+use vierbergenlars\SemVer\SemVerException;
 
 /**
  * GithubRepository
@@ -13,6 +16,7 @@ use RuntimeException;
  */
 class GithubRepository implements RepositoryInterface
 {
+
     protected $url;
     protected $tag = array();
     protected $githubClient;
@@ -80,34 +84,60 @@ class GithubRepository implements RepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function findPackage($version = '*')
+    public function findPackage($rawCriteria = '*')
     {
         list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
         $paginator = new ResultPager($this->githubClient);
         $tags = $paginator->fetchAll($this->githubClient->api('repo'), 'tags', array($repoUser, $repoName));
-
-        $version = $this->fixVersion($version);
 
         // edge case: package has no tags
         if (count($tags) === 0) {
             return 'master';
         }
 
-        foreach ($this->sortTags($tags) as $tag) {
-            if (fnmatch($version, $tag['name']) || fnmatch('v' . $version, $tag['name'])) {
-                $this->tag = $tag;
-
-                return $tag['name'];
-            }
-        }
-
-        if ($version == 'latest.*.*') {
+        // edge case: user asked for latest package
+        if ($rawCriteria == 'latest' || $rawCriteria == '*' || empty($rawCriteria)) {
             $this->tag = $tags[0];
 
-            return $tags[0]['name'];
+            return $this->tag['name'];
         }
 
-        throw new RuntimeException(sprintf('Version %s not found.', $version), self::VERSION_NOT_FOUND);
+        try {
+            $criteria = new expression($rawCriteria);
+        } catch (SemVerException $sve) {
+            throw new RuntimeException(sprintf('Criteria %s is not valid.', $rawCriteria), self::INVALID_CRITERIA);
+        }
+        $sortedTags = $this->sortTags($tags);
+
+        // Yes, the php-semver lib does offer a maxSatisfying() method similar the code below.
+        // We're not using it because it will throw an exception on what it considers to be an
+        // "invalid" candidate version, and not continue checking the rest of the candidates.
+        // So, even if it's faster than this code, it's not a complete solution..
+        $bestMatch = false;
+
+        $matches = array_filter(
+            $sortedTags, function($tag) use ($repoName, $criteria) {
+            try {
+                $candidate = $tag['parsed_version'];
+
+                return $criteria->satisfiedBy($candidate) ? $tag : false;
+            } catch (\Exception $rex) {
+                // @todo Find a better way to do this - we shouldn't throw because of one bad version tag,
+                // but on the other hand we should probably allow the user to know (maybe via -vvv?)
+                // Console output is not available at this level, so this is the least bad way to go.
+                error_log(sprintf('%s: Candidate version %s is not valid, skipping', $repoName, $tag['name']));
+            }
+        });
+
+        // If the array has elements, the LAST element is the best (highest numbered) version.
+        if (count($matches)) {
+            // @todo Get rid of this side effect?
+            $this->tag = array_pop($matches);
+
+            return $this->tag['name'];
+        }
+
+        throw new RuntimeException(sprintf('%s: No suitable version for %s was found.', $repoName, $rawCriteria), self::VERSION_NOT_FOUND);
     }
 
     /**
@@ -133,9 +163,9 @@ class GithubRepository implements RepositoryInterface
             return array();
         }
 
-        return array_map(function ($var) {
-            return $var['name'];
-        }, $tags);
+        $sortedTags = $this->sortTags($tags);  // Filters out bad tag specs
+
+        return array_keys($sortedTags);
     }
 
     /**
@@ -178,39 +208,6 @@ class GithubRepository implements RepositoryInterface
     }
 
     /**
-     * @param  string $version
-     * @return string
-     */
-    private function fixVersion($version)
-    {
-        if (is_null($version)) {
-            return '*';
-        }
-        //Replace the x and X wildcard by the * one to simplify the rest of the logic.
-        $version = str_replace(array('x', 'X'), '*', $version);
-        $bits = explode('.', $version);
-        if (substr($version, 0, 1) == '~') {
-            $version = substr($version, 1) . '*';
-        } elseif (substr($version, 0, 2) == '>=') {
-            if (count($bits) == 3) {
-                array_pop($bits);
-                $version = implode('.', $bits);
-                $version = substr($version, 2) . '.*';
-            } else {
-                $version = substr($version, 2) . '.*';
-            }
-        } else {
-            if (count($bits) == 1) {
-                $version = $version . '.*.*';
-            } elseif (count($bits) == 2) {
-                $version = $version . '.*';
-            }
-        }
-
-        return trim($version);
-    }
-
-    /**
      * @param  string
      * @return string
      */
@@ -235,30 +232,58 @@ class GithubRepository implements RepositoryInterface
         return $url;
     }
 
+    // Why do we have to do this? Your guess is as good as mine.
+    // The only flaw I've seen in the semver lib we're using,
+    // and the regex's in there are too complicated to mess with.
+    private function fixupRawTag($rawValue)
+    {
+        // WHY NOT SCRUB OUT PLUS SIGNS, RIGHT?
+        $found_it = strpos($rawValue, '+');
+        if ($found_it !== false) {
+            $rawValue = substr($rawValue, 0, $found_it);
+        }
+        $pieces = explode('.', $rawValue);
+        $count = count($pieces);
+        if ($count == 0) {
+            $pieces[] = '0';
+            $count = 1;
+        }
+        for ($add = $count; $add < 3; $add++) {
+            $pieces[] = '0';
+        }
+        $return = implode('.', array_slice($pieces, 0, 3)
+        );
+
+        return $return;
+    }
+
     /**
      * @param  array $tags
      * @return array
      */
     private function sortTags($tags)
     {
-        foreach ($tags as &$tag) {
-            if (preg_match('/^([\d\.]*)(.*)$/', $tag['name'], $matches)) {
-                $number = implode(
-                    array_map(
-                        function ($digit) {return str_pad($digit, 6, '0', STR_PAD_LEFT); },
-                        explode('.', trim($matches[1], '.'))
-                    )
-                );
-                $preRelease = $matches[2] ?: 'zzzzzz';
+        $return = array();
 
-                $tag['normal_version'] = $number . $preRelease;
-            } else {
-                $tag['normal_version'] = 'zzzzzz';
+        // Don't include invalid tags
+        foreach ($tags as $tag) {
+            try {
+                $fixedName = $this->fixupRawTag($tag['name']);
+                $v = new version($fixedName, true);
+                if ($v->valid()) {
+                    $tag['parsed_version'] = $v;
+                    $return[$v->getVersion()] = $tag;
+                }
+            } catch (\Exception $ex) {
+                // Skip
             }
         }
 
-        usort($tags, function ($tag1, $tag2) { return strcmp($tag2['normal_version'], $tag1['normal_version']); });
+        uasort($return, function($a, $b) {
+            return version::compare($a['parsed_version'], $b['parsed_version']);
+        });
 
-        return $tags;
+        return $return;
     }
+
 }

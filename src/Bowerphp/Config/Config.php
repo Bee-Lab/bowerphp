@@ -21,14 +21,15 @@ use RuntimeException;
  */
 class Config implements ConfigInterface
 {
+
     protected $cacheDir;
     protected $installDir;
     protected $filesystem;
-    protected $basePackagesUrl     = 'http://bower.herokuapp.com/packages/';
-    protected $allPackagesUrl      = 'https://bower-component-list.herokuapp.com/';
+    protected $basePackagesUrl = 'http://bower.herokuapp.com/packages/';
+    protected $allPackagesUrl = 'https://bower-component-list.herokuapp.com/';
     protected $saveToBowerJsonFile = false;
-    protected $bowerFileNames      = array('bower.json', 'package.json');
-    protected $stdBowerFileName    = 'bower.json';
+    protected $bowerFileNames = array('bower.json', 'package.json');
+    protected $stdBowerFileName = 'bower.json';
 
     /**
      * @param Filesystem $filesystem
@@ -36,9 +37,9 @@ class Config implements ConfigInterface
     public function __construct(Filesystem $filesystem)
     {
         $this->filesystem = $filesystem;
-        $this->cacheDir   = $this->getHomeDir() . '/.cache/bowerphp';
+        $this->cacheDir = $this->getHomeDir() . '/.cache/bowerphp';
         $this->installDir = getcwd() . '/bower_components';
-        $rc               = getcwd() . '/.bowerrc';
+        $rc = getcwd() . '/.bowerrc';
 
         if ($this->filesystem->exists($rc)) {
             $json = json_decode($this->filesystem->read($rc), true);
@@ -146,7 +147,7 @@ class Config implements ConfigInterface
      */
     public function getBowerFileContent()
     {
-        if (!$this->filesystem->exists(getcwd() . '/' . $this->stdBowerFileName)) {
+        if (!$this->bowerFileExists()) {
             throw new RuntimeException('No ' . $this->stdBowerFileName . ' found. You can run "init" command to create it.');
         }
         $bowerJson = $this->filesystem->read(getcwd() . '/' . $this->stdBowerFileName);
@@ -155,6 +156,34 @@ class Config implements ConfigInterface
         }
 
         return $decode;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getOverridesSection()
+    {
+        if ($this->bowerFileExists()) {
+            $bowerData = $this->getBowerFileContent();
+            if ($bowerData && array_key_exists('overrides', $bowerData)) {
+                return $bowerData['overrides'];
+            }
+        }
+
+        return array();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getOverrideFor($packageName)
+    {
+        $overrides = $this->getOverridesSection();
+        if (array_key_exists($packageName, $overrides)) {
+            return $overrides[$packageName];
+        }
+
+        return array();
     }
 
     /**
@@ -189,13 +218,13 @@ class Config implements ConfigInterface
      */
     protected function createAClearBowerFile(array $params)
     {
-        $structure =  array(
-            'name'    => $params['name'],
+        $structure = array(
+            'name' => $params['name'],
             'authors' => array(
                 0 => 'Beelab <info@bee-lab.net>',
                 1 => $params['author'],
             ),
-            'private'      => true,
+            'private' => true,
             'dependencies' => new \StdClass(),
         );
 
@@ -222,4 +251,5 @@ class Config implements ConfigInterface
 
         return rtrim($home, '/');
     }
+
 }

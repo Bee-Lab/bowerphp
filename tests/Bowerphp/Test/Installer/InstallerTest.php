@@ -23,6 +23,8 @@ class InstallerTest extends TestCase
         $this->installer = new Installer($this->filesystem, $this->zipArchive, $this->config);
 
         $this->config
+            ->shouldReceive('getOverridesSection')->andReturn(array())
+            ->shouldReceive('getOverrideFor')->andReturn(array())
             ->shouldReceive('getBasePackagesUrl')->andReturn('http://bower.herokuapp.com/packages/')
             ->shouldReceive('getInstallDir')->andReturn(getcwd() . '/bower_components')
             ->shouldReceive('getCacheDir')->andReturn('.')

@@ -29,6 +29,7 @@ use Symfony\Component\Finder\Finder;
  */
 class Bowerphp
 {
+
     protected $config;
     protected $filesystem;
     protected $githubClient;
@@ -121,7 +122,12 @@ class Bowerphp
             }
         }
 
-        $dependencies = $package->getRequires();
+        $overrides = $this->config->getOverrideFor($package->getName());
+        if (array_key_exists('dependencies', $overrides)) {
+            $dependencies = $overrides['dependencies'];
+        } else {
+            $dependencies = $package->getRequires();
+        }
         if (!empty($dependencies)) {
             foreach ($dependencies as $name => $version) {
                 $depPackage = new Package($name, $version);
@@ -148,7 +154,7 @@ class Bowerphp
                     list($name, $requiredVersion) = explode('#', $requiredVersion);
                 }
                 $package = new Package($name, $requiredVersion);
-                $this->installPackage($package, $installer);
+                $this->installPackage($package, $installer, true);
             }
         }
     }
@@ -167,7 +173,7 @@ class Bowerphp
         if (is_null($package->getRequiredVersion())) {
             $decode = $this->config->getBowerFileContent();
             if (empty($decode['dependencies']) || empty($decode['dependencies'][$package->getName()])) {
-                throw new InvalidArgumentException(sprintf('Package %s not found in bower.json.', $package->getName()));
+                throw new InvalidArgumentException(sprintf('Package %s not found in bower.json', $package->getName()));
             }
             $package->setRequiredVersion($decode['dependencies'][$package->getName()]);
         }
@@ -195,7 +201,12 @@ class Bowerphp
 
         $installer->update($package);
 
-        $dependencies = $package->getRequires();
+        $overrides = $this->config->getOverrideFor($package->getName());
+        if (array_key_exists('dependencies', $overrides)) {
+            $dependencies = $overrides['dependencies'];
+        } else {
+            $dependencies = $package->getRequires();
+        }
         if (!empty($dependencies)) {
             foreach ($dependencies as $name => $requiredVersion) {
                 $depPackage = new Package($name, $requiredVersion);
@@ -341,6 +352,7 @@ class Bowerphp
         try {
             $bower = $this->config->getBowerFileContent();
         } catch (RuntimeException $e) { // no bower.json file, package is extraneous
+
             return true;
         }
         if (!isset($bower['dependencies'])) {
@@ -381,9 +393,9 @@ class Bowerphp
             $authors[] = $params['author'];
         }
         $structure = array(
-            'name'         => $params['name'],
-            'authors'      => $authors,
-            'private'      => true,
+            'name' => $params['name'],
+            'authors' => $authors,
+            'private' => true,
             'dependencies' => new \StdClass(),
         );
 
@@ -435,4 +447,5 @@ class Bowerphp
 
         return $packageInfo;
     }
+
 }
