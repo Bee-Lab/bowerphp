@@ -134,6 +134,40 @@ class ConfigTest extends TestCase
         $config->getBowerFileContent();
     }
 
+    public function testGetOverrideSection()
+    {
+        $json = '{"name": "jquery-ui", "version": "1.10.4", "main": ["ui/jquery-ui.js"], ' .
+            '"dependencies": {"jquery": ">=1.6"}, "overrides": {"jquery": {}}}';
+
+        $this->filesystem
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/.bowerrc')->andReturn($json)
+            ->shouldReceive('exists')->with(getcwd() . '/bower.json')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
+        ;
+
+        $config = new Config($this->filesystem);
+
+        $this->assertEquals(array('jquery' => array()), $config->getOverridesSection());
+    }
+
+    public function testGetOverrideFor()
+    {
+        $json = '{"name": "jquery-ui", "version": "1.10.4", "main": ["ui/jquery-ui.js"], ' .
+            '"dependencies": {"jquery": ">=1.6"}, "overrides": {"jquery": {"foo": "bar"}}}';
+
+        $this->filesystem
+            ->shouldReceive('exists')->with(getcwd() . '/.bowerrc')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/.bowerrc')->andReturn($json)
+            ->shouldReceive('exists')->with(getcwd() . '/bower.json')->andReturn(true)
+            ->shouldReceive('read')->with(getcwd() . '/bower.json')->andReturn($json)
+        ;
+
+        $config = new Config($this->filesystem);
+
+        $this->assertEquals(array('foo' => 'bar'), $config->getOverrideFor('jquery'));
+    }
+
     public function testUpdateBowerJsonFile()
     {
         $json = '{
