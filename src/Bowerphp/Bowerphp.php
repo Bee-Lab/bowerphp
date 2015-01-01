@@ -29,7 +29,6 @@ use Symfony\Component\Finder\Finder;
  */
 class Bowerphp
 {
-
     protected $config;
     protected $filesystem;
     protected $githubClient;
@@ -393,9 +392,9 @@ class Bowerphp
             $authors[] = $params['author'];
         }
         $structure = array(
-            'name' => $params['name'],
-            'authors' => $authors,
-            'private' => true,
+            'name'         => $params['name'],
+            'authors'      => $authors,
+            'private'      => true,
             'dependencies' => new \StdClass(),
         );
 
@@ -447,5 +446,4 @@ class Bowerphp
 
         return $packageInfo;
     }
-
 }

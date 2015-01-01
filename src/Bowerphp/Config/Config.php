@@ -21,7 +21,6 @@ use RuntimeException;
  */
 class Config implements ConfigInterface
 {
-
     protected $cacheDir;
     protected $installDir;
     protected $filesystem;
@@ -219,12 +218,12 @@ class Config implements ConfigInterface
     protected function createAClearBowerFile(array $params)
     {
         $structure = array(
-            'name' => $params['name'],
+            'name'    => $params['name'],
             'authors' => array(
                 0 => 'Beelab <info@bee-lab.net>',
                 1 => $params['author'],
             ),
-            'private' => true,
+            'private'      => true,
             'dependencies' => new \StdClass(),
         );
 
@@ -251,5 +250,4 @@ class Config implements ConfigInterface
 
         return rtrim($home, '/');
     }
-
 }

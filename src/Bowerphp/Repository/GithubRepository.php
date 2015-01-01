@@ -16,7 +16,6 @@ use vierbergenlars\SemVer\SemVerException;
  */
 class GithubRepository implements RepositoryInterface
 {
-
     protected $url;
     protected $tag = array();
     protected $githubClient;
@@ -116,7 +115,7 @@ class GithubRepository implements RepositoryInterface
         $bestMatch = false;
 
         $matches = array_filter(
-            $sortedTags, function($tag) use ($repoName, $criteria) {
+            $sortedTags, function ($tag) use ($repoName, $criteria) {
             try {
                 $candidate = $tag['parsed_version'];
 
@@ -279,11 +278,10 @@ class GithubRepository implements RepositoryInterface
             }
         }
 
-        uasort($return, function($a, $b) {
+        uasort($return, function ($a, $b) {
             return version::compare($a['parsed_version'], $b['parsed_version']);
         });
 
         return $return;
     }
-
 }
