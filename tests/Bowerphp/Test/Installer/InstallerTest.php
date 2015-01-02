@@ -233,6 +233,22 @@ class InstallerTest extends TestCase
         $this->installer->getInstalled($finder);
     }
 
+    public function testGetInstalledWithoutPackageVersion()
+    {
+        $finder = Mockery::mock('Symfony\Component\Finder\Finder');
+
+        $finder
+            ->shouldReceive('directories->in')->andReturn(array('package1'));
+
+        $this->filesystem
+            ->shouldReceive('exists')->with(getcwd().'/bower_components')->andReturn(true)
+            ->shouldReceive('exists')->with('package1/.bower.json')->andReturn(true)
+            ->shouldReceive('read')->with('package1/.bower.json')->andReturn('{"name":"package1"}')
+        ;
+
+        $this->installer->getInstalled($finder);
+    }
+
     public function testFindDependentPackages()
     {
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
