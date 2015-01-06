@@ -44,24 +44,14 @@ class Compiler
             unlink($pharFile);
         }
 
-        $process = new Process('git log --pretty="%H" -n1 HEAD', __DIR__);
-        if ($process->run() != 0) {
-            throw new \RuntimeException('Can\'t run git log. You must ensure to run compile from composer git repository clone and that git binary is available.');
-        }
-        $this->version = trim($process->getOutput());
+        $this->checkGitAvailability();
+        $this->checkGitRepo();
 
-        $process = new Process('git log -n1 --pretty=%ci HEAD', __DIR__);
-        if ($process->run() != 0) {
-            throw new \RuntimeException('Can\'t run git log. You must ensure to run compile from composer git repository clone and that git binary is available.');
-        }
-        $date = new \DateTime(trim($process->getOutput()));
+        $this->version = $this->getGitTagOrHash();
+
+        $date = $this->getGitDate();
         $date->setTimezone(new \DateTimeZone('UTC'));
         $this->versionDate = $date->format('Y-m-d H:i:s');
-
-        $process = new Process('git describe --tags HEAD');
-        if ($process->run() == 0) {
-            $this->version = trim($process->getOutput());
-        }
 
         $phar = new \Phar($pharFile, 0, 'bowerphp.phar');
         $phar->setSignatureAlgorithm(\Phar::SHA1);
@@ -124,6 +114,63 @@ class Compiler
 
         unset($phar);
         chmod("bowerphp.phar", 0700);
+    }
+
+    /**
+     * Make sure that git is installed and accessible.
+     *
+     * @throws \RuntimeException
+     */
+    private function checkGitAvailability()
+    {
+        $process = new Process('git log', __DIR__);
+        if ($process->run() != 0) {
+            throw new \RuntimeException('Can\'t run git log. You must ensure that git binary is available.');
+        }
+    }
+
+    /**
+     * Make sure that the working directory is a git repo.
+     *
+     * @throws \RuntimeException
+     */
+    private function checkGitRepo()
+    {
+        $process = new Process('git log --pretty="%H" -n1 HEAD', __DIR__);
+        if ($process->run() != 0) {
+            throw new \RuntimeException('Can\'t run git log. You must ensure to run compile from composer git repository clone.');
+        }
+    }
+
+    /**
+     * Return version information.
+     * Either the closest tag or if no tag is reachable, the hash of the commit.
+     *
+     * @return string
+     */
+    private function getGitTagOrHash()
+    {
+        //
+        $process = new Process('git describe --tags HEAD');
+        if ($process->run() == 0) {
+            return trim($process->getOutput());
+        } else {
+            $process = new Process('git log --pretty="%H" -n1 HEAD', __DIR__);
+
+            return trim($process->getOutput());
+        }
+    }
+
+    /**
+     * Return the date of the last commit.
+     *
+     * @return \DateTime
+     */
+    private function getGitDate()
+    {
+        $process = new Process('git log -n1 --pretty=%ci HEAD', __DIR__);
+
+        return new \DateTime(trim($process->getOutput()));
     }
 
     /**
