@@ -107,12 +107,9 @@ class Bowerphp
 
         $this->output->writelnInfoPackage($package);
 
-        $file = $this->repository->getRelease();
-
         $this->output->writelnInstalledPackage($package);
 
-        $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();
-        $this->filesystem->write($tmpFileName, $file);
+        $this->cachePackage($package);
 
         $installer->install($package);
 
@@ -195,11 +192,7 @@ class Bowerphp
 
         $this->output->writelnUpdatingPackage($package);
 
-        // get release archive from repository
-        $file = $this->repository->getRelease();
-
-        $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();
-        $this->filesystem->write($tmpFileName, $file);
+        $this->cachePackage($package);
 
         $installer->update($package);
 
@@ -448,5 +441,17 @@ class Bowerphp
         }
 
         return $packageInfo;
+    }
+
+    /**
+     * @param PackageInterface $package
+     */
+    private function cachePackage(PackageInterface $package)
+    {
+        // get release archive from repository
+        $file = $this->repository->getRelease();
+
+        $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();
+        $this->filesystem->write($tmpFileName, $file);
     }
 }
