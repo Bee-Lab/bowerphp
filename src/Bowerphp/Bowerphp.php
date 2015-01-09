@@ -96,6 +96,8 @@ class Bowerphp
 
         $package->setVersion($packageTag);
 
+        $this->updateBowerFile($package, $isDependency);
+
         // if package is already installed, match current version with latest available version
         if ($this->isPackageInstalled($package)) {
             $packageBower = $this->config->getPackageBowerFileContent($package);
@@ -112,14 +114,6 @@ class Bowerphp
         $this->cachePackage($package);
 
         $installer->install($package);
-
-        if ($this->config->isSaveToBowerJsonFile() && !$isDependency) {
-            try {
-                $this->config->updateBowerJsonFile($package);
-            } catch (RuntimeException $e) {
-                $this->output->writelnNoBowerJsonFile();
-            }
-        }
 
         $overrides = $this->config->getOverrideFor($package->getName());
         if (array_key_exists('dependencies', $overrides)) {
@@ -453,5 +447,20 @@ class Bowerphp
 
         $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();
         $this->filesystem->write($tmpFileName, $file);
+    }
+
+    /**
+     * @param PackageInterface $package
+     * @param bool $isDependency
+     */
+    private function updateBowerFile(PackageInterface $package, $isDependency = false)
+    {
+        if ($this->config->isSaveToBowerJsonFile() && !$isDependency) {
+            try {
+                $this->config->updateBowerJsonFile($package);
+            } catch (RuntimeException $e) {
+                $this->output->writelnNoBowerJsonFile();
+            }
+        }
     }
 }
