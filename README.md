@@ -35,6 +35,15 @@ This project is in alpha status.
 
 See currently open [issues](https://github.com/Bee-Lab/bowerphp/issues).
 
+Contributing
+------------
+
+All contribution are welcome, just take a look at our [issues](https://github.com/Bee-Lab/bowerphp/issues) tracker if you want to start somewhere.
+
+If you make a PR make sure that it follow the [PSR2 standard](http://www.php-fig.org/psr/psr-2/).
+To make sure that your code comply with the standard, you can use a git hook with [php-cs-fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer).
+There is one here that you only need to copy to your .git/hooks folder under the name of pre-commit and you are set.
+
 Building the phar
 -----------------
 
