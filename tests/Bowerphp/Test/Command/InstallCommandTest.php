@@ -3,7 +3,9 @@
 namespace Bowerphp\Test\Command;
 
 use Bowerphp\Console\Application;
+use Bowerphp\Repository\GithubRepository;
 use FilesystemIterator;
+use Github\Client;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -111,6 +113,28 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertRegExp('/Nothing to install/m', $commandTester->getDisplay());
 
         unlink($file);
+    }
+
+    /**
+     * This test is probably not ideal in that it will only work (meaning break if the code behavior change) as long
+     * as the jquery-address package has no tag.
+     * The first assertion is designed to make sure that the test is still valid and does it's job.
+     */
+    public function testExecuteInstallWithoutTag()
+    {
+        $githubRepo = new GithubRepository();
+        $githubRepo->setUrl('https://github.com/asual/jquery-address');
+        $githubRepo->setHttpClient(new Client());
+        //The test only make sense if the library has no git tags.
+        $this->assertEquals(array(),$githubRepo->getTags());
+
+
+        $application = new Application();
+        $commandTester = new CommandTester($command = $application->get('install'));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery-address'), array('decorated' => false));
+
+        $this->assertRegExp('/jquery-address#master/m', $commandTester->getDisplay());
+        $this->assertFileExists(getcwd() . '/bower_components/jquery-address/.bower.json');
     }
 
     public function tearDown()

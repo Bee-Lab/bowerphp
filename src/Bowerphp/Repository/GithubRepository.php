@@ -17,7 +17,7 @@ use vierbergenlars\SemVer\SemVerException;
 class GithubRepository implements RepositoryInterface
 {
     protected $url;
-    protected $tag = array();
+    protected $tag = array('name' => null);
     protected $githubClient;
 
     /**
