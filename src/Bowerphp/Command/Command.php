@@ -27,9 +27,21 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 abstract class Command extends BaseCommand
 {
+    /**
+     * @var  Filesystem
+     */
     protected $filesystem;
+    /**
+     * @var Config
+     */
     protected $config;
+    /**
+     * @var  Client
+     */
     protected $githubClient;
+    /**
+     * @var  BowerphpConsoleOutput
+     */
     protected $consoleOutput;
 
     /**
