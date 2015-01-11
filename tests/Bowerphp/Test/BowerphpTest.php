@@ -175,6 +175,7 @@ EOT;
 
         $this->config
             ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery', 'version' => '2.0.3'))
+            ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
         ;
 
         $this->filesystem

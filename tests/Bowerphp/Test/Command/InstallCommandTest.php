@@ -25,6 +25,61 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertRegExp('/jquery#2/m', $commandTester->getDisplay());
         $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
         $this->assertFileExists(getcwd() . '/bower_components/jquery/src/jquery.js');
+        $this->assertFileNotExists(getcwd() . '/bower.json');
+    }
+
+    public function testExecuteAndSave()
+    {
+        $application = new Application();
+        //setup
+        $commandTester = new CommandTester($command = $application->get('init'));
+        $commandTester->execute(array('command' => $command->getName()), array('interactive' => false, 'decorated' => false));
+        //install
+        $commandTester = new CommandTester($command = $application->get('install'));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery', '--save'=> true), array('decorated' => false));
+
+        //Check that the install worked
+        $this->assertRegExp('/jquery#2/m', $commandTester->getDisplay());
+        $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
+        $this->assertFileExists(getcwd() . '/bower_components/jquery/src/jquery.js');
+
+        //Check that the save worked
+        $this->assertFileExists(getcwd() . '/bower.json');
+        $bowerJsonDependencies = array("jquery"=> "*");
+        $json = json_decode(file_get_contents(getcwd() . '/bower.json'), true);
+        $this->assertArrayHasKey('dependencies', $json);
+        $this->assertEquals($bowerJsonDependencies, $json['dependencies']);
+    }
+
+    /**
+     * We need to make sure that it's possible to save a package even if he has already been installed separetly.
+     * See https://github.com/Bee-Lab/bowerphp/issues/104
+     */
+    public function testExecuteAndThenTestSave()
+    {
+        $application = new Application();
+        //setup
+        $commandTester = new CommandTester($command = $application->get('init'));
+        $commandTester->execute(array('command' => $command->getName()), array('interactive' => false, 'decorated' => false));
+        //install
+        $commandTester = new CommandTester($command = $application->get('install'));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery'), array('decorated' => false));
+
+        //Check that the install worked
+        $this->assertRegExp('/jquery#2/m', $commandTester->getDisplay());
+        $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
+        $this->assertFileExists(getcwd() . '/bower_components/jquery/src/jquery.js');
+
+        //Try to save the package in the bower.json
+        $commandTester = new CommandTester($command = $application->get('install'));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery', '--save'=> true), array('decorated' => false));
+
+        //Check that the save worked
+        $this->assertFileExists(getcwd() . '/bower.json');
+        $bowerJsonDependencies = array("jquery"=> "*");
+        $json = json_decode(file_get_contents(getcwd() . '/bower.json'), true);
+        $this->assertArrayHasKey('dependencies', $json);
+        $this->assertEquals($bowerJsonDependencies, $json['dependencies']);
     }
 
     public function testExecuteVerbose()
@@ -146,6 +201,9 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
                 $path->isFile() ? unlink($path->getPathname()) : rmdir($path->getPathname());
             }
             rmdir($dir);
+        }
+        if (file_exists(getcwd() . '/bower.json')) {
+            unlink(getcwd() . '/bower.json');
         }
     }
 }
