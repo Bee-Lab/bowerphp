@@ -44,15 +44,6 @@ class Compiler
             unlink($pharFile);
         }
 
-        $this->checkGitAvailability();
-        $this->checkGitRepo();
-
-        $this->version = $this->getGitTagOrHash();
-
-        $date = $this->getGitDate();
-        $date->setTimezone(new \DateTimeZone('UTC'));
-        $this->versionDate = $date->format('Y-m-d H:i:s');
-
         $phar = new \Phar($pharFile, 0, 'bowerphp.phar');
         $phar->setSignatureAlgorithm(\Phar::SHA1);
 
@@ -99,7 +90,7 @@ class Compiler
             $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../vendor/composer/include_paths.php'));
         }
         $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../vendor/composer/ClassLoader.php'));
-        $this->addComposerBin($phar);
+        $this->addBin($phar);
 
         // Stubs
         $phar->setStub($this->getStub());
@@ -114,63 +105,6 @@ class Compiler
 
         unset($phar);
         chmod("bowerphp.phar", 0700);
-    }
-
-    /**
-     * Make sure that git is installed and accessible.
-     *
-     * @throws \RuntimeException
-     */
-    private function checkGitAvailability()
-    {
-        $process = new Process('git log', __DIR__);
-        if ($process->run() != 0) {
-            throw new \RuntimeException('Can\'t run git log. You must ensure that git binary is available.');
-        }
-    }
-
-    /**
-     * Make sure that the working directory is a git repo.
-     *
-     * @throws \RuntimeException
-     */
-    private function checkGitRepo()
-    {
-        $process = new Process('git log --pretty="%H" -n1 HEAD', __DIR__);
-        if ($process->run() != 0) {
-            throw new \RuntimeException('Can\'t run git log. You must ensure to run compile from composer git repository clone.');
-        }
-    }
-
-    /**
-     * Return version information.
-     * Either the closest tag or if no tag is reachable, the hash of the commit.
-     *
-     * @return string
-     */
-    private function getGitTagOrHash()
-    {
-        //
-        $process = new Process('git describe --tags HEAD');
-        if ($process->run() == 0) {
-            return trim($process->getOutput());
-        } else {
-            $process = new Process('git log --pretty="%H" -n1 HEAD', __DIR__);
-
-            return trim($process->getOutput());
-        }
-    }
-
-    /**
-     * Return the date of the last commit.
-     *
-     * @return \DateTime
-     */
-    private function getGitDate()
-    {
-        $process = new Process('git log -n1 --pretty=%ci HEAD', __DIR__);
-
-        return new \DateTime(trim($process->getOutput()));
     }
 
     /**
@@ -200,7 +134,7 @@ class Compiler
     /**
      * @param Phar $phar
      */
-    private function addComposerBin(\Phar $phar)
+    private function addBin(\Phar $phar)
     {
         $content = file_get_contents(__DIR__ . '/../../bin/bowerphp');
         $content = preg_replace('{^#!/usr/bin/env php\s*}', '', $content);
@@ -262,12 +196,6 @@ class Compiler
 Phar::mapPhar('bowerphp.phar');
 
 EOF;
-
-        // add warning once the phar is older than 30 days
-        if (preg_match('{^[a-f0-9]+$}', $this->version)) {
-            $warningTime = time() + 30*86400;
-            $stub .= "define('BOWERPHP_DEV_WARNING_TIME', $warningTime);\n";
-        }
 
         return $stub . <<<'EOF'
 require 'phar://bowerphp.phar/bin/bowerphp';
