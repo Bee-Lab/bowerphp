@@ -11,7 +11,7 @@ use Github\Client;
 interface RepositoryInterface
 {
     const VERSION_NOT_FOUND = 3;
-    const INVALID_CRITERIA = 4;
+    const INVALID_CRITERIA  = 4;
     const INVALID_CANDIDATE = 5;
 
     /**

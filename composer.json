@@ -31,7 +31,7 @@
         "symfony/filesystem": "~2.1",
         "symfony/process": "~2.1",
         "camspiers/json-pretty": "1.0.*",
-        "knplabs/github-api": "1.3.*",
+        "knplabs/github-api": "1.4.*@dev",
         "vierbergenlars/php-semver": "~3.0"
     },
     "require-dev":{
