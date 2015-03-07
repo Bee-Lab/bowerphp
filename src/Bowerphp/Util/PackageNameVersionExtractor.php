@@ -3,18 +3,16 @@
 /*
  * This file is part of Bowerphp.
  *
- * (c) Mauro D'Alatri <mauro.dalatri@bee-lab.net>
+ * (c) Piotr Olaszewski <piotroo89 [%] gmail dot com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Bowerphp\Util;
 
 /**
  * PackageNameVersionExtractor
- *
- * @package Bowerphp\Util
- * @author Piotr Olaszewski <piotroo89 [%] gmail dot com>
  */
 class PackageNameVersionExtractor
 {

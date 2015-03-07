@@ -500,6 +500,7 @@ EOT;
         $this->repository
             ->shouldReceive('setUrl->setHttpClient');
         $this->repository
+            ->shouldReceive('findPackage')->with('*')->andReturn('1.0.0')
             ->shouldReceive('getBower')->andReturn('{invalid')
         ;
 
@@ -970,6 +971,7 @@ EOT;
         $this->repository
             ->shouldReceive('setUrl->setHttpClient');
         $this->repository
+            ->shouldReceive('findPackage')->with('1')->andReturn('1.0.0')
             ->shouldReceive('getBower')->andReturn('{invalid')
         ;
 

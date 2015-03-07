@@ -37,7 +37,8 @@
     "require-dev":{
         "ext-phar": "*",
         "phpunit/phpunit": "4.*",
-        "mockery/mockery": "~0.9.3"
+        "mockery/mockery": "~0.9.3",
+        "fabpot/php-cs-fixer": "~1.5"
     },
     "autoload": {
         "psr-0": { "Bowerphp": "src/" }

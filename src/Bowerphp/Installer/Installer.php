@@ -12,8 +12,7 @@ use RuntimeException;
 use Symfony\Component\Finder\Finder;
 
 /**
- * Package installation manager.
- *
+ * Package installation manager
  */
 class Installer implements InstallerInterface
 {

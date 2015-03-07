@@ -6,7 +6,6 @@ $finder = Symfony\CS\Finder\DefaultFinder::create()
 ;
 
 return Symfony\CS\Config\Config::create()
-    ->level(Symfony\CS\FixerInterface::SYMFONY_LEVEL)
-    ->fixers(array('concat_with_spaces', 'phpdoc_params', 'align_double_arrow', '-concat_without_spaces'))
+    ->fixers(array('concat_with_spaces', 'align_double_arrow', '-concat_without_spaces', '-phpdoc_short_description', '-phpdoc_separation'))
     ->finder($finder)
 ;

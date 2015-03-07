@@ -86,13 +86,15 @@ interface ConfigInterface
     /**
      * Retrieve the array of overrides optionally defined in the bower.json file.
      * Each element's key is a package name, and contains an array of other package names
-     * and versions that should replace the dependencies found in that package's canonical bower.json.
+     * and versions that should replace the dependencies found in that package's canonical bower.json
+     *
      * @return array The overrides section from the bower.json file, or an empty array if no overrides section is defined.
      */
     public function getOverridesSection();
 
     /**
-     * Get the array of overrides defined for the specified package.
+     * Get the array of overrides defined for the specified package
+     *
      * @param  string $packageName The name of the package for which dependencies are being overridden.
      * @return array  A list of dependency name => override versions to be used instead of the target package's normal dependencies.  An empty array if none are defined.
      */

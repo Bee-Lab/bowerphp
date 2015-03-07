@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace Bowerphp\Command;
 
 use Bowerphp\Bowerphp;
@@ -28,19 +29,22 @@ use Symfony\Component\Console\Output\OutputInterface;
 abstract class Command extends BaseCommand
 {
     /**
-     * @var  Filesystem
+     * @var Filesystem
      */
     protected $filesystem;
+
     /**
      * @var Config
      */
     protected $config;
+
     /**
-     * @var  Client
+     * @var Client
      */
     protected $githubClient;
+
     /**
-     * @var  BowerphpConsoleOutput
+     * @var BowerphpConsoleOutput
      */
     protected $consoleOutput;
 

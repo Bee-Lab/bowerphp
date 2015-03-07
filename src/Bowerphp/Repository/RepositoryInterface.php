@@ -5,8 +5,7 @@ namespace Bowerphp\Repository;
 use Github\Client;
 
 /**
- * Repository interface.
- *
+ * Repository interface
  */
 interface RepositoryInterface
 {
@@ -38,10 +37,10 @@ interface RepositoryInterface
     /**
      * Searches for the first match of a package version.
      *
-     * @param  string $version package version
+     * @param  string $rawCriteria A criteria to explain the required version
      * @return string
      */
-    public function findPackage($version = '*');
+    public function findPackage($rawCriteria = '*');
 
     /**
      * Get a release

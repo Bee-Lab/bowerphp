@@ -80,6 +80,7 @@ class Bowerphp
     public function installPackage(PackageInterface $package, InstallerInterface $installer, $isDependency = false)
     {
         if (strpos($package->getName(), 'github') !== false) {
+            // install from a github endpoint
             $name = basename($package->getName(), '.git');
             $repoUrl = $package->getName();
             $package = new Package($name, $package->getRequiredVersion());
@@ -402,14 +403,14 @@ class Bowerphp
         // open package repository
         $repoUrl = $decode['url'];
         $this->repository->setUrl($repoUrl)->setHttpClient($this->githubClient);
-        $bowerJson = $this->repository->getBower($package->getRequiredVersion());
-        $bower = json_decode($bowerJson, true);
-        if (!is_array($bower)) {
-            throw new RuntimeException(sprintf('Invalid bower.json found in package %s: %s.', $package->getName(), $bowerJson));
-        }
         $packageTag = $this->repository->findPackage($package->getRequiredVersion());
         if (is_null($packageTag)) {
             throw new RuntimeException(sprintf('Cannot find package %s version %s.', $package->getName(), $package->getRequiredVersion()));
+        }
+        $bowerJson = $this->repository->getBower($packageTag);
+        $bower = json_decode($bowerJson, true);
+        if (!is_array($bower)) {
+            throw new RuntimeException(sprintf('Invalid bower.json found in package %s: %s.', $package->getName(), $bowerJson));
         }
         if ($setInfo) {
             $package->setInfo($bower);
@@ -451,7 +452,7 @@ class Bowerphp
 
     /**
      * @param PackageInterface $package
-     * @param bool $isDependency
+     * @param bool             $isDependency
      */
     private function updateBowerFile(PackageInterface $package, $isDependency = false)
     {

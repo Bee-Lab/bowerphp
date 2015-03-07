@@ -12,7 +12,6 @@ use vierbergenlars\SemVer\SemVerException;
 
 /**
  * GithubRepository
- *
  */
 class GithubRepository implements RepositoryInterface
 {

@@ -6,13 +6,12 @@ use Bowerphp\Package\PackageInterface;
 use Symfony\Component\Finder\Finder;
 
 /**
- * Interface for the package installation manager.
- *
+ * Interface for the package installation manager
  */
 interface InstallerInterface
 {
     /**
-     * Installs specific package.
+     * Installs specific package
      *
      * @param PackageInterface $package package instance
      */
@@ -27,7 +26,7 @@ interface InstallerInterface
     public function update(PackageInterface $package);
 
     /**
-     * Uninstalls specific package.
+     * Uninstalls specific package
      *
      * @param PackageInterface $package package instance
      */
@@ -42,7 +41,7 @@ interface InstallerInterface
     public function getInstalled(Finder $finder);
 
     /**
-     * Find packages that depend on given package.
+     * Find packages that depend on given package
      *
      * @param  PackageInterface $package
      * @param  Finder           $finder

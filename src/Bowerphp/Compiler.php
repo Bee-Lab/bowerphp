@@ -12,11 +12,9 @@
 namespace Bowerphp;
 
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Process\Process;
 
 /**
  * The Compiler class compiles Bower into a phar
- *
  */
 class Compiler
 {
