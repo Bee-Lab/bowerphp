@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e374fa8d146c61a967f58eb296c8f4dd",
+    "hash": "6d4d59bcc5f0aa0d3731f96147612fb6",
     "packages": [
         {
             "name": "camspiers/json-pretty",
@@ -1633,7 +1633,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.3.2",
+        "php": ">=5.3.6",
         "ext-zip": "*",
         "ext-fileinfo": "*"
     },
