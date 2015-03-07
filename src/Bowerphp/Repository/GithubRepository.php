@@ -114,20 +114,13 @@ class GithubRepository implements RepositoryInterface
         // So, even if it's faster than this code, it's not a complete solution..
         $matches = array_filter(
             $sortedTags, function ($tag) use ($repoName, $criteria) {
-            try {
-                $candidate = $tag['parsed_version'];
+            $candidate = $tag['parsed_version'];
 
-                return $criteria->satisfiedBy($candidate) ? $tag : false;
-            } catch (\Exception $rex) {
-                // @todo Find a better way to do this - we shouldn't throw because of one bad version tag,
-                // but on the other hand we should probably allow the user to know (maybe via -vvv?)
-                // Console output is not available at this level, so this is the least bad way to go.
-                error_log(sprintf('%s: Candidate version %s is not valid, skipping', $repoName, $tag['name']));
-            }
+            return $criteria->satisfiedBy($candidate) ? $tag : false;
         });
 
         // If the array has elements, the LAST element is the best (highest numbered) version.
-        if (count($matches)) {
+        if (count($matches) > 0) {
             // @todo Get rid of this side effect?
             $this->tag = array_pop($matches);
 
