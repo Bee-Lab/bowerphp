@@ -99,7 +99,7 @@ class ConfigTest extends TestCase
 
     /**
      * @expectedException        RuntimeException
-     * @expectedExceptionMessage Malformed JSON {invalid.
+     * @expectedExceptionMessage Malformed JSON in bower.json: {invalid.
      */
     public function testGetBowerFileContentWithExceptionOnInvalidJson()
     {

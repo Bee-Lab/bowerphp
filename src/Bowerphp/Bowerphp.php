@@ -427,12 +427,12 @@ class Bowerphp
     {
         try {
             $response = $this->githubClient->getHttpClient()->get($this->config->getBasePackagesUrl() . urlencode($name));
-        } catch (RequestException $e) {
-            throw new RuntimeException(sprintf('Cannot download package %s (%s).', $name, $e->getMessage()));
+        } catch (RuntimeException $e) {
+            throw new RuntimeException(sprintf('Cannot fetch registry info for package %s from search registry (%s).', $name, $e->getMessage()));
         }
         $packageInfo = json_decode($response->getBody(true), true);
         if (!is_array($packageInfo) || empty($packageInfo['url'])) {
-            throw new RuntimeException(sprintf('Package %s has malformed json or is missing "url".', $name));
+            throw new RuntimeException(sprintf('Registry info for package %s has malformed json or is missing "url".', $name));
         }
 
         return $packageInfo;
