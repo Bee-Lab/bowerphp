@@ -63,7 +63,7 @@ EOT
         } catch (\RuntimeException $e) {
             $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
 
-            return $e->getCode();
+            return 1;
         }
 
         $output->writeln('');

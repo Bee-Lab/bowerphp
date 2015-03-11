@@ -101,7 +101,7 @@ EOT
                 $output->writeln(sprintf('Available versions: %s', implode(', ', $bowerphp->getPackageInfo($package, 'versions'))));
             }
 
-            return $e->getCode();
+            return 1;
         }
 
         $output->writeln('');
