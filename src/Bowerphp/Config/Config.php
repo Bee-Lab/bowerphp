@@ -151,7 +151,7 @@ class Config implements ConfigInterface
         }
         $bowerJson = $this->filesystem->read(getcwd() . '/' . $this->stdBowerFileName);
         if (empty($bowerJson) || !is_array($decode = json_decode($bowerJson, true))) {
-            throw new RuntimeException(sprintf('Malformed JSON %s.', $bowerJson));
+            throw new RuntimeException(sprintf('Malformed JSON in %s: %s.', $this->stdBowerFileName, $bowerJson));
         }
 
         return $decode;

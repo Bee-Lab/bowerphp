@@ -403,7 +403,7 @@ EOT;
 
     /**
      * @expectedException        RuntimeException
-     * @expectedExceptionMessage Cannot download package jquery (error).
+     * @expectedExceptionMessage Cannot fetch registry info for package jquery from search registry (error).
      */
     public function testUpdatePackageNotFoundInRepository()
     {
@@ -441,7 +441,7 @@ EOT;
 
     /**
      * @expectedException        RuntimeException
-     * @expectedExceptionMessage Package colorbox has malformed json or is missing "url".
+     * @expectedExceptionMessage Registry info for package colorbox has malformed json or is missing "url".
      */
     public function testUpdatePackageJsonException()
     {
@@ -933,7 +933,7 @@ EOT;
 
     /**
      * @expectedException        RuntimeException
-     * @expectedExceptionMessage Package colorbox has malformed json or is missing "url".
+     * @expectedExceptionMessage Registry info for package colorbox has malformed json or is missing "url".
      */
     public function testInstallPackageJsonException()
     {
@@ -1178,7 +1178,7 @@ EOT;
 
     /**
      * @expectedException        RuntimeException
-     * @expectedExceptionMessage Package colorbox has malformed json or is missing "url".
+     * @expectedExceptionMessage Registry info for package colorbox has malformed json or is missing "url".
      */
     public function testGetPackageInfoJsonException()
     {
