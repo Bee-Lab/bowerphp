@@ -1002,7 +1002,7 @@ EOT;
             ->shouldReceive('findPackage')->andReturn(null)
         ;
 
-        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output, $installer);
+        $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
         $bowerphp->installPackage($package, $installer);
     }
 

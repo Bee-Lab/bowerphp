@@ -41,7 +41,7 @@
         "fabpot/php-cs-fixer": "~1.5"
     },
     "autoload": {
-        "psr-0": { "Bowerphp": "src/" }
+        "psr-4": { "Bowerphp\\": "src/Bowerphp" }
     },
     "bin": ["bin/bowerphp"],
     "extra": {

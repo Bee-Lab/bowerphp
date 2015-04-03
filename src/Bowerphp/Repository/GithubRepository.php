@@ -226,9 +226,9 @@ class GithubRepository implements RepositoryInterface
     private function fixupRawTag($rawValue)
     {
         // WHY NOT SCRUB OUT PLUS SIGNS, RIGHT?
-        $found_it = strpos($rawValue, '+');
-        if ($found_it !== false) {
-            $rawValue = substr($rawValue, 0, $found_it);
+        $foundIt = strpos($rawValue, '+');
+        if ($foundIt !== false) {
+            $rawValue = substr($rawValue, 0, $foundIt);
         }
         $pieces = explode('.', $rawValue);
         $count = count($pieces);
