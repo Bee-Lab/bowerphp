@@ -47,12 +47,12 @@ There is one here that you only need to copy to your .git/hooks folder under the
 Building the phar
 -----------------
 
-One method to build the phar is to simply run:
+You can build the phar by simply running:
 ```sh
 php bin/compile
 ```
-Another is to use the [box command line utility](https://github.com/box-project/box2)
-If you add this config in a box.json file you only just need to run the two commands bellow to have a working phar.
+Or you can use the [box command line utility](https://github.com/box-project/box2)
+If you add this config in a box.json file, you only just need to run the two commands below to have a working phar.
 
 ###the commands
 

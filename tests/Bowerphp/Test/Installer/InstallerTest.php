@@ -308,7 +308,7 @@ class InstallerTest extends TestCase
             "*.html",
         );
         $force = array(
-            "twbs-bootstrap-6d03173/bower.json",
+            "bower.json",
         );
 
         $ignored = $this->installer->isIgnored($filename, $ignore, $force, 'twbs-bootstrap-6d03173/');
