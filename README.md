@@ -31,7 +31,7 @@ Once you created your token, just store it in the ``BOWERPHP_TOKEN`` environment
 Status
 ------
 
-This project is in alpha status.
+This project is in beta status.
 
 See currently open [issues](https://github.com/Bee-Lab/bowerphp/issues).
 
