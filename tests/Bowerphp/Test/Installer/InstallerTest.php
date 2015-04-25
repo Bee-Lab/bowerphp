@@ -282,7 +282,7 @@ class InstallerTest extends TestCase
             '*.html',
         );
 
-        $ignored = $this->installer->isIgnored($filename, $ignore, 'twbs-bootstrap-6d03173/');
+        $ignored = $this->installer->isIgnored($filename, $ignore, array(), 'twbs-bootstrap-6d03173/');
         $this->assertTrue($ignored);
     }
 
@@ -302,12 +302,16 @@ class InstallerTest extends TestCase
             "CONTRIBUTING.md",
             "Gruntfile.js",
             "browserstack.json",
+            "bower.json",
             "composer.json",
             "package.json",
             "*.html",
         );
+        $force = array(
+            "twbs-bootstrap-6d03173/bower.json",
+        );
 
-        $ignored = $this->installer->isIgnored($filename, $ignore, 'twbs-bootstrap-6d03173/');
+        $ignored = $this->installer->isIgnored($filename, $ignore, $force, 'twbs-bootstrap-6d03173/');
         $this->assertFalse($ignored);
     }
 
@@ -522,7 +526,7 @@ class InstallerTest extends TestCase
             "!/bower.json",
             "!/dist/**",
         );
-        $ignored = $this->installer->isIgnored($file, $ignore, "zeroclipboard-zeroclipboard-1ec7da6/");
+        $ignored = $this->installer->isIgnored($file, $ignore, array(), "zeroclipboard-zeroclipboard-1ec7da6/");
         $this->assertEquals($ignored, $shouldIgnore);
     }
 }

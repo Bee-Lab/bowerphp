@@ -192,7 +192,20 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertFileExists(getcwd() . '/bower_components/jquery-address/.bower.json');
     }
 
-    public function tearDown()
+    /**
+     * See https://github.com/Bee-Lab/bowerphp/issues/119
+     */
+    public function testExecuteInstallWithAllIgnores()
+    {
+        $application = new Application();
+        $commandTester = new CommandTester($command = $application->get('install'));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => 'blueimp-tmpl'), array('decorated' => false));
+
+        $this->assertRegExp('/blueimp-tmpl#/m', $commandTester->getDisplay());
+        $this->assertFileExists(getcwd() . '/bower_components/blueimp-tmpl/js/tmpl.js');
+    }
+
+    protected function tearDown()
     {
         $dir = getcwd() . '/bower_components/';
         if (is_dir($dir)) {
