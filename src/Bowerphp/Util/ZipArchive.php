@@ -7,7 +7,7 @@ use ZipArchive as PhpZipArchive;
 class ZipArchive extends PhpZipArchive
 {
     /**
-     * @return integer
+     * @return int
      */
     public function getNumFiles()
     {

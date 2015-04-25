@@ -1336,7 +1336,7 @@ EOT;
      * @param array         $names          names of packages
      * @param array         $versions       versions of packages
      * @param array         $requires       required versions of packages
-     * @param boolean       $update         if this is an update (instead of an install)
+     * @param bool          $update         if this is an update (instead of an install)
      * @param array         $updateVersions updated versions of packages (after update)
      */
     protected function installPackage(MockInterface $package, MockInterface $installer, array $names, array $versions, array $requires = array('*'), $update = false, array $updateVersions = array())

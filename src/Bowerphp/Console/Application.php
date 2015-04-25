@@ -153,7 +153,7 @@ class Application extends BaseApplication
      * @param OutputInterface $output  An Output instance
      * @param string          $default Default command to execute
      *
-     * @return integer 0 if everything went fine, or an error code
+     * @return int 0 if everything went fine, or an error code
      * @codeCoverageIgnore
      */
     private function symfonyDoRun(InputInterface $input, OutputInterface $output, $default = 'list-commands')

@@ -28,7 +28,7 @@ class InfoCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('info'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'scrap-your-markup'), array('decorated' => false));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => 'restio'), array('decorated' => false));
 
         $this->assertRegExp('/No versions available/', $commandTester->getDisplay());
     }

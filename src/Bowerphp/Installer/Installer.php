@@ -168,10 +168,10 @@ class Installer implements InstallerInterface
     /**
      * Check if a file should be ignored
      *
-     * @param  string  $name    file's name
-     * @param  array   $ignore  list of ignores
-     * @param  string  $dirName dir's name (to be removed from file's name)
-     * @return boolean
+     * @param  string $name    file's name
+     * @param  array  $ignore  list of ignores
+     * @param  string $dirName dir's name (to be removed from file's name)
+     * @return bool
      */
     public function isIgnored($name, array $ignore, $dirName)
     {

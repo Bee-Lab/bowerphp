@@ -39,7 +39,7 @@ class Filesystem extends BaseFilesystem
      *
      * @param  string      $filename The file to be written to.
      * @param  string      $content  The data to write into the file.
-     * @param  integer     $mode     The file mode (octal).
+     * @param  int         $mode     The file mode (octal).
      * @throws IOException If the file cannot be written to.
      */
     public function write($filename, $content, $mode = 0644)

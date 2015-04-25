@@ -75,7 +75,7 @@ class Bowerphp
      *
      * @param PackageInterface   $package
      * @param InstallerInterface $installer
-     * @param boolean            $isDependency
+     * @param bool               $isDependency
      */
     public function installPackage(PackageInterface $package, InstallerInterface $installer, $isDependency = false)
     {
@@ -324,7 +324,7 @@ class Bowerphp
      * Check if package is installed
      *
      * @param  PackageInterface $package
-     * @return boolean
+     * @return bool
      */
     public function isPackageInstalled(PackageInterface $package)
     {
@@ -394,7 +394,7 @@ class Bowerphp
 
     /**
      * @param  PackageInterface $package
-     * @param  boolean          $setInfo
+     * @param  bool             $setInfo
      * @return string
      */
     protected function getPackageTag(PackageInterface $package, $setInfo = false)

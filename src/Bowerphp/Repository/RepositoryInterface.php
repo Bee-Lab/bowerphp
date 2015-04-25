@@ -14,8 +14,8 @@ interface RepositoryInterface
     const INVALID_CANDIDATE = 5;
 
     /**
-     * @param string  $url
-     * @param boolean $raw
+     * @param string $url
+     * @param bool   $raw
      */
     public function setUrl($url, $raw = true);
 
@@ -27,9 +27,9 @@ interface RepositoryInterface
     /**
      * Get repo bower.json
      *
-     * @param  string  $version
-     * @param  boolean $includeHomepage
-     * @param  string  $url
+     * @param  string $version
+     * @param  bool   $includeHomepage
+     * @param  string $url
      * @return string
      */
     public function getBower($version = 'master', $includeHomepage = false, $url = '');

@@ -23,7 +23,7 @@ class Compiler
     private $gz;
 
     /**
-     * @param boolean $gz
+     * @param bool $gz
      */
     public function __construct($gz = false)
     {
@@ -108,7 +108,7 @@ class Compiler
     /**
      * @param Phar        $phar
      * @param SplFileInfo $file
-     * @param boolean     $strip
+     * @param bool        $strip
      */
     private function addFile(\Phar $phar, \SplFileInfo $file, $strip = true)
     {
