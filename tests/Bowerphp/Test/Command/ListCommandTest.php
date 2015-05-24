@@ -10,7 +10,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class ListCommandTest extends \PHPUnit_Framework_TestCase
 {
-    public function setUp()
+    protected function setUp()
     {
         if (!is_dir(getcwd() . '/bower_components/')) {
             mkdir(getcwd() . '/bower_components/');
@@ -31,7 +31,7 @@ class ListCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertRegExp('/jquery#1/', $commandTester->getDisplay());    // TODO check is NOT extraneous
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         unlink(getcwd() . '/bower.json');
         unlink(getcwd() . '/bower_components/bootstrap/.bower.json');

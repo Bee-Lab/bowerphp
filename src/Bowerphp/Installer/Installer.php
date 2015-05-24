@@ -45,7 +45,7 @@ class Installer implements InstallerInterface
         }
         $dirName = trim($this->zipArchive->getNameIndex(0), '/');
         $info = $package->getInfo();
-        $files = $this->filterZipFiles($this->zipArchive, isset($info['ignore']) ? $info['ignore'] : array(), isset($info['main']) ? (array)$info['main'] : array());
+        $files = $this->filterZipFiles($this->zipArchive, isset($info['ignore']) ? $info['ignore'] : array(), isset($info['main']) ? (array) $info['main'] : array());
         foreach ($files as $i => $file) {
             $stat = $this->zipArchive->statIndex($i);
             $fileName = $this->config->getInstallDir() . '/' . str_replace($dirName, $package->getName(), $file);

@@ -1,4 +1,5 @@
 <?php
+
 namespace Bowerphp\Test\Command;
 
 use Bowerphp\Factory\CommandFactory;
@@ -14,7 +15,7 @@ class UpdateCommandTest extends \PHPUnit_Framework_TestCase
     private $packageDotBowerFile;
     private $bowerFile;
 
-    public function setUp()
+    protected function setUp()
     {
         $dir = getcwd() . '/bower_components/';
         if (!is_dir($dir)) {
@@ -55,7 +56,7 @@ class UpdateCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertRegExp('/Package nonexistent-package is not installed/', $commandTester->getDisplay());
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         $dir = getcwd() . '/bower_components/';
         if (is_dir($dir)) {

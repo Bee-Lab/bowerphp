@@ -15,8 +15,19 @@ use vierbergenlars\SemVer\SemVerException;
  */
 class GithubRepository implements RepositoryInterface
 {
+    /**
+     * @var string
+     */
     protected $url;
+
+    /**
+     * @var array
+     */
     protected $tag = array('name' => null);
+
+    /**
+     * @var Client
+     */
     protected $githubClient;
 
     /**
@@ -47,6 +58,8 @@ class GithubRepository implements RepositoryInterface
     public function setHttpClient(Client $githubClient)
     {
         $this->githubClient = $githubClient;
+        // see https://developer.github.com/changes/2015-04-17-preview-repository-redirects/
+        $this->githubClient->getHttpClient()->setHeaders(['Accept' => 'application/vnd.github.quicksilver-preview+json']);
 
         return $this;
     }
@@ -111,8 +124,7 @@ class GithubRepository implements RepositoryInterface
         // We're not using it because it will throw an exception on what it considers to be an
         // "invalid" candidate version, and not continue checking the rest of the candidates.
         // So, even if it's faster than this code, it's not a complete solution..
-        $matches = array_filter(
-            $sortedTags, function ($tag) use ($repoName, $criteria) {
+        $matches = array_filter($sortedTags, function ($tag) use ($repoName, $criteria) {
             $candidate = $tag['parsed_version'];
 
             return $criteria->satisfiedBy($candidate) ? $tag : false;
@@ -220,9 +232,14 @@ class GithubRepository implements RepositoryInterface
         return $url;
     }
 
-    // Why do we have to do this? Your guess is as good as mine.
-    // The only flaw I've seen in the semver lib we're using,
-    // and the regex's in there are too complicated to mess with.
+    /**
+     * Why do we have to do this? Your guess is as good as mine.
+     * The only flaw I've seen in the semver lib we're using,
+     * and the regex's in there are too complicated to mess with.
+     *
+     * @param  string $rawValue
+     * @return string
+     */
     private function fixupRawTag($rawValue)
     {
         // WHY NOT SCRUB OUT PLUS SIGNS, RIGHT?
@@ -239,8 +256,7 @@ class GithubRepository implements RepositoryInterface
         for ($add = $count; $add < 3; $add++) {
             $pieces[] = '0';
         }
-        $return = implode('.', array_slice($pieces, 0, 3)
-        );
+        $return = implode('.', array_slice($pieces, 0, 3));
 
         return $return;
     }

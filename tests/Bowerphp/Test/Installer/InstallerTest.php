@@ -13,7 +13,7 @@ class InstallerTest extends TestCase
     protected $zipArchive;
     protected $config;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
 

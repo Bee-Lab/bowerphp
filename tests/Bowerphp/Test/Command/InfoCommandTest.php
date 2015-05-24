@@ -33,6 +33,15 @@ class InfoCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertRegExp('/No versions available/', $commandTester->getDisplay());
     }
 
+    public function testExecuteWithRenamedRepo()
+    {
+        $application = new Application();
+        $commandTester = new CommandTester($command = $application->get('info'));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery-hammerjs'), array('decorated' => false));
+
+        $this->assertRegExp('/jquery-hammerjs/', $commandTester->getDisplay());
+    }
+
     /**
      * @expectedException        RuntimeException
      * @expectedExceptionMessage Not enough arguments.

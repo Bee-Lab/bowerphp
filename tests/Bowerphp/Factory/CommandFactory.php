@@ -1,4 +1,5 @@
 <?php
+
 namespace Bowerphp\Factory;
 
 use Bowerphp\Console\Application;

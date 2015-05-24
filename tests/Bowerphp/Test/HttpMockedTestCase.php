@@ -36,7 +36,7 @@ abstract class HttpMockedTestCase extends PHPUnit_Framework_TestCase
         ;
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         Mockery::close();
     }

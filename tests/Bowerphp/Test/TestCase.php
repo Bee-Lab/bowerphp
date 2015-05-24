@@ -7,15 +7,25 @@ use ReflectionClass;
 
 abstract class TestCase extends \PHPUnit_Framework_TestCase
 {
-    protected $filesystem, $httpClient;
+    /**
+     * @param \Mockery\MockInterface
+     */
+    protected $filesystem;
 
-    public function setUp()
+    /**
+     * XXX this is indeed a GithubClient, it should be renamed here and in all tests
+     *
+     * @param \Mockery\MockInterface
+     */
+    protected $httpClient;
+
+    protected function setUp()
     {
         $this->filesystem = Mockery::mock('Bowerphp\Util\Filesystem');
         $this->httpClient = Mockery::mock('Github\Client');
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         Mockery::close();
     }

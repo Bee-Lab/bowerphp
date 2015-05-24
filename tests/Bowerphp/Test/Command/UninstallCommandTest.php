@@ -10,7 +10,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class UninstallCommandTest extends \PHPUnit_Framework_TestCase
 {
-    public function setUp()
+    protected function setUp()
     {
         $dir = getcwd() . '/bower_components/';
         if (!is_dir($dir)) {
@@ -53,7 +53,7 @@ class UninstallCommandTest extends \PHPUnit_Framework_TestCase
         rmdir($dir . '/test-package/');
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         $dir = getcwd() . '/bower_components/';
         if (is_dir($dir)) {

@@ -17,7 +17,7 @@ class BowerphpTest extends TestCase
     protected $config;
     protected $repository;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->config = Mockery::mock('Bowerphp\Config\ConfigInterface');

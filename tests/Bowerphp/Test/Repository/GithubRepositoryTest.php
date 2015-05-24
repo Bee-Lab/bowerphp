@@ -10,15 +10,20 @@ use ReflectionClass;
 
 class GithubRepositoryTest extends TestCase
 {
-
     /**
      * @var RepositoryInterface
      */
     protected $repository;
 
-    public function setUp()
+    protected $guzzle;
+
+    protected function setUp()
     {
         parent::setUp();
+
+        $this->guzzle = Mockery::mock('Guzzle\Http\ClientInterface');
+        $this->httpClient->shouldReceive('getHttpClient')->andReturn($this->guzzle);
+        $this->guzzle->shouldReceive('setHeaders');
 
         $this->repository = new GithubRepository();
         $this->repository->setUrl('https://raw.githubusercontent.com/components/jquery')->setHttpClient($this->httpClient);
@@ -417,7 +422,6 @@ class GithubRepositoryTest extends TestCase
      */
     private function mockTagsRequest($responseJson)
     {
-        $guzzle = Mockery::mock('Github\HttpClient\HttpClientInterface');
         $response = Mockery::mock('Guzzle\Http\Message\Response');
         $repo = Mockery::mock('Github\Api\Repo');
 
@@ -427,10 +431,9 @@ class GithubRepositoryTest extends TestCase
             ->shouldReceive('tags')->with('components', 'jquery')->andReturn(json_decode($responseJson, true))
         ;
         $this->httpClient
-            ->shouldReceive('getHttpClient')->andReturn($guzzle)
             ->shouldReceive('api')->with('repo')->andReturn($repo)
         ;
-        $guzzle
+        $this->guzzle
             ->shouldReceive('getLastResponse')->andReturn($response)
         ;
         $response

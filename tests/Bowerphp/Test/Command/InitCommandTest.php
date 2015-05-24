@@ -22,7 +22,7 @@ class InitCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('dependencies', $json);
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         $file = getcwd() . '/bower.json';
         if (is_file($file)) {
