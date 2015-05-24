@@ -59,7 +59,7 @@ class GithubRepository implements RepositoryInterface
     {
         $this->githubClient = $githubClient;
         // see https://developer.github.com/changes/2015-04-17-preview-repository-redirects/
-        $this->githubClient->getHttpClient()->setHeaders(['Accept' => 'application/vnd.github.quicksilver-preview+json']);
+        $this->githubClient->getHttpClient()->setHeaders(array('Accept' => 'application/vnd.github.quicksilver-preview+json'));
 
         return $this;
     }

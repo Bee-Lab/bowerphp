@@ -32,7 +32,7 @@ class Compiler
     }
 
     /**
-     * Compiles composer into a single phar file
+     * Compiles bower into a single phar file
      *
      * @throws \RuntimeException
      * @param  string            $pharFile The full path to the file to create
@@ -74,6 +74,7 @@ class Compiler
             ->in(__DIR__ . '/../../vendor/knplabs/github-api/lib/')
             ->in(__DIR__ . '/../../vendor/vierbergenlars/php-semver/src/vierbergenlars/LibJs/')
             ->in(__DIR__ . '/../../vendor/vierbergenlars/php-semver/src/vierbergenlars/SemVer/')
+            ->in(__DIR__ . '/../../vendor/hamcrest/hamcrest-php/hamcrest/')
         ;
 
         foreach ($finder as $file) {
@@ -82,6 +83,7 @@ class Compiler
 
         $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../vendor/autoload.php'));
         $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../vendor/composer/autoload_psr4.php'));
+        $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../vendor/composer/autoload_files.php'));
         $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../vendor/composer/autoload_namespaces.php'));
         $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../vendor/composer/autoload_classmap.php'));
         $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../vendor/composer/autoload_real.php'));
