@@ -127,7 +127,7 @@ class Application extends BaseApplication
     {
         $helperSet = parent::getDefaultHelperSet();
 
-        $helperSet->set(new DialogHelper());
+        $helperSet->set(new DialogHelper(false));
 
         return $helperSet;
     }
