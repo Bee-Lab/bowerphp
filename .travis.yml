@@ -8,6 +8,7 @@ php:
 
 env:
     - BOWERPHP_TOKEN=00fe3b72344a637f8d28696f8a73ef67c9fa64e2
+    - SYMFONY_DEPRECATIONS_HELPER=weak
 
 before_script:
     - echo '' > ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
