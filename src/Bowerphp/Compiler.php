@@ -19,8 +19,6 @@ use Symfony\Component\Finder\Finder;
  */
 class Compiler
 {
-    private $version;
-    private $versionDate;
     private $gz;
 
     /**

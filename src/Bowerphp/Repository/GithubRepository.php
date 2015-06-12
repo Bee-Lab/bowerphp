@@ -124,7 +124,7 @@ class GithubRepository implements RepositoryInterface
         // We're not using it because it will throw an exception on what it considers to be an
         // "invalid" candidate version, and not continue checking the rest of the candidates.
         // So, even if it's faster than this code, it's not a complete solution..
-        $matches = array_filter($sortedTags, function ($tag) use ($repoName, $criteria) {
+        $matches = array_filter($sortedTags, function ($tag) use ($criteria) {
             $candidate = $tag['parsed_version'];
 
             return $criteria->satisfiedBy($candidate) ? $tag : false;
