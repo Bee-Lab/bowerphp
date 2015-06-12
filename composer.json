@@ -38,9 +38,7 @@
         "ext-phar": "*",
         "phpunit/phpunit": "4.*",
         "mockery/mockery": "~0.9.3",
-        "fabpot/php-cs-fixer": "~1.5",
-        "symfony/phpunit-bridge": "^2.7",
-        "symfony/debug": "^2.7"
+        "fabpot/php-cs-fixer": "~1.5"
     },
     "autoload": {
         "psr-4": { "Bowerphp\\": "src/Bowerphp" }
