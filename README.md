@@ -1,6 +1,8 @@
 Bowerphp
 ========
 
+[![Join the chat at https://gitter.im/Bee-Lab/bowerphp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Bee-Lab/bowerphp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 An implementation of [bower](http://bower.io) in PHP.
 
 http://bowerphp.org
