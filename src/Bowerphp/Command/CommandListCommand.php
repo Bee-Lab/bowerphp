@@ -17,7 +17,7 @@ use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
- * CommandList: this command shows a list of availabel commands.
+ * CommandList: this command shows a list of available commands.
  * It's just an extension of original ListCommand, needed to change "list" name
  */
 class CommandListCommand extends ListCommand

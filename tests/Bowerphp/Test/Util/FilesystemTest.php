@@ -2,8 +2,8 @@
 
 namespace Bowerphp\Test\Util;
 
-use Bowerphp\Util\Filesystem;
 use Bowerphp\Test\TestCase;
+use Bowerphp\Util\Filesystem;
 
 class FilesystemTest extends TestCase
 {

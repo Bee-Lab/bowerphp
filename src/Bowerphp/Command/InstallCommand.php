@@ -16,8 +16,8 @@ use Bowerphp\Package\Package;
 use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Util\PackageNameVersionExtractor;
 use Bowerphp\Util\ZipArchive;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 

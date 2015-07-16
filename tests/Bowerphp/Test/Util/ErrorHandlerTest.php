@@ -2,8 +2,8 @@
 
 namespace Bowerphp\Test\Util;
 
-use Bowerphp\Util\ErrorHandler;
 use Bowerphp\Test\TestCase;
+use Bowerphp\Util\ErrorHandler;
 
 class ErrorHandlerTest extends TestCase
 {

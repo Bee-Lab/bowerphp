@@ -15,7 +15,6 @@ use Bowerphp\Command;
 use Bowerphp\Command\Helper\DialogHelper;
 use Bowerphp\Util\ErrorHandler;
 use Symfony\Component\Console\Application as BaseApplication;
-use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -94,7 +93,7 @@ class Application extends BaseApplication
     protected function getDefaultCommands()
     {
         return array(
-            new HelpCommand(),
+            new Command\HelpCommand(),
             new Command\CommandListCommand(),
             new Command\HomeCommand(),
             new Command\InfoCommand(),

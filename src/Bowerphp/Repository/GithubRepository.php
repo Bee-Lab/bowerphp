@@ -6,9 +6,9 @@ use Bowerphp\Util\Json;
 use Github\Client;
 use Github\ResultPager;
 use RuntimeException;
-use vierbergenlars\SemVer\version;
 use vierbergenlars\SemVer\expression;
 use vierbergenlars\SemVer\SemVerException;
+use vierbergenlars\SemVer\version;
 
 /**
  * GithubRepository

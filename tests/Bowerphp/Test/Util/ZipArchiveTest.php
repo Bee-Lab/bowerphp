@@ -2,8 +2,8 @@
 
 namespace Bowerphp\Test\Util;
 
-use Bowerphp\Util\ZipArchive;
 use Bowerphp\Test\TestCase;
+use Bowerphp\Util\ZipArchive;
 
 class ZipArchiveTest extends TestCase
 {
