@@ -15,10 +15,13 @@ namespace Bowerphp;
 use Symfony\Component\Finder\Finder;
 
 /**
- * The Compiler class compiles Bower into a phar
+ * The Compiler class compiles Bower into a phar.
  */
 class Compiler
 {
+    /**
+     * @var bool
+     */
     private $gz;
 
     /**
@@ -103,7 +106,7 @@ class Compiler
         $this->addFile($phar, new \SplFileInfo(__DIR__ . '/../../LICENSE'), false);
 
         unset($phar);
-        chmod("bowerphp.phar", 0700);
+        chmod('bowerphp.phar', 0700);
     }
 
     /**
@@ -120,11 +123,6 @@ class Compiler
             $content = $this->stripWhitespace($content);
         } elseif ('LICENSE' === basename($file)) {
             $content = "\n" . $content . "\n";
-        }
-
-        if ($path === 'src/Bowerphp/Bowerphp.php') {
-            $content = str_replace('@package_version@', $this->version, $content);
-            $content = str_replace('@release_date@', $this->versionDate, $content);
         }
 
         $phar->addFromString($path, $content);

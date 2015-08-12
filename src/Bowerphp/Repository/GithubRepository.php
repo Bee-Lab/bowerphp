@@ -2,6 +2,7 @@
 
 namespace Bowerphp\Repository;
 
+use Bowerphp\Util\ArrayColumn;
 use Bowerphp\Util\Json;
 use Github\Client;
 use Github\ResultPager;
@@ -113,10 +114,19 @@ class GithubRepository implements RepositoryInterface
             return $this->tag['name'];
         }
 
+        // edge case for versions vith slash (like ckeditor). See also issue #120
+        if (strpos($rawCriteria, '/') > 0) {
+            $tagNames = ArrayColumn::array_column($tags, 'name');
+            if (false !== $tag = array_search($rawCriteria, $tagNames)) {
+                $this->tag = $tag;
+                return $rawCriteria;
+            }
+        }
+
         try {
             $criteria = new expression($rawCriteria);
         } catch (SemVerException $sve) {
-            throw new RuntimeException(sprintf('Criteria %s is not valid.', $rawCriteria), self::INVALID_CRITERIA);
+            throw new RuntimeException(sprintf('Criteria %s is not valid.', $rawCriteria), self::INVALID_CRITERIA, $sve);
         }
         $sortedTags = $this->sortTags($tags);
 
@@ -253,7 +263,7 @@ class GithubRepository implements RepositoryInterface
             $pieces[] = '0';
             $count = 1;
         }
-        for ($add = $count; $add < 3; $add++) {
+        for ($add = $count; $add < 3; ++$add) {
             $pieces[] = '0';
         }
         $return = implode('.', array_slice($pieces, 0, 3));

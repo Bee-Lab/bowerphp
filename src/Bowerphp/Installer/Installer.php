@@ -144,7 +144,7 @@ class Installer implements InstallerInterface
         $dirName = $archive->getNameIndex(0);
         $return = array();
         $numFiles = $archive->getNumFiles();
-        for ($i = 0; $i < $numFiles; $i++) {
+        for ($i = 0; $i < $numFiles; ++$i) {
             $stat = $archive->statIndex($i);
             $return[] = $stat['name'];
         }

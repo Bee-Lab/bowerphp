@@ -42,6 +42,15 @@ class InfoCommandTest extends \PHPUnit_Framework_TestCase
         $this->assertRegExp('/jquery-hammerjs/', $commandTester->getDisplay());
     }
 
+    public function testExecuteWithSlashedVersion()
+    {
+        $application = new Application();
+        $commandTester = new CommandTester($command = $application->get('info'));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => 'ckeditor#full/4.5.2'), array('decorated' => false));
+
+        $this->assertRegExp('/name: \'ckeditor\'/', $commandTester->getDisplay());
+    }
+
     /**
      * @expectedException        RuntimeException
      * @expectedExceptionMessage Not enough arguments.

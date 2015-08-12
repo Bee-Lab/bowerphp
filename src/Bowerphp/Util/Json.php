@@ -19,10 +19,11 @@ use Camspiers\JsonPretty\JsonPretty;
 class Json
 {
     /**
-     * FOR php 5.3 from php >= 5.4* use parameter JSON_PRETTY_PRINT
-     * See http://www.php.net/manual/en/function.json-encode.php
+     * For PHP 5.3 from php >= 5.4* use parameter JSON_PRETTY_PRINT.
+     * See {@link http://www.php.net/manual/en/function.json-encode.php}.
      *
-     * @param  mixed  $value
+     * @param mixed $value
+     *
      * @return string
      */
     public static function encode($value)
