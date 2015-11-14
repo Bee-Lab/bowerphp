@@ -319,6 +319,6 @@ class GithubRepository implements RepositoryInterface
      */
     private function isNotStable(version $version)
     {
-        return !empty($version->getPrerelease());
+        return count($version->getPrerelease()) > 0;
     }
 }
