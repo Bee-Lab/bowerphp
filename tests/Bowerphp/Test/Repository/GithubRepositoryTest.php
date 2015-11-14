@@ -300,8 +300,7 @@ class GithubRepositoryTest extends TestCase
             '*',
         );
 
-        foreach ($wildcards as $wildcard)
-        {
+        foreach ($wildcards as $wildcard) {
             $tag = $this->repository->findPackage('2.0.' . $wildcard);
             $this->assertEquals('2.0.5', $tag);
 
@@ -333,7 +332,6 @@ class GithubRepositoryTest extends TestCase
         $tag = $this->repository->findPackage('2.0.3');
         $this->assertEquals('2.0.3', $tag);
     }
-
 
     /**
      * @expectedException RuntimeException
@@ -441,5 +439,4 @@ class GithubRepositoryTest extends TestCase
             ->shouldReceive('getHeader')
         ;
     }
-
 }

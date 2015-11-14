@@ -86,7 +86,7 @@ class BowerphpConsoleOutputTest extends \PHPUnit_Framework_TestCase
         ;
 
         $bConsoleOutput = new BowerphpConsoleOutput($output);
-        $bConsoleOutput->writelnJsonText("name");
+        $bConsoleOutput->writelnJsonText('name');
     }
 
     public function testWritelnListPackage()

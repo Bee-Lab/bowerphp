@@ -73,7 +73,7 @@ EOT;
 
         $this->filesystem
             ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
-            ->shouldReceive('write')->with('./tmp/jquery', "fileAsString...")
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...')
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
@@ -104,7 +104,7 @@ EOT;
 
         $this->filesystem
             ->shouldReceive('exists')->with(getcwd() . '/bower_components/select2/.bower.json')->andReturn(false)
-            ->shouldReceive('write')->with('./tmp/select2', "fileAsString...")
+            ->shouldReceive('write')->with('./tmp/select2', 'fileAsString...')
         ;
 
         $this->output
@@ -227,7 +227,7 @@ EOT;
 
         $this->filesystem
             ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
-            ->shouldReceive('write')->with('./tmp/jquery', "fileAsString...")
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...')
         ;
 
         $this->installPackage($package, $installer, array('jquery'), array('2.0.3'));
@@ -254,7 +254,7 @@ EOT;
 
         $this->filesystem
             ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
-            ->shouldReceive('write')->with('./tmp/jquery', "fileAsString...")
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...')
         ;
 
         $this->installPackage($package, $installer, array('jquery'), array('2.0.3'));
@@ -279,7 +279,7 @@ EOT;
 
         $this->filesystem
             ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
-            ->shouldReceive('write')->with('./tmp/jquery', "fileAsString...")
+            ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...')
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
@@ -310,7 +310,7 @@ EOT;
 
         $this->filesystem
             ->shouldReceive('exists')->with(getcwd() . '/bower_components/select2/.bower.json')->andReturn(false)
-            ->shouldReceive('write')->with('./tmp/select2', "fileAsString...")
+            ->shouldReceive('write')->with('./tmp/select2', 'fileAsString...')
         ;
 
         $this->output
@@ -319,7 +319,7 @@ EOT;
         ;
 
         $json = array(
-            'name' => 'pippo',
+            'name'         => 'pippo',
             'dependencies' => array('select2' => 'https://github.com/ivaynberg/select2.git#3.5.1'),
         );
         $this->config
@@ -693,7 +693,7 @@ EOT;
             ->shouldReceive('setUrl')->with('git://github.com/jackmoore/colorbox.git', false)
             ->shouldReceive('findPackage')->with('1.1')->andReturn('1.1.0')
             ->shouldReceive('setUrl')->with('https://github.com/jackmoore/colorbox', true)
-            ->shouldReceive('getBower')->with('1.1.0', true, "git://github.com/jackmoore/colorbox.git")->andReturn('a json...')
+            ->shouldReceive('getBower')->with('1.1.0', true, 'git://github.com/jackmoore/colorbox.git')->andReturn('a json...')
             ->shouldReceive('getTags')->andReturn(array('1.1.0', '1.0.0-rc1', '1.0.0', '1.0.0-beta'))
         ;
 
@@ -725,7 +725,7 @@ EOT;
             ->shouldReceive('setUrl')->with('git://github.com/jackmoore/colorbox.git', false)
             ->shouldReceive('findPackage')->with('1.1')->andReturn('1.1.0')
             ->shouldReceive('setUrl')->with('https://github.com/jackmoore/colorbox', true)
-            ->shouldReceive('getBower')->with('1.1.0', true, "git://github.com/jackmoore/colorbox.git")->andReturn('a json...')
+            ->shouldReceive('getBower')->with('1.1.0', true, 'git://github.com/jackmoore/colorbox.git')->andReturn('a json...')
             ->shouldReceive('getTags')->andReturn(array('1.1.0', '1.0.0'))
         ;
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);

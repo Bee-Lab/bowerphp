@@ -31,7 +31,7 @@ class Installer implements InstallerInterface
     {
         $this->filesystem = $filesystem;
         $this->zipArchive = $zipArchive;
-        $this->config     = $config;
+        $this->config = $config;
     }
 
     /**

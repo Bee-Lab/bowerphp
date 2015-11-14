@@ -292,23 +292,23 @@ class InstallerTest extends TestCase
     public function testIsNotIgnored($filename)
     {
         $ignore = array(
-            "**/.*",
-            "_*",
-            "docs-assets",
-            "examples",
-            "/fonts",
-            "js/tests",
-            "CNAME",
-            "CONTRIBUTING.md",
-            "Gruntfile.js",
-            "browserstack.json",
-            "bower.json",
-            "composer.json",
-            "package.json",
-            "*.html",
+            '**/.*',
+            '_*',
+            'docs-assets',
+            'examples',
+            '/fonts',
+            'js/tests',
+            'CNAME',
+            'CONTRIBUTING.md',
+            'Gruntfile.js',
+            'browserstack.json',
+            'bower.json',
+            'composer.json',
+            'package.json',
+            '*.html',
         );
         $force = array(
-            "bower.json",
+            'bower.json',
         );
 
         $ignored = $this->installer->isIgnored($filename, $ignore, $force, 'twbs-bootstrap-6d03173/');
@@ -522,11 +522,11 @@ class InstallerTest extends TestCase
     public function testIgnoreExceptions($file, $shouldIgnore)
     {
         $ignore = array(
-            "*",
-            "!/bower.json",
-            "!/dist/**",
+            '*',
+            '!/bower.json',
+            '!/dist/**',
         );
-        $ignored = $this->installer->isIgnored($file, $ignore, array(), "zeroclipboard-zeroclipboard-1ec7da6/");
+        $ignored = $this->installer->isIgnored($file, $ignore, array(), 'zeroclipboard-zeroclipboard-1ec7da6/');
         $this->assertEquals($ignored, $shouldIgnore);
     }
 
@@ -547,8 +547,8 @@ class InstallerTest extends TestCase
     public function testIgnoreAllExceptNegations($file, $shouldIgnore)
     {
         $ignore = array(
-            "**/*",
-            "!/dist/**",
+            '**/*',
+            '!/dist/**',
         );
         $ignored = $this->installer->isIgnored($file, $ignore, array(), 'pippo/');
         $this->assertEquals($ignored, $shouldIgnore);

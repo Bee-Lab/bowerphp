@@ -36,7 +36,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester->execute(array('command' => $command->getName()), array('interactive' => false, 'decorated' => false));
         //install
         $commandTester = new CommandTester($command = $application->get('install'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery', '--save'=> true), array('decorated' => false));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery', '--save' => true), array('decorated' => false));
 
         //Check that the install worked
         $this->assertRegExp('/jquery#2.1/m', $commandTester->getDisplay());
@@ -45,7 +45,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
 
         //Check that the save worked
         $this->assertFileExists(getcwd() . '/bower.json');
-        $bowerJsonDependencies = array("jquery"=> "*");
+        $bowerJsonDependencies = array('jquery' => '*');
         $json = json_decode(file_get_contents(getcwd() . '/bower.json'), true);
         $this->assertArrayHasKey('dependencies', $json);
         $this->assertEquals($bowerJsonDependencies, $json['dependencies']);
@@ -72,11 +72,11 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
 
         //Try to save the package in the bower.json
         $commandTester = new CommandTester($command = $application->get('install'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery', '--save'=> true), array('decorated' => false));
+        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery', '--save' => true), array('decorated' => false));
 
         //Check that the save worked
         $this->assertFileExists(getcwd() . '/bower.json');
-        $bowerJsonDependencies = array("jquery"=> "*");
+        $bowerJsonDependencies = array('jquery' => '*');
         $json = json_decode(file_get_contents(getcwd() . '/bower.json'), true);
         $this->assertArrayHasKey('dependencies', $json);
         $this->assertEquals($bowerJsonDependencies, $json['dependencies']);
@@ -186,7 +186,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $githubRepo->setUrl('https://github.com/asual/jquery-address');
         $githubRepo->setHttpClient($client);
         //The test only make sense if the library has no git tags.
-        $this->assertEquals(array(),$githubRepo->getTags());
+        $this->assertEquals(array(), $githubRepo->getTags());
 
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('install'));

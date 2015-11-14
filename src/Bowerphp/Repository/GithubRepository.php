@@ -262,7 +262,7 @@ class GithubRepository implements RepositoryInterface
         if ($foundIt !== false) {
             $rawValue = substr($rawValue, 0, $foundIt);
         }
-        $rawValue = strtr($rawValue, ['.alpha' => '-alpha', '.beta' => '-beta', '.dev' => '-dev']);
+        $rawValue = strtr($rawValue, array('.alpha' => '-alpha', '.beta' => '-beta', '.dev' => '-dev'));
         $pieces = explode('.', $rawValue);
         $count = count($pieces);
         if ($count == 0) {
