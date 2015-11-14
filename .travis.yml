@@ -7,8 +7,10 @@ php:
     - 5.6
     - 7.0      
 
+
 env:
-    - BOWERPHP_TOKEN=32875dd5ac2f82776d3bcdab1345485df251076f SYMFONY_DEPRECATIONS_HELPER=weak
+    - secure: "g+2Ar7a8eAsZtE/mEQT6BWgkx7Bou9qy1381OhI7tMOQBE+KA5Lm+KAC5tH9Us5tmK074dNMsWPBrsgnayxezBjQBpcshDQgoLqaPtWz8XeKTvUEpizFTjQ8v68w42I4SzzMdNIWQhPjiAfjA8e02uaoRELWOYNoc824ot/y1iw="
+    - SYMFONY_DEPRECATIONS_HELPER=weak
 
 before_script:
     - echo '' > ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
