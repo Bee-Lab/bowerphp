@@ -109,7 +109,8 @@ class GithubRepository implements RepositoryInterface
 
         // edge case: user asked for latest package
         if ($rawCriteria == 'latest' || $rawCriteria == '*' || empty($rawCriteria)) {
-            $this->tag = $tags[0];
+            $sortedTags = $this->sortTags($tags);
+            $this->tag = end($sortedTags);
 
             return $this->tag['name'];
         }
@@ -119,6 +120,7 @@ class GithubRepository implements RepositoryInterface
             $tagNames = ArrayColumn::array_column($tags, 'name');
             if (false !== $tag = array_search($rawCriteria, $tagNames)) {
                 $this->tag = $tag;
+
                 return $rawCriteria;
             }
         }
@@ -133,7 +135,7 @@ class GithubRepository implements RepositoryInterface
         // Yes, the php-semver lib does offer a maxSatisfying() method similar the code below.
         // We're not using it because it will throw an exception on what it considers to be an
         // "invalid" candidate version, and not continue checking the rest of the candidates.
-        // So, even if it's faster than this code, it's not a complete solution..
+        // So, even if it's faster than this code, it's not a complete solution.
         $matches = array_filter($sortedTags, function ($tag) use ($criteria) {
             $candidate = $tag['parsed_version'];
 
@@ -252,11 +254,15 @@ class GithubRepository implements RepositoryInterface
      */
     private function fixupRawTag($rawValue)
     {
+        if (0 === strpos($rawValue, 'v')) {
+            $rawValue = substr($rawValue, 1);
+        }
         // WHY NOT SCRUB OUT PLUS SIGNS, RIGHT?
         $foundIt = strpos($rawValue, '+');
         if ($foundIt !== false) {
             $rawValue = substr($rawValue, 0, $foundIt);
         }
+        $rawValue = strtr($rawValue, ['.alpha' => '-alpha', '.beta' => '-beta', '.dev' => '-dev']);
         $pieces = explode('.', $rawValue);
         $count = count($pieces);
         if ($count == 0) {
@@ -272,10 +278,12 @@ class GithubRepository implements RepositoryInterface
     }
 
     /**
-     * @param  array $tags
+     * @param array $tags
+     * @param bool  $excludeUnstables
+     *
      * @return array
      */
-    private function sortTags($tags)
+    private function sortTags(array $tags, $excludeUnstables = true)
     {
         $return = array();
 
@@ -283,10 +291,14 @@ class GithubRepository implements RepositoryInterface
         foreach ($tags as $tag) {
             try {
                 $fixedName = $this->fixupRawTag($tag['name']);
-                $v = new version($fixedName, true);
+                $v = new version($fixedName);
                 if ($v->valid()) {
+                    $version = $v->getVersion();
+                    if ($excludeUnstables && $this->isNotStable($v)) {
+                        continue;
+                    }
                     $tag['parsed_version'] = $v;
-                    $return[$v->getVersion()] = $tag;
+                    $return[$version] = $tag;
                 }
             } catch (\Exception $ex) {
                 // Skip
@@ -298,5 +310,15 @@ class GithubRepository implements RepositoryInterface
         });
 
         return $return;
+    }
+
+    /**
+     * @param version $version
+     *
+     * @return bool
+     */
+    private function isNotStable(version $version)
+    {
+        return !empty($version->getPrerelease());
     }
 }

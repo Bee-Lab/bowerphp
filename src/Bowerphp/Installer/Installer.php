@@ -193,6 +193,7 @@ class Installer implements InstallerInterface
         foreach ($ignore as $pattern) {
             if (strpos($pattern, '**') !== false) {
                 $pattern = str_replace('**', '*', $pattern);
+                #$pattern = str_replace('*/*', '*', $pattern);
                 if (substr($pattern, 0, 1) == '/') {
                     $vName = '/' . $vName;
                 }
@@ -200,6 +201,9 @@ class Installer implements InstallerInterface
                     $vName = '/' . $vName;
                 }
                 if (fnmatch($pattern, $vName, FNM_PATHNAME)) {
+                    return true;
+                } elseif ($pattern === '*/*' && fnmatch('*', $vName, FNM_PATHNAME)) {
+                    // this a special case, where a double asterisk must match also files in the root dir
                     return true;
                 }
             } elseif (substr($pattern, -1) == '/') { // trailing slash

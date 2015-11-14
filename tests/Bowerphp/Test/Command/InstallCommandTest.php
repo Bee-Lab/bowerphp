@@ -22,7 +22,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command = $application->get('install'));
         $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery'), array('decorated' => false));
 
-        $this->assertRegExp('/jquery#3/m', $commandTester->getDisplay());
+        $this->assertRegExp('/jquery#2.1/m', $commandTester->getDisplay());
         $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
         $this->assertFileExists(getcwd() . '/bower_components/jquery/src/jquery.js');
         $this->assertFileNotExists(getcwd() . '/bower.json');
@@ -39,7 +39,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery', '--save'=> true), array('decorated' => false));
 
         //Check that the install worked
-        $this->assertRegExp('/jquery#3/m', $commandTester->getDisplay());
+        $this->assertRegExp('/jquery#2.1/m', $commandTester->getDisplay());
         $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
         $this->assertFileExists(getcwd() . '/bower_components/jquery/src/jquery.js');
 
@@ -66,7 +66,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery'), array('decorated' => false));
 
         //Check that the install worked
-        $this->assertRegExp('/jquery#3/m', $commandTester->getDisplay());
+        $this->assertRegExp('/jquery#2.1/m', $commandTester->getDisplay());
         $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
         $this->assertFileExists(getcwd() . '/bower_components/jquery/src/jquery.js');
 
@@ -88,7 +88,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $commandTester = new CommandTester($command = $application->get('install'));
         $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery'), array('decorated' => false, 'verbosity' => OutputInterface::VERBOSITY_DEBUG));
 
-        $this->assertRegExp('/jquery#3/', $commandTester->getDisplay());
+        $this->assertRegExp('/jquery#2.1/', $commandTester->getDisplay());
         $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
         $this->assertFileExists(getcwd() . '/bower_components/jquery/src/jquery.js');
     }
@@ -177,12 +177,16 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function testExecuteInstallWithoutTag()
     {
+        $client = new Client();
+        $token = getenv('BOWERPHP_TOKEN');
+        if (!empty($token)) {
+            $client->authenticate($token, null, Client::AUTH_HTTP_TOKEN);
+        }
         $githubRepo = new GithubRepository();
         $githubRepo->setUrl('https://github.com/asual/jquery-address');
-        $githubRepo->setHttpClient(new Client());
+        $githubRepo->setHttpClient($client);
         //The test only make sense if the library has no git tags.
         $this->assertEquals(array(),$githubRepo->getTags());
-
 
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('install'));

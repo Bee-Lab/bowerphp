@@ -5,10 +5,10 @@ php:
     - 5.4
     - 5.5
     - 5.6
-    - nightly      
+    - 7.0      
 
 env:
-    - BOWERPHP_TOKEN=00fe3b72344a637f8d28696f8a73ef67c9fa64e2 SYMFONY_DEPRECATIONS_HELPER=weak
+    - BOWERPHP_TOKEN=32875dd5ac2f82776d3bcdab1345485df251076f SYMFONY_DEPRECATIONS_HELPER=weak
 
 before_script:
     - echo '' > ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
@@ -19,6 +19,3 @@ before_script:
 script:
     - phpunit
 
-matrix:
-    allow_failures:
-        - php: nightly

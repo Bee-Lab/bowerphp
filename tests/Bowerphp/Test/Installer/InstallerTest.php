@@ -529,4 +529,28 @@ class InstallerTest extends TestCase
         $ignored = $this->installer->isIgnored($file, $ignore, array(), "zeroclipboard-zeroclipboard-1ec7da6/");
         $this->assertEquals($ignored, $shouldIgnore);
     }
+
+    public function providerIgnoreAllExceptNegations()
+    {
+        return array(
+            array('pippo/src/foo.js', true),
+            array('pippo/dist/.htaccess', false),
+            array('pippo/bower.json', true),
+        );
+    }
+
+    /**
+     * See issue https://github.com/Bee-Lab/bowerphp/issues/126
+     *
+     * @dataProvider providerIgnoreAllExceptNegations
+     */
+    public function testIgnoreAllExceptNegations($file, $shouldIgnore)
+    {
+        $ignore = array(
+            "**/*",
+            "!/dist/**",
+        );
+        $ignored = $this->installer->isIgnored($file, $ignore, array(), 'pippo/');
+        $this->assertEquals($ignored, $shouldIgnore);
+    }
 }
