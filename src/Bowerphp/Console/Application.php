@@ -104,6 +104,7 @@ class Application extends BaseApplication
             new Command\SearchCommand(),
             new Command\UpdateCommand(),
             new Command\UninstallCommand(),
+            new Command\PruneCommand(),
         );
     }
 
