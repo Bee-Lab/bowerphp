@@ -12,7 +12,6 @@
 namespace Bowerphp\Console;
 
 use Bowerphp\Command;
-use Bowerphp\Command\Helper\DialogHelper;
 use Bowerphp\Util\ErrorHandler;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -125,8 +124,11 @@ class Application extends BaseApplication
     protected function getDefaultHelperSet()
     {
         $helperSet = parent::getDefaultHelperSet();
-
-        $helperSet->set(new DialogHelper());
+        if (class_exists('Symfony\Component\Console\Helper\DialogHelper')) {
+            $helperSet->set(new \Bowerphp\Command\Helper\DialogHelper());
+        } else {
+            $helperSet->set(new \Bowerphp\Command\Helper\QuestionHelper());
+        }
 
         return $helperSet;
     }

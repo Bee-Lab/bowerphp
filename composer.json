@@ -26,22 +26,24 @@
         "php": ">=5.3.6",
         "ext-zip": "*",
         "ext-fileinfo": "*",
-        "symfony/console": "~2.3",
-        "symfony/finder": "~2.2",
-        "symfony/filesystem": "~2.1",
-        "symfony/process": "~2.1",
+        "symfony/console": "~2.3|~3.0",
+        "symfony/finder": "~2.3|~3.0",
+        "symfony/filesystem": "~2.3|~3.0",
+        "symfony/process": "~2.3|~3.0",
         "camspiers/json-pretty": "1.0.*",
         "knplabs/github-api": "1.4.*",
         "vierbergenlars/php-semver": "~3.0"
     },
-    "require-dev":{
+    "require-dev": {
         "ext-phar": "*",
         "phpunit/phpunit": "4.*",
         "mockery/mockery": "~0.9.3",
         "fabpot/php-cs-fixer": "~1.5"
     },
     "autoload": {
-        "psr-4": { "Bowerphp\\": "src/Bowerphp" }
+        "psr-4": {
+            "Bowerphp\\": "src/Bowerphp"
+        }
     },
     "bin": ["bin/bowerphp"],
     "extra": {
