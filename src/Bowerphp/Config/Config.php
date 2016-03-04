@@ -21,6 +21,7 @@ use RuntimeException;
  */
 class Config implements ConfigInterface
 {
+    protected $currentDir;
     protected $cacheDir;
     protected $installDir;
     protected $filesystem;
@@ -29,29 +30,43 @@ class Config implements ConfigInterface
     protected $saveToBowerJsonFile = false;
     protected $bowerFileNames = array('bower.json', 'package.json');
     protected $stdBowerFileName = 'bower.json';
+    protected $rcFileName = '.bowerrc';
 
     /**
      * @param Filesystem $filesystem
      */
     public function __construct(Filesystem $filesystem)
     {
+        $this->currentDir = getcwd();
         $this->filesystem = $filesystem;
         $this->cacheDir = $this->getHomeDir() . '/.cache/bowerphp';
-        $this->installDir = getcwd() . '/bower_components';
-        $rc = getcwd() . '/.bowerrc';
+        $this->installDir = $this->currentDir . '/bower_components';
+        $rcPath = $this->getBowerrcPath();
 
-        if ($this->filesystem->exists($rc)) {
+        if ($rcPath) {
+            $rc = $rcPath . '/' . $this->rcFileName;
             $json = json_decode($this->filesystem->read($rc), true);
             if (is_null($json)) {
-                throw new RuntimeException('Invalid .bowerrc file.');
+              throw new RuntimeException('Invalid .bowerrc file.');
+            }
+            if (isset($json['cwd'])) {
+              $this->currentDir = $rcPath . '/' . $json['cwd'];
             }
             if (isset($json['directory'])) {
-                $this->installDir = getcwd() . '/' . $json['directory'];
+              $this->installDir = $rcPath . '/' . $json['directory'];
             }
             if (isset($json['storage']) && isset($json['storage']['packages'])) {
-                $this->cacheDir = $json['storage']['packages'];
+              $this->cacheDir = $json['storage']['packages'];
             }
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCurrentDir() 
+    {
+        return $this->currentDir;
     }
 
     /**
@@ -107,7 +122,7 @@ class Config implements ConfigInterface
      */
     public function initBowerJsonFile(array $params)
     {
-        $file = getcwd() . '/' . $this->stdBowerFileName;
+        $file = $this->currentDir . '/' . $this->stdBowerFileName;
         $json = Json::encode($this->createAClearBowerFile($params));
 
         return $this->filesystem->write($file, $json);
@@ -124,7 +139,7 @@ class Config implements ConfigInterface
 
         $decode = $this->getBowerFileContent();
         $decode['dependencies'][$package->getName()] = $package->getRequiredVersion();
-        $file = getcwd() . '/' . $this->stdBowerFileName;
+        $file = $this->currentDir . '/' . $this->stdBowerFileName;
         $json = Json::encode($decode);
 
         return $this->filesystem->write($file, $json);
@@ -136,7 +151,7 @@ class Config implements ConfigInterface
     public function updateBowerJsonFile2(array $old, array $new)
     {
         $json = Json::encode(array_merge($old, $new));
-        $file = getcwd() . '/' . $this->stdBowerFileName;
+        $file = $this->currentDir . '/' . $this->stdBowerFileName;
 
         return $this->filesystem->write($file, $json);
     }
@@ -149,7 +164,7 @@ class Config implements ConfigInterface
         if (!$this->bowerFileExists()) {
             throw new RuntimeException('No ' . $this->stdBowerFileName . ' found. You can run "init" command to create it.');
         }
-        $bowerJson = $this->filesystem->read(getcwd() . '/' . $this->stdBowerFileName);
+        $bowerJson = $this->filesystem->read($this->currentDir . '/' . $this->stdBowerFileName);
         if (empty($bowerJson) || !is_array($decode = json_decode($bowerJson, true))) {
             throw new RuntimeException(sprintf('Malformed JSON in %s: %s.', $this->stdBowerFileName, $bowerJson));
         }
@@ -208,7 +223,7 @@ class Config implements ConfigInterface
      */
     public function bowerFileExists()
     {
-        return $this->filesystem->exists(getcwd() . '/' . $this->stdBowerFileName);
+        return $this->filesystem->exists($this->currentDir . '/' . $this->stdBowerFileName);
     }
 
     /**
@@ -249,5 +264,17 @@ class Config implements ConfigInterface
         }
 
         return rtrim($home, '/');
+    }
+
+    protected function getBowerrcPath()
+    {
+      do {
+        if ($this->filesystem->exists(getcwd() . '/' . $this->rcFileName)) {
+          return getcwd();
+        }
+        chdir('..');
+      }
+      while(getcwd() !== '/');
+      return false;
     }
 }

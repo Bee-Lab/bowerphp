@@ -21,6 +21,11 @@ interface ConfigInterface
     /**
      * @return string
      */
+    public function getCurrentDir();
+
+    /**
+     * @return string
+     */
     public function getBasePackagesUrl();
 
     /**
