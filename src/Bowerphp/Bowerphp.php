@@ -357,11 +357,13 @@ class Bowerphp
                 return false;
             }
             // look for dependencies of dependencies of dependencies
-            foreach ($depBower['dependencies'] as $name1 => $version1) {
-                $dotBowerJson = $this->filesystem->read($this->config->getInstallDir() . '/' . $name1 . '/.bower.json');
-                $depDepBower = json_decode($dotBowerJson, true);
-                if (isset($depDepBower['dependencies'][$package->getName()])) {
-                    return false;
+            if (isset($depBower['dependencies'])) {
+                foreach ($depBower['dependencies'] as $name1 => $version1) {
+                    $dotBowerJson = $this->filesystem->read($this->config->getInstallDir() . '/' . $name1 . '/.bower.json');
+                    $depDepBower = json_decode($dotBowerJson, true);
+                    if (isset($depDepBower['dependencies'][$package->getName()])) {
+                        return false;
+                    }
                 }
             }
         }
