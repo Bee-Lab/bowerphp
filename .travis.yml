@@ -11,19 +11,12 @@ cache:
     directories:
         - $HOME/.composer/cache
 
-matrix:
-    fast_finish: true
-    include:
-        - php: 5.3
-          env: COMPOSER_FLAGS="--prefer-lowest"
-        - php: 5.4
-          env: COMPOSER_FLAGS="--prefer-lowest"
 
 env:
     - secure: "g+2Ar7a8eAsZtE/mEQT6BWgkx7Bou9qy1381OhI7tMOQBE+KA5Lm+KAC5tH9Us5tmK074dNMsWPBrsgnayxezBjQBpcshDQgoLqaPtWz8XeKTvUEpizFTjQ8v68w42I4SzzMdNIWQhPjiAfjA8e02uaoRELWOYNoc824ot/y1iw="
 
 before_script:
     - echo '' > ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
-    - composer update $COMPOSER_FLAGS --prefer-dist --no-interaction
+    - composer update --prefer-dist --no-interaction
     - git config --global user.name travis-ci
     - git config --global user.email travis@example.com
