@@ -28,7 +28,7 @@
         "ext-fileinfo": "*",
         "symfony/console": "~2.3|~3.0",
         "symfony/finder": "~2.3|~3.0",
-        "symfony/filesystem": "~2.3|~3.0",
+        "symfony/filesystem": "~2.4|~3.0",
         "symfony/process": "~2.3|~3.0",
         "camspiers/json-pretty": "1.0.*",
         "knplabs/github-api": "1.4.*",
