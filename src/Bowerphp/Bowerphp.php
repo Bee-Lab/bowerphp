@@ -216,7 +216,12 @@ class Bowerphp
         $decode = $this->config->getBowerFileContent();
         if (!empty($decode['dependencies'])) {
             foreach ($decode['dependencies'] as $packageName => $requiredVersion) {
-                $this->updatePackage(new Package($packageName, $requiredVersion), $installer);
+                $package = new Package($packageName, $requiredVersion);
+                if ($this->isPackageInstalled($package)) {
+                    $this->updatePackage($package, $installer);
+                } else {
+                    $this->installPackage($package, $installer);
+                }
             }
         }
     }
