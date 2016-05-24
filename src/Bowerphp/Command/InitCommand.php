@@ -50,29 +50,15 @@ EOT
 
         // @codeCoverageIgnoreStart
         if ($input->isInteractive()) {
-            if (class_exists('Symfony\Component\Console\Helper\DialogHelper')) {
-                $dialog = $this->getHelperSet()->get('dialog');
-                $params['name'] = $dialog->ask(
-                    $output,
-                    $dialog->getQuestion('Please specify a name for project', $params['name']),
-                    $params['name']
-                );
-                $params['author'] = $dialog->ask(
-                    $output,
-                    $dialog->getQuestion('Please specify an author', $params['author']),
-                    $params['author']
-                );
-            } else {
-                $dialog = $this->getHelperSet()->get('question');
+            $dialog = $this->getHelperSet()->get('question');
 
-                $params['name'] = $dialog->ask(
-                    $input, $output, $dialog->getQuestion('Please specify a name for project', $params['name'])
-                );
+            $params['name'] = $dialog->ask(
+                $input, $output, $dialog->getQuestion('Please specify a name for project', $params['name'])
+            );
 
-                $params['author'] = $dialog->ask(
-                    $input, $output, $dialog->getQuestion('Please specify an author', $params['author'])
-                );
-            }
+            $params['author'] = $dialog->ask(
+                $input, $output, $dialog->getQuestion('Please specify an author', $params['author'])
+            );
         }
         // @codeCoverageIgnoreEnd
         $bowerphp = $this->getBowerphp($output);

@@ -11,13 +11,13 @@
 
 namespace Bowerphp\Command\Helper;
 
-use Symfony\Component\Console\Helper\QuestionHelper as BaseDialogHelper;
+use Symfony\Component\Console\Helper\QuestionHelper as BaseQuestionHelper;
 use Symfony\Component\Console\Question\Question;
 
 /**
  * Copied by Composer https://github.com/composer/composer
  */
-class QuestionHelper extends BaseDialogHelper
+class QuestionHelper extends BaseQuestionHelper
 {
     /**
      * Build text for asking a question. For example:

@@ -120,11 +120,7 @@ class Application extends BaseApplication
     protected function getDefaultHelperSet()
     {
         $helperSet = parent::getDefaultHelperSet();
-        if (class_exists('Symfony\Component\Console\Helper\DialogHelper')) {
-            $helperSet->set(new \Bowerphp\Command\Helper\DialogHelper());
-        } else {
-            $helperSet->set(new \Bowerphp\Command\Helper\QuestionHelper());
-        }
+        $helperSet->set(new \Bowerphp\Command\Helper\QuestionHelper());
 
         return $helperSet;
     }
