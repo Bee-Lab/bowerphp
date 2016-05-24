@@ -31,12 +31,12 @@
         "symfony/filesystem": "~2.4|~3.0",
         "symfony/process": "~2.3|~3.0",
         "camspiers/json-pretty": "1.0.*",
-        "knplabs/github-api": "1.4.*",
+        "knplabs/github-api": "^1.4",
         "vierbergenlars/php-semver": "~3.0"
     },
     "require-dev": {
         "ext-phar": "*",
-        "phpunit/phpunit": "4.*",
+        "phpunit/phpunit": "4.*|5.*",
         "mockery/mockery": "~0.9.3",
         "fabpot/php-cs-fixer": "~1.5"
     },

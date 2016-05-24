@@ -20,8 +20,7 @@ class SearchCommandTest extends \PHPUnit_Framework_TestCase
 
         //then
         $this->assertRegExp('/Search results/', $commandTester->getDisplay());
-        $this->assertRegExp('/jquery.smartbanner.git/', $commandTester->getDisplay());
-        $this->assertRegExp('/git:/', $commandTester->getDisplay());
+        $this->assertRegExp('/js-geo.git/', $commandTester->getDisplay());
     }
 
     /**
