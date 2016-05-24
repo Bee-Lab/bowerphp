@@ -20,8 +20,8 @@ abstract class HttpMockedTestCase extends PHPUnit_Framework_TestCase
         $this->config = Mockery::mock('Bowerphp\Config\ConfigInterface');
 
         $this->config
-            ->shouldReceive('getOverridesSection')->andReturn(array())
-            ->shouldReceive('getOverrideFor')->andReturn(array())
+            ->shouldReceive('getOverridesSection')->andReturn([])
+            ->shouldReceive('getOverrideFor')->andReturn([])
             ->shouldReceive('getBasePackagesUrl')->andReturn('http://bower.herokuapp.com/packages/')
         ;
     }

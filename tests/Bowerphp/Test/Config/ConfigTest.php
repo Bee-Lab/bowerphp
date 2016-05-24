@@ -48,7 +48,7 @@ class ConfigTest extends TestCase
         $config = new Config($this->filesystem);
 
         $method = $this->getMethod('Bowerphp\Config\Config', 'getHomeDir');
-        $this->assertContains('/', $method->invokeArgs($config, array()));
+        $this->assertContains('/', $method->invokeArgs($config, []));
     }
 
     public function testGetHomeDirWindows()
@@ -64,7 +64,7 @@ class ConfigTest extends TestCase
         $config = new Config($this->filesystem);
 
         $method = $this->getMethod('Bowerphp\Config\Config', 'getHomeDir');
-        $this->assertContains('AppData', $method->invokeArgs($config, array()));
+        $this->assertContains('AppData', $method->invokeArgs($config, []));
     }
 
     /**
@@ -148,7 +148,7 @@ class ConfigTest extends TestCase
 
         $config = new Config($this->filesystem);
 
-        $this->assertEquals(array('jquery' => array()), $config->getOverridesSection());
+        $this->assertEquals(['jquery' => []], $config->getOverridesSection());
     }
 
     public function testGetOverrideFor()
@@ -165,7 +165,7 @@ class ConfigTest extends TestCase
 
         $config = new Config($this->filesystem);
 
-        $this->assertEquals(array('foo' => 'bar'), $config->getOverrideFor('jquery'));
+        $this->assertEquals(['foo' => 'bar'], $config->getOverrideFor('jquery'));
     }
 
     public function testUpdateBowerJsonFile()
@@ -210,7 +210,7 @@ class ConfigTest extends TestCase
 
         $config = new Config($this->filesystem);
 
-        $this->assertEquals(456, $config->updateBowerJsonFile2(array('foo' => 1), array('foo' => 2, 'bar' => 3)));
+        $this->assertEquals(456, $config->updateBowerJsonFile2(['foo' => 1], ['foo' => 2, 'bar' => 3]));
     }
 
     public function testGetPackageBowerFileContent()
@@ -228,7 +228,7 @@ class ConfigTest extends TestCase
         ;
 
         $config = new Config($this->filesystem);
-        $this->assertEquals(array('name' => 'foobar', 'version' => '1.2.3'), $config->getPackageBowerFileContent($package));
+        $this->assertEquals(['name' => 'foobar', 'version' => '1.2.3'], $config->getPackageBowerFileContent($package));
     }
 
     /**
@@ -307,7 +307,7 @@ class ConfigTest extends TestCase
         $config = new Config($this->filesystem);
 
         try {
-            $this->assertEquals(123, $config->initBowerJsonFile(array('name' => 'foo', 'author' => 'bar')));
+            $this->assertEquals(123, $config->initBowerJsonFile(['name' => 'foo', 'author' => 'bar']));
         } catch (NoMatchingExpectationException $e) {
             $this->markTestSkipped('Some json libs (e.g. Debian one) encode strings differently.');
         }

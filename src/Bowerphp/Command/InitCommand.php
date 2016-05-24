@@ -46,7 +46,7 @@ EOT
 
         $author = sprintf('%s <%s>', $this->getGitInfo('user.name'), $this->getGitInfo('user.email'));
 
-        $params = array('name' => get_current_user(), 'author' => $author);
+        $params = ['name' => get_current_user(), 'author' => $author];
 
         // @codeCoverageIgnoreStart
         if ($input->isInteractive()) {
@@ -89,7 +89,7 @@ EOT
      */
     private function getGitInfo($info = 'user.name')
     {
-        $output = array();
+        $output = [];
         $return = 0;
         $info = exec("git config --get $info", $output, $return);
 

@@ -26,7 +26,7 @@ class ListCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('list'));
-        $commandTester->execute(array('command' => $command->getName()), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName()], ['decorated' => false]);
         $this->assertRegExp('/bootstrap#3 extraneous/', $commandTester->getDisplay());
         $this->assertRegExp('/jquery#1/', $commandTester->getDisplay());    // TODO check is NOT extraneous
     }

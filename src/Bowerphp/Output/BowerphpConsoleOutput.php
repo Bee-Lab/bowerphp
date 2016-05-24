@@ -13,7 +13,6 @@ namespace Bowerphp\Output;
 
 use Bowerphp\Bowerphp;
 use Bowerphp\Package\PackageInterface;
-use Bowerphp\Util\Json;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class BowerphpConsoleOutput
@@ -85,7 +84,7 @@ class BowerphpConsoleOutput
      */
     public function writelnJsonText($jsonPart)
     {
-        $this->output->writeln(sprintf('<fg=cyan>%s</fg=cyan>', Json::encode($jsonPart)));
+        $this->output->writeln(sprintf('<fg=cyan>%s</fg=cyan>', json_encode($jsonPart, JSON_PRETTY_PRINT)));
     }
 
     /**

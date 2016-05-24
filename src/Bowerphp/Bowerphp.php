@@ -42,8 +42,13 @@ class Bowerphp
      * @param RepositoryInterface   $repository
      * @param BowerphpConsoleOutput $output
      */
-    public function __construct(ConfigInterface $config, Filesystem $filesystem, Client $githubClient, RepositoryInterface $repository, BowerphpConsoleOutput $output)
-    {
+    public function __construct(
+        ConfigInterface $config,
+        Filesystem $filesystem,
+        Client $githubClient,
+        RepositoryInterface $repository,
+        BowerphpConsoleOutput $output
+    ) {
         $this->config = $config;
         $this->filesystem = $filesystem;
         $this->githubClient = $githubClient;
@@ -377,16 +382,16 @@ class Bowerphp
      */
     protected function createAClearBowerFile(array $params)
     {
-        $authors = array('Beelab <info@bee-lab.net>');
+        $authors = ['Beelab <info@bee-lab.net>'];
         if (!empty($params['author'])) {
             $authors[] = $params['author'];
         }
-        $structure = array(
+        $structure = [
             'name'         => $params['name'],
             'authors'      => $authors,
             'private'      => true,
             'dependencies' => new \StdClass(),
-        );
+        ];
 
         return $structure;
     }

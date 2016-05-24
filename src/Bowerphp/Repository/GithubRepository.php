@@ -2,8 +2,6 @@
 
 namespace Bowerphp\Repository;
 
-use Bowerphp\Util\ArrayColumn;
-use Bowerphp\Util\Json;
 use Github\Client;
 use Github\ResultPager;
 use RuntimeException;
@@ -24,7 +22,7 @@ class GithubRepository implements RepositoryInterface
     /**
      * @var array
      */
-    protected $tag = array('name' => null);
+    protected $tag = ['name' => null];
 
     /**
      * @var Client
@@ -60,7 +58,7 @@ class GithubRepository implements RepositoryInterface
     {
         $this->githubClient = $githubClient;
         // see https://developer.github.com/changes/2015-04-17-preview-repository-redirects/
-        $this->githubClient->getHttpClient()->setHeaders(array('Accept' => 'application/vnd.github.quicksilver-preview+json'));
+        $this->githubClient->getHttpClient()->setHeaders(['Accept' => 'application/vnd.github.quicksilver-preview+json']);
 
         return $this;
     }
@@ -87,7 +85,7 @@ class GithubRepository implements RepositoryInterface
                 $this->setUrl($oldUrl, true);
             }
             $array['homepage'] = $this->url;
-            $json = Json::encode($array);
+            $json = json_encode($array, JSON_PRETTY_PRINT);
         }
 
         return $json;
@@ -100,7 +98,7 @@ class GithubRepository implements RepositoryInterface
     {
         list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
         $paginator = new ResultPager($this->githubClient);
-        $tags = $paginator->fetchAll($this->githubClient->api('repo'), 'tags', array($repoUser, $repoName));
+        $tags = $paginator->fetchAll($this->githubClient->api('repo'), 'tags', [$repoUser, $repoName]);
 
         // edge case: package has no tags
         if (count($tags) === 0) {
@@ -117,7 +115,7 @@ class GithubRepository implements RepositoryInterface
 
         // edge case for versions vith slash (like ckeditor). See also issue #120
         if (strpos($rawCriteria, '/') > 0) {
-            $tagNames = ArrayColumn::array_column($tags, 'name');
+            $tagNames = array_column($tags, 'name');
             if (false !== $tag = array_search($rawCriteria, $tagNames)) {
                 $this->tag = $tag;
 
@@ -170,10 +168,10 @@ class GithubRepository implements RepositoryInterface
     {
         list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
         $paginator = new ResultPager($this->githubClient);
-        $tags = $paginator->fetchAll($this->githubClient->api('repo'), 'tags', array($repoUser, $repoName));
+        $tags = $paginator->fetchAll($this->githubClient->api('repo'), 'tags', [$repoUser, $repoName]);
         // edge case: no tags
         if (count($tags) === 0) {
-            return array();
+            return [];
         }
 
         $sortedTags = $this->sortTags($tags);  // Filters out bad tag specs
@@ -214,7 +212,7 @@ class GithubRepository implements RepositoryInterface
             if (isset($array['dependencies'])) {
                 unset($array['dependencies']);
             }
-            $json = Json::encode($array);
+            $json = json_encode($array, JSON_PRETTY_PRINT);
         }
 
         return $json;
@@ -226,13 +224,13 @@ class GithubRepository implements RepositoryInterface
      */
     private function clearGitURL($url)
     {
-        $partsToClean = array(
+        $partsToClean = [
             'git://',
             'git@github.com:',
             'https://',
             'github.com/',
             'raw.githubusercontent.com/',
-        );
+        ];
         foreach ($partsToClean as $part) {
             $url = str_replace($part, '', $url);
         }
@@ -262,7 +260,7 @@ class GithubRepository implements RepositoryInterface
         if ($foundIt !== false) {
             $rawValue = substr($rawValue, 0, $foundIt);
         }
-        $rawValue = strtr($rawValue, array('.alpha' => '-alpha', '.beta' => '-beta', '.dev' => '-dev'));
+        $rawValue = strtr($rawValue, ['.alpha' => '-alpha', '.beta' => '-beta', '.dev' => '-dev']);
         $pieces = explode('.', $rawValue);
         $count = count($pieces);
         if ($count == 0) {
@@ -285,7 +283,7 @@ class GithubRepository implements RepositoryInterface
      */
     private function sortTags(array $tags, $excludeUnstables = true)
     {
-        $return = array();
+        $return = [];
 
         // Don't include invalid tags
         foreach ($tags as $tag) {

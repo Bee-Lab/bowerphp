@@ -29,7 +29,7 @@ class UninstallCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('uninstall'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'test-package'), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'test-package'], ['decorated' => false]);
 
         $this->assertFileNotExists(getcwd() . '/bower_components/test-package/.bower.json');
         $this->assertFileNotExists(getcwd() . '/bower_components/test-package/bower.json');
@@ -41,7 +41,7 @@ class UninstallCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('uninstall'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'nonexistent-package'), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'nonexistent-package'], ['decorated' => false]);
 
         $this->assertRegExp('/Package nonexistent-package is not installed/', $commandTester->getDisplay());
 

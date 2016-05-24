@@ -13,8 +13,8 @@ class Package implements PackageInterface
     protected $repository;
     protected $requiredVersion;
     protected $version;
-    protected $requires = array();
-    protected $info = array();
+    protected $requires = [];
+    protected $info = [];
 
     /**
      * All descendants' constructors should call this parent constructor
@@ -25,7 +25,7 @@ class Package implements PackageInterface
      * @param array  $requires        The package's dependencies
      * @param array  $info            Package info (e.g. info from bower.json)
      */
-    public function __construct($name, $requiredVersion = null, $version = null, $requires = array(), $info = array())
+    public function __construct($name, $requiredVersion = null, $version = null, $requires = [], $info = [])
     {
         $this->name = $name;
         $this->requiredVersion = $requiredVersion === 'master' ? '*' : $requiredVersion;

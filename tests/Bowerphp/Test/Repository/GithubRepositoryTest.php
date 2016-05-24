@@ -173,8 +173,8 @@ class GithubRepositoryTest extends TestCase
         $repo = Mockery::mock('Github\Api\Repo');
         $contents = Mockery::mock('Github\Api\Repository\Contents');
 
-        $bower1 = array('name' => 'jquery', 'version' => '2.0.3', 'main' => 'jquery.js');
-        $bower2 = array('name' => 'jquery', 'version' => '2.0.3', 'main' => 'jquery.js', 'homepage' => 'https://raw.githubusercontent.com/components/jquery');
+        $bower1 = ['name' => 'jquery', 'version' => '2.0.3', 'main' => 'jquery.js'];
+        $bower2 = ['name' => 'jquery', 'version' => '2.0.3', 'main' => 'jquery.js', 'homepage' => 'https://raw.githubusercontent.com/components/jquery'];
 
         $this->httpClient
             ->shouldReceive('api')->with('repo')->andReturn($repo)
@@ -294,11 +294,11 @@ class GithubRepositoryTest extends TestCase
         ;
         $this->mockTagsRequest($response);
 
-        $wildcards = array(
+        $wildcards = [
             'x',
             'X',
             '*',
-        );
+        ];
 
         foreach ($wildcards as $wildcard) {
             $tag = $this->repository->findPackage('2.0.' . $wildcard);
@@ -349,7 +349,7 @@ class GithubRepositoryTest extends TestCase
         $repo = Mockery::mock('Github\Api\Repo');
         $contents = Mockery::mock('Github\Api\Repository\Contents');
 
-        $this->setTag($this->repository, (array('name' => 'foo')));
+        $this->setTag($this->repository, (['name' => 'foo']));
 
         $this->httpClient
             ->shouldReceive('api')->with('repo')->andReturn($repo)
@@ -376,12 +376,12 @@ class GithubRepositoryTest extends TestCase
     public function testClearUrl()
     {
         $clearGitURL = $this->getMethod('Bowerphp\Repository\GithubRepository', 'clearGitURL');
-        $this->assertEquals('components/jquery', $clearGitURL->invokeArgs($this->repository, array('git://github.com/components/jquery.git')));
-        $this->assertEquals('components/jqueryui', $clearGitURL->invokeArgs($this->repository, array('git://github.com/components/jqueryui')));
-        $this->assertEquals('MAXakaWIZARD/jquery.appear', $clearGitURL->invokeArgs($this->repository, array('git@github.com:MAXakaWIZARD/jquery.appear.git')));
-        $this->assertEquals('components/jqueryui', $clearGitURL->invokeArgs($this->repository, array('https://github.com/components/jqueryui.git')));
-        $this->assertEquals('components/jqueryui', $clearGitURL->invokeArgs($this->repository, array('https://github.com/components/jqueryui')));
-        $this->assertEquals('components/jqueryui/master/jquery-ui.min.js', $clearGitURL->invokeArgs($this->repository, array('https://raw.githubusercontent.com/components/jqueryui/master/jquery-ui.min.js')));
+        $this->assertEquals('components/jquery', $clearGitURL->invokeArgs($this->repository, ['git://github.com/components/jquery.git']));
+        $this->assertEquals('components/jqueryui', $clearGitURL->invokeArgs($this->repository, ['git://github.com/components/jqueryui']));
+        $this->assertEquals('MAXakaWIZARD/jquery.appear', $clearGitURL->invokeArgs($this->repository, ['git@github.com:MAXakaWIZARD/jquery.appear.git']));
+        $this->assertEquals('components/jqueryui', $clearGitURL->invokeArgs($this->repository, ['https://github.com/components/jqueryui.git']));
+        $this->assertEquals('components/jqueryui', $clearGitURL->invokeArgs($this->repository, ['https://github.com/components/jqueryui']));
+        $this->assertEquals('components/jqueryui/master/jquery-ui.min.js', $clearGitURL->invokeArgs($this->repository, ['https://raw.githubusercontent.com/components/jqueryui/master/jquery-ui.min.js']));
     }
 
     public function testGetTags()
@@ -391,14 +391,14 @@ class GithubRepositoryTest extends TestCase
             {"name": "2.0.2", "zipball_url": "https://api.github.com/repos/components/jquery/zipball/2.0.2"}]';
         $this->mockTagsRequest($tagJson);
 
-        $this->assertEquals(array('2.0.2', '2.0.3'), $this->repository->getTags());
+        $this->assertEquals(['2.0.2', '2.0.3'], $this->repository->getTags());
     }
 
     public function testGetTagsWithoutTags()
     {
         $this->mockTagsRequest('[ ]');
 
-        $this->assertEquals(array(), $this->repository->getTags());
+        $this->assertEquals([], $this->repository->getTags());
     }
 
     /**

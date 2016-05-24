@@ -6,7 +6,6 @@ use Bowerphp\Config\ConfigInterface;
 use Bowerphp\Package\Package;
 use Bowerphp\Package\PackageInterface;
 use Bowerphp\Util\Filesystem;
-use Bowerphp\Util\Json;
 use Bowerphp\Util\ZipArchive;
 use RuntimeException;
 use Symfony\Component\Finder\Finder;
@@ -16,8 +15,19 @@ use Symfony\Component\Finder\Finder;
  */
 class Installer implements InstallerInterface
 {
+    /**
+     * @var Filesystem
+     */
     protected $filesystem;
+
+    /**
+     * @var ZipArchive
+     */
     protected $zipArchive;
+
+    /**
+     * @var ConfigInterface
+     */
     protected $config;
 
     /**
@@ -45,7 +55,7 @@ class Installer implements InstallerInterface
         }
         $dirName = trim($this->zipArchive->getNameIndex(0), '/');
         $info = $package->getInfo();
-        $files = $this->filterZipFiles($this->zipArchive, isset($info['ignore']) ? $info['ignore'] : array(), isset($info['main']) ? (array) $info['main'] : array());
+        $files = $this->filterZipFiles($this->zipArchive, isset($info['ignore']) ? $info['ignore'] : [], isset($info['main']) ? (array) $info['main'] : []);
         foreach ($files as $i => $file) {
             $stat = $this->zipArchive->statIndex($i);
             $fileName = $this->config->getInstallDir() . '/' . str_replace($dirName, $package->getName(), $file);
@@ -67,8 +77,8 @@ class Installer implements InstallerInterface
 
         // create .bower.json metadata file
          // XXX we still need to add some other info
-        $dotBowerContent = array_merge($package->getInfo(), array('version' => $package->getVersion()));
-        $dotBowerJson = str_replace('\/', '/', Json::encode($dotBowerContent));
+        $dotBowerContent = array_merge($package->getInfo(), ['version' => $package->getVersion()]);
+        $dotBowerJson = str_replace('\/', '/', json_encode($dotBowerContent, JSON_PRETTY_PRINT));
         $this->filesystem->write($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json', $dotBowerJson);
     }
 
@@ -93,7 +103,7 @@ class Installer implements InstallerInterface
      */
     public function getInstalled(Finder $finder)
     {
-        $packages = array();
+        $packages = [];
         if (!$this->filesystem->exists($this->config->getInstallDir())) {
             return $packages;
         }
@@ -119,7 +129,7 @@ class Installer implements InstallerInterface
      */
     public function findDependentPackages(PackageInterface $package, Finder $finder)
     {
-        $return = array();
+        $return = [];
         $packages = $this->getInstalled($finder);
         foreach ($packages as $installedPackage) {
             $requires = $installedPackage->getRequires();
@@ -139,10 +149,10 @@ class Installer implements InstallerInterface
      * @param  array      $force
      * @return array
      */
-    protected function filterZipFiles(ZipArchive $archive, array $ignore = array(), array $force = array())
+    protected function filterZipFiles(ZipArchive $archive, array $ignore = [], array $force = [])
     {
         $dirName = $archive->getNameIndex(0);
-        $return = array();
+        $return = [];
         $numFiles = $archive->getNumFiles();
         for ($i = 0; $i < $numFiles; ++$i) {
             $stat = $archive->statIndex($i);
@@ -186,7 +196,7 @@ class Installer implements InstallerInterface
             }
             $pattern = ltrim($pattern, '!');
             // the ! negates the line, otherwise the syntax is the same
-            if ($this->isIgnored($name, array($pattern), $force, $dirName)) {
+            if ($this->isIgnored($name, [$pattern], $force, $dirName)) {
                 return false;
             }
         }
@@ -210,22 +220,22 @@ class Installer implements InstallerInterface
                 if (substr($pattern, 0, 1) == '/') {
                     $pattern = substr($pattern, 1); // remove possible starting slash
                 }
-                $escPattern = str_replace(array('.', '*'), array('\.', '.*'), $pattern);
+                $escPattern = str_replace(['.', '*'], ['\.', '.*'], $pattern);
                 if (preg_match('#^' . $escPattern . '#', $vName) > 0) {
                     return true;
                 }
             } elseif (strpos($pattern, '/') === false) { // no slash
-                $escPattern = str_replace(array('.', '*'), array('\.', '.*'), $pattern);
+                $escPattern = str_replace(['.', '*'], ['\.', '.*'], $pattern);
                 if (preg_match('#^' . $escPattern . '#', $vName) > 0) {
                     return true;
                 }
             } elseif (substr($pattern, 0, 1) == '/') {    // starting slash
-                $escPattern = str_replace(array('.', '*'), array('\.', '.*'), $pattern);
+                $escPattern = str_replace(['.', '*'], ['\.', '.*'], $pattern);
                 if (preg_match('#^' . $escPattern . '#', '/' . $vName) > 0) {
                     return true;
                 }
             } else {
-                $escPattern = str_replace(array('.', '*'), array('\.', '.*'), $pattern);
+                $escPattern = str_replace(['.', '*'], ['\.', '.*'], $pattern);
                 if (preg_match('#^' . $escPattern . '#', $vName) > 0) {
                     return true;
                 }

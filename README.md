@@ -15,7 +15,7 @@ Installation
 ------------
 
 ```bash
-$ composer require beelab/bowerphp:1.0.*@dev
+$ composer require beelab/bowerphp
 ```
 
 Configuration
@@ -31,7 +31,7 @@ Once you created your token, just store it in the ``BOWERPHP_TOKEN`` environment
 Status
 ------
 
-This project is in beta status.
+This project is in stable version (no beta suffix), but still in `0` major version (BC not assured).
 
 See currently open [issues](https://github.com/Bee-Lab/bowerphp/issues).
 

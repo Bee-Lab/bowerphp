@@ -71,7 +71,6 @@ class Compiler
             ->exclude('Tests')
             ->in(__DIR__ . '/../../vendor/symfony/')
             ->in(__DIR__ . '/../../vendor/guzzle/guzzle/src/')
-            ->in(__DIR__ . '/../../vendor/camspiers/json-pretty/src/')
             ->in(__DIR__ . '/../../vendor/knplabs/github-api/lib/')
             ->in(__DIR__ . '/../../vendor/vierbergenlars/php-semver/src/vierbergenlars/LibJs/')
             ->in(__DIR__ . '/../../vendor/vierbergenlars/php-semver/src/vierbergenlars/SemVer/')
@@ -154,7 +153,7 @@ class Compiler
         foreach (token_get_all($source) as $token) {
             if (is_string($token)) {
                 $output .= $token;
-            } elseif (in_array($token[0], array(T_COMMENT, T_DOC_COMMENT))) {
+            } elseif (in_array($token[0], [T_COMMENT, T_DOC_COMMENT])) {
                 $output .= str_repeat("\n", substr_count($token[1], "\n"));
             } elseif (T_WHITESPACE === $token[0]) {
                 // reduce wide spaces

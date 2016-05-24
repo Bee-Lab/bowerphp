@@ -14,12 +14,12 @@ class InfoCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('info'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'colorbox'), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'colorbox'], ['decorated' => false]);
 
         $this->assertRegExp('/name: \'jquery-colorbox\'/', $commandTester->getDisplay());
         $this->assertRegExp('/Available versions:/', $commandTester->getDisplay());
 
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'colorbox', 'property' => 'main'), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'colorbox', 'property' => 'main'], ['decorated' => false]);
 
         $this->assertEquals('"jquery.colorbox.js"' . PHP_EOL, $commandTester->getDisplay());
     }
@@ -28,7 +28,7 @@ class InfoCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('info'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'restio'), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'restio'], ['decorated' => false]);
 
         $this->assertRegExp('/No versions available/', $commandTester->getDisplay());
     }
@@ -37,7 +37,7 @@ class InfoCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('info'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery-hammerjs'), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'jquery-hammerjs'], ['decorated' => false]);
 
         $this->assertRegExp('/jquery-hammerjs/', $commandTester->getDisplay());
     }
@@ -46,7 +46,7 @@ class InfoCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('info'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'ckeditor#full/4.5.2'), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'ckeditor#full/4.5.2'], ['decorated' => false]);
 
         $this->assertRegExp('/name: \'ckeditor\'/', $commandTester->getDisplay());
     }
@@ -59,6 +59,6 @@ class InfoCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('info'));
-        $commandTester->execute(array(), array('decorated' => false));
+        $commandTester->execute([], ['decorated' => false]);
     }
 }

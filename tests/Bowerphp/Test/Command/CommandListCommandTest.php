@@ -15,7 +15,7 @@ class CommandListCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('list-commands'));
-        $commandTester->execute(array('command' => $command->getName()), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName()], ['decorated' => false]);
 
         $this->assertRegExp('/Available commands/', $commandTester->getDisplay());
     }
@@ -27,7 +27,7 @@ class CommandListCommandTest extends \PHPUnit_Framework_TestCase
         $application->setCatchExceptions(false);
 
         $tester = new ApplicationTester($application);
-        $tester->run(array('-d' => '/', '--profile' => ''), array('decorated' => false));
+        $tester->run(['-d' => '/', '--profile' => ''], ['decorated' => false]);
     }
 
     public function testWorkingDir()
@@ -37,7 +37,7 @@ class CommandListCommandTest extends \PHPUnit_Framework_TestCase
         $application->setCatchExceptions(false);
 
         $tester = new ApplicationTester($application);
-        $tester->run(array('-d' => '/'), array('decorated' => false));
+        $tester->run(['-d' => '/'], ['decorated' => false]);
     }
 
     /**
@@ -51,6 +51,6 @@ class CommandListCommandTest extends \PHPUnit_Framework_TestCase
         $application->setCatchExceptions(false);
 
         $tester = new ApplicationTester($application);
-        $tester->run(array('-d' => '/thisDirDoesNotExist'), array('decorated' => false));
+        $tester->run(['-d' => '/thisDirDoesNotExist'], ['decorated' => false]);
     }
 }

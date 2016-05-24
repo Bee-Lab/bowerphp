@@ -52,6 +52,6 @@ class ErrorHandler
      */
     public static function register()
     {
-        set_error_handler(array(__CLASS__, 'handle'));
+        set_error_handler([__CLASS__, 'handle']);
     }
 }

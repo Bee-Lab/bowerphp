@@ -49,19 +49,19 @@ class PackageTest extends TestCase
     {
         $package = new Package('foo', null, '1.0.0');
 
-        $this->assertEquals(array(), $package->getRequires());
+        $this->assertEquals([], $package->getRequires());
 
-        $package->setRequires(array('baz'));
-        $this->assertEquals(array('baz'), $package->getRequires());
+        $package->setRequires(['baz']);
+        $this->assertEquals(['baz'], $package->getRequires());
     }
 
     public function testGetInfo()
     {
-        $package = new Package('foo', null, '1.0.0', null, array('url' => 'bar'));
+        $package = new Package('foo', null, '1.0.0', null, ['url' => 'bar']);
 
-        $this->assertEquals(array('url' => 'bar'), $package->getInfo());
+        $this->assertEquals(['url' => 'bar'], $package->getInfo());
 
-        $package->setInfo(array('url' => 'baz'));
-        $this->assertEquals(array('url' => 'baz'), $package->getInfo());
+        $package->setInfo(['url' => 'baz']);
+        $this->assertEquals(['url' => 'baz'], $package->getInfo());
     }
 }

@@ -14,7 +14,7 @@ class LookupCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('lookup'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery'), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'jquery'], ['decorated' => false]);
 
         $this->assertRegExp('/jquery-dist.git/', $commandTester->getDisplay());
     }
@@ -27,6 +27,6 @@ class LookupCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('lookup'));
-        $commandTester->execute(array(), array('decorated' => false));
+        $commandTester->execute([], ['decorated' => false]);
     }
 }

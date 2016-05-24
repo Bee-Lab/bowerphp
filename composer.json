@@ -23,14 +23,13 @@
         "issues": "https://github.com/bee-lab/bowserphp/issues"
     },
     "require": {
-        "php": ">=5.3.6",
+        "php": ">=5.5.9",
         "ext-zip": "*",
         "ext-fileinfo": "*",
-        "symfony/console": "~2.3|~3.0",
-        "symfony/finder": "~2.3|~3.0",
-        "symfony/filesystem": "~2.4|~3.0",
-        "symfony/process": "~2.3|~3.0",
-        "camspiers/json-pretty": "1.0.*",
+        "symfony/console": "~2.7|~3.0",
+        "symfony/finder": "~2.7|~3.0",
+        "symfony/filesystem": "~2.7|~3.0",
+        "symfony/process": "~2.7|~3.0",
         "knplabs/github-api": "^1.4",
         "vierbergenlars/php-semver": "~3.0"
     },

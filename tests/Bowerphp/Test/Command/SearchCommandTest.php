@@ -16,7 +16,7 @@ class SearchCommandTest extends \PHPUnit_Framework_TestCase
     public function shouldExecute()
     {
         //when
-        $commandTester = CommandFactory::tester('search', array('name' => 'smart'));
+        $commandTester = CommandFactory::tester('search', ['name' => 'smart']);
 
         //then
         $this->assertRegExp('/Search results/', $commandTester->getDisplay());
@@ -29,7 +29,7 @@ class SearchCommandTest extends \PHPUnit_Framework_TestCase
     public function shouldWriteNoResultWhenNoPackageFound()
     {
         //when
-        $commandTester = CommandFactory::tester('search', array('name' => 'unexistant'));
+        $commandTester = CommandFactory::tester('search', ['name' => 'unexistant']);
 
         //then
         $this->assertRegExp('/No results/', $commandTester->getDisplay());

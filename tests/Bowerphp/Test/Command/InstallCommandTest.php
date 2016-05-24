@@ -20,7 +20,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('install'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery'), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'jquery'], ['decorated' => false]);
 
         $this->assertRegExp('/jquery#/m', $commandTester->getDisplay());
         $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
@@ -33,10 +33,10 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $application = new Application();
         //setup
         $commandTester = new CommandTester($command = $application->get('init'));
-        $commandTester->execute(array('command' => $command->getName()), array('interactive' => false, 'decorated' => false));
+        $commandTester->execute(['command' => $command->getName()], ['interactive' => false, 'decorated' => false]);
         //install
         $commandTester = new CommandTester($command = $application->get('install'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery', '--save' => true), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'jquery', '--save' => true], ['decorated' => false]);
 
         //Check that the install worked
         $this->assertRegExp('/jquery#/m', $commandTester->getDisplay());
@@ -45,7 +45,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
 
         //Check that the save worked
         $this->assertFileExists(getcwd() . '/bower.json');
-        $bowerJsonDependencies = array('jquery' => '*');
+        $bowerJsonDependencies = ['jquery' => '*'];
         $json = json_decode(file_get_contents(getcwd() . '/bower.json'), true);
         $this->assertArrayHasKey('dependencies', $json);
         $this->assertEquals($bowerJsonDependencies, $json['dependencies']);
@@ -60,10 +60,10 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $application = new Application();
         //setup
         $commandTester = new CommandTester($command = $application->get('init'));
-        $commandTester->execute(array('command' => $command->getName()), array('interactive' => false, 'decorated' => false));
+        $commandTester->execute(['command' => $command->getName()], ['interactive' => false, 'decorated' => false]);
         //install
         $commandTester = new CommandTester($command = $application->get('install'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery'), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'jquery'], ['decorated' => false]);
 
         //Check that the install worked
         $this->assertRegExp('/jquery#/m', $commandTester->getDisplay());
@@ -72,11 +72,11 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
 
         //Try to save the package in the bower.json
         $commandTester = new CommandTester($command = $application->get('install'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery', '--save' => true), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'jquery', '--save' => true], ['decorated' => false]);
 
         //Check that the save worked
         $this->assertFileExists(getcwd() . '/bower.json');
-        $bowerJsonDependencies = array('jquery' => '*');
+        $bowerJsonDependencies = ['jquery' => '*'];
         $json = json_decode(file_get_contents(getcwd() . '/bower.json'), true);
         $this->assertArrayHasKey('dependencies', $json);
         $this->assertEquals($bowerJsonDependencies, $json['dependencies']);
@@ -86,7 +86,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('install'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery'), array('decorated' => false, 'verbosity' => OutputInterface::VERBOSITY_DEBUG));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'jquery'], ['decorated' => false, 'verbosity' => OutputInterface::VERBOSITY_DEBUG]);
 
         $this->assertRegExp('/jquery#/', $commandTester->getDisplay());
         $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
@@ -97,7 +97,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('install'));
-        $commandTester->execute(array('command' => $command->getName()), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName()], ['decorated' => false]);
 
         $this->assertRegExp('/No bower.json found/', $commandTester->getDisplay());
     }
@@ -106,7 +106,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('install'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery#999'), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'jquery#999'], ['decorated' => false]);
 
         $this->assertRegExp('/Available versions/', $commandTester->getDisplay());
     }
@@ -115,7 +115,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('install'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery-ui'), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'jquery-ui'], ['decorated' => false]);
 
         $this->assertRegExp('/jquery#/m', $commandTester->getDisplay());
         $this->assertFileExists(getcwd() . '/bower_components/jquery-ui/.bower.json');
@@ -126,7 +126,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('install'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'https://github.com/select2/select2.git#3.5.1'), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'https://github.com/select2/select2.git#3.5.1'], ['decorated' => false]);
 
         $this->assertRegExp('/select2#/m', $commandTester->getDisplay());
         $this->assertFileExists(getcwd() . '/bower_components/select2/.bower.json');
@@ -139,7 +139,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
 
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('install'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => $file), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => $file], ['decorated' => false]);
 
         $this->assertRegExp('/jquery#1.11.1/m', $commandTester->getDisplay());
         $this->assertFileExists(getcwd() . '/bower_components/jquery/.bower.json');
@@ -151,7 +151,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('install'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'doesnotexist/bower.json'), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'doesnotexist/bower.json'], ['decorated' => false]);
 
         $this->assertRegExp('/Cannot read/m', $commandTester->getDisplay());
     }
@@ -163,7 +163,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
 
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('install'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => $file), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => $file], ['decorated' => false]);
 
         $this->assertRegExp('/Nothing to install/m', $commandTester->getDisplay());
 
@@ -186,11 +186,11 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
         $githubRepo->setUrl('https://github.com/asual/jquery-address');
         $githubRepo->setHttpClient($client);
         //The test only make sense if the library has no git tags.
-        $this->assertEquals(array(), $githubRepo->getTags());
+        $this->assertEquals([], $githubRepo->getTags());
 
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('install'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery-address'), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'jquery-address'], ['decorated' => false]);
 
         $this->assertRegExp('/jquery-address#master/m', $commandTester->getDisplay());
         $this->assertFileExists(getcwd() . '/bower_components/jquery-address/.bower.json');
@@ -203,7 +203,7 @@ class InstallCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('install'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'blueimp-tmpl'), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'blueimp-tmpl'], ['decorated' => false]);
 
         $this->assertRegExp('/blueimp-tmpl#/m', $commandTester->getDisplay());
         $this->assertFileExists(getcwd() . '/bower_components/blueimp-tmpl/js/tmpl.js');

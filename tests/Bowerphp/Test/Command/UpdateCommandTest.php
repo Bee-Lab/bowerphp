@@ -35,7 +35,7 @@ class UpdateCommandTest extends \PHPUnit_Framework_TestCase
     public function testUpdateDependencies()
     {
         //when
-        CommandFactory::tester('update', array('package' => 'jquery'));
+        CommandFactory::tester('update', ['package' => 'jquery']);
 
         //then
         $dotBower = json_decode(file_get_contents($this->packageDotBowerFile), true);
@@ -50,7 +50,7 @@ class UpdateCommandTest extends \PHPUnit_Framework_TestCase
     public function testThrowExceptionWhenPackageIsNotInstalled()
     {
         //when
-        $commandTester = CommandFactory::tester('update', array('package' => 'nonexistent-package'));
+        $commandTester = CommandFactory::tester('update', ['package' => 'nonexistent-package']);
 
         //then
         $this->assertRegExp('/Package nonexistent-package is not installed/', $commandTester->getDisplay());

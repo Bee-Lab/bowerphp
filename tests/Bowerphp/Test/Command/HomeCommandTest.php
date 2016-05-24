@@ -18,21 +18,21 @@ class HomeCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('home'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'nonexistante'), array('decorated' => false));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'nonexistante'], ['decorated' => false]);
     }
 
     public function testExecuteVerbose()
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('home'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery'), array('decorated' => false, 'verbosity' => OutputInterface::VERBOSITY_DEBUG));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'jquery'], ['decorated' => false, 'verbosity' => OutputInterface::VERBOSITY_DEBUG]);
     }
 
     public function testExecuteNonVerbose()
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('home'));
-        $commandTester->execute(array('command' => $command->getName(), 'package' => 'jquery'), array('decorated' => false, 'verbosity' => OutputInterface::VERBOSITY_NORMAL));
+        $commandTester->execute(['command' => $command->getName(), 'package' => 'jquery'], ['decorated' => false, 'verbosity' => OutputInterface::VERBOSITY_NORMAL]);
     }
 
     /**
@@ -43,6 +43,6 @@ class HomeCommandTest extends \PHPUnit_Framework_TestCase
     {
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('home'));
-        $commandTester->execute(array(), array('decorated' => false));
+        $commandTester->execute([], ['decorated' => false]);
     }
 }

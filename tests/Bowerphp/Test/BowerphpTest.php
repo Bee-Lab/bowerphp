@@ -46,16 +46,16 @@ class BowerphpTest extends TestCase
     }
 }
 EOT;
-        $params = array('name' => 'Foo', 'author' => 'Mallo');
+        $params = ['name' => 'Foo', 'author' => 'Mallo'];
 
         $this->config
             ->shouldReceive('initBowerJsonFile')->with($params)->andReturn(123)
             ->shouldReceive('bowerFileExists')->andReturn(false, true)
-            ->shouldReceive('getBowerFileContent')->andReturn(array('name' => 'Bar'))
+            ->shouldReceive('getBowerFileContent')->andReturn(['name' => 'Bar'])
             ->shouldReceive('setSaveToBowerJsonFile')->with(true)
-            ->shouldReceive('getOverridesSection')->andReturn(array())
-            ->shouldReceive('getOverrideFor')->andReturn(array())
-            ->shouldReceive('updateBowerJsonFile2')->with(array('name' => 'Bar'), $params)->andReturn(456)
+            ->shouldReceive('getOverridesSection')->andReturn([])
+            ->shouldReceive('getOverrideFor')->andReturn([])
+            ->shouldReceive('updateBowerJsonFile2')->with(['name' => 'Bar'], $params)->andReturn(456)
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
@@ -69,7 +69,7 @@ EOT;
 
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
-        $this->installPackage($package, $installer, array('jquery'), array('2.0.3'));
+        $this->installPackage($package, $installer, ['jquery'], ['2.0.3']);
 
         $this->filesystem
             ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
@@ -112,8 +112,8 @@ EOT;
             ->shouldReceive('writelnInstalledPackage')
         ;
         $this->config
-            ->shouldReceive('getOverridesSection')->andReturn(array())
-            ->shouldReceive('getOverrideFor')->andReturn(array())
+            ->shouldReceive('getOverridesSection')->andReturn([])
+            ->shouldReceive('getOverrideFor')->andReturn([])
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
         ;
 
@@ -170,11 +170,11 @@ EOT;
             ->shouldReceive('getRequiredVersion')->andReturn('*')
             ->shouldReceive('setRepository')->with($this->repository)
             ->shouldReceive('setVersion')->with('2.0.3')
-            ->shouldReceive('setInfo')->with(array('name' => 'jquery', 'version' => '2.0.3', 'main' => 'jquery.js'))
+            ->shouldReceive('setInfo')->with(['name' => 'jquery', 'version' => '2.0.3', 'main' => 'jquery.js'])
         ;
 
         $this->config
-            ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery', 'version' => '2.0.3'))
+            ->shouldReceive('getPackageBowerFileContent')->andReturn(['name' => 'jquery', 'version' => '2.0.3'])
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
         ;
 
@@ -230,7 +230,7 @@ EOT;
             ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...')
         ;
 
-        $this->installPackage($package, $installer, array('jquery'), array('2.0.3'));
+        $this->installPackage($package, $installer, ['jquery'], ['2.0.3']);
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
         $bowerphp->installPackage($package, $installer);
@@ -257,7 +257,7 @@ EOT;
             ->shouldReceive('write')->with('./tmp/jquery', 'fileAsString...')
         ;
 
-        $this->installPackage($package, $installer, array('jquery'), array('2.0.3'));
+        $this->installPackage($package, $installer, ['jquery'], ['2.0.3']);
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
         $bowerphp->installPackage($package, $installer);
@@ -270,8 +270,8 @@ EOT;
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
-        $this->installPackage($package, $installer, array('jquery'), array('2.0.1'), array('>=1.6'));
-        $json = array('name' => 'pippo', 'dependencies' => array('jquery' => '>=1.6'));
+        $this->installPackage($package, $installer, ['jquery'], ['2.0.1'], ['>=1.6']);
+        $json = ['name' => 'pippo', 'dependencies' => ['jquery' => '>=1.6']];
 
         $this->config
             ->shouldReceive('getBowerFileContent')->andReturn($json)
@@ -318,13 +318,13 @@ EOT;
             ->shouldReceive('writelnInstalledPackage')
         ;
 
-        $json = array(
+        $json = [
             'name'         => 'pippo',
-            'dependencies' => array('select2' => 'https://github.com/ivaynberg/select2.git#3.5.1'),
-        );
+            'dependencies' => ['select2' => 'https://github.com/ivaynberg/select2.git#3.5.1'],
+        ];
         $this->config
-            ->shouldReceive('getOverridesSection')->andReturn(array())
-            ->shouldReceive('getOverrideFor')->andReturn(array())
+            ->shouldReceive('getOverridesSection')->andReturn([])
+            ->shouldReceive('getOverrideFor')->andReturn([])
             ->shouldReceive('getBowerFileContent')->andReturn($json)
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
         ;
@@ -362,7 +362,7 @@ EOT;
 
         $bowerJson = '{"name": "Foo", "dependencies": {"less": "*"}}';
 
-        $this->installPackage($package, $installer, array('less'), array('1.2.1'), array(null), true, array('1.2.3'));
+        $this->installPackage($package, $installer, ['less'], ['1.2.1'], [null], true, ['1.2.3']);
 
         $this->config
             ->shouldReceive('getBowerFileContent')->andReturn(json_decode($bowerJson, true))
@@ -418,7 +418,7 @@ EOT;
         $package
             ->shouldReceive('getName')->andReturn('jquery')
             ->shouldReceive('getRequiredVersion')->andReturn('*')
-            ->shouldReceive('setInfo')->with(array('name' => 'jquery', 'version' => '1.0.0'))
+            ->shouldReceive('setInfo')->with(['name' => 'jquery', 'version' => '1.0.0'])
             ->shouldReceive('setVersion')->with('1.0.0')
             ->shouldReceive('setRequires')->with(null)
         ;
@@ -428,7 +428,7 @@ EOT;
         ;
 
         $this->config
-            ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery', 'version' => '1.0.0'))
+            ->shouldReceive('getPackageBowerFileContent')->andReturn(['name' => 'jquery', 'version' => '1.0.0'])
         ;
 
         $guzzle
@@ -455,13 +455,13 @@ EOT;
         ;
 
         $this->config
-            ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'colorbox', 'version' => '1.0.0'))
+            ->shouldReceive('getPackageBowerFileContent')->andReturn(['name' => 'colorbox', 'version' => '1.0.0'])
         ;
 
         $package
             ->shouldReceive('getName')->andReturn('colorbox')
             ->shouldReceive('getRequiredVersion')->andReturn('*')
-            ->shouldReceive('setInfo')->with(array('name' => 'colorbox', 'version' => '1.0.0'))
+            ->shouldReceive('setInfo')->with(['name' => 'colorbox', 'version' => '1.0.0'])
             ->shouldReceive('setVersion')->with('1.0.0')
             ->shouldReceive('setRequires')->with(null)
         ;
@@ -486,13 +486,13 @@ EOT;
         ;
 
         $this->config
-            ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'colorbox', 'version' => '1.0.0'))
+            ->shouldReceive('getPackageBowerFileContent')->andReturn(['name' => 'colorbox', 'version' => '1.0.0'])
         ;
 
         $package
             ->shouldReceive('getName')->andReturn('colorbox')
             ->shouldReceive('getRequiredVersion')->andReturn('*')
-            ->shouldReceive('setInfo')->with(array('name' => 'colorbox', 'version' => '1.0.0'))
+            ->shouldReceive('setInfo')->with(['name' => 'colorbox', 'version' => '1.0.0'])
             ->shouldReceive('setVersion')->with('1.0.0')
             ->shouldReceive('setRequires')->with(null)
         ;
@@ -516,7 +516,7 @@ EOT;
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
         $this->config
-            ->shouldReceive('getBowerFileContent')->andReturn(array('dependencies' => array('jquery-ui' => '*')))
+            ->shouldReceive('getBowerFileContent')->andReturn(['dependencies' => ['jquery-ui' => '*']])
         ;
 
         $bowerJsonJqueryUI = '{"name":"jquery-ui","version":"1.10.1", "main":"jquery-ui.js","dependencies":{"jquery":"*"}}';
@@ -554,10 +554,10 @@ EOT;
             ->shouldReceive('writelnUpdatingPackage')
         ;
         $this->config
-            ->shouldReceive('getOverridesSection')->andReturn(array())
-            ->shouldReceive('getOverrideFor')->andReturn(array())
+            ->shouldReceive('getOverridesSection')->andReturn([])
+            ->shouldReceive('getOverrideFor')->andReturn([])
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
-            ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery-ui', 'version' => '1.10.0'))
+            ->shouldReceive('getPackageBowerFileContent')->andReturn(['name' => 'jquery-ui', 'version' => '1.10.0'])
         ;
 
         $installer
@@ -593,10 +593,10 @@ EOT;
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
         $this->config
-            ->shouldReceive('getBowerFileContent')->andReturn(array('dependencies' => array('jquery' => '*')))
+            ->shouldReceive('getBowerFileContent')->andReturn(['dependencies' => ['jquery' => '*']])
         ;
 
-        $this->installPackage($package, $installer, array('jquery'), array('2.0.1'), array('*'), true, array('2.0.3'));
+        $this->installPackage($package, $installer, ['jquery'], ['2.0.1'], ['*'], true, ['2.0.3']);
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
         $bowerphp->updatePackages($installer);
@@ -653,13 +653,13 @@ EOT;
         ;
 
         $this->config
-            ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'colorbox', 'version' => '1.0.0'))
+            ->shouldReceive('getPackageBowerFileContent')->andReturn(['name' => 'colorbox', 'version' => '1.0.0'])
         ;
 
         $package
             ->shouldReceive('getName')->andReturn('colorbox')
             ->shouldReceive('getRequiredVersion')->andReturn('2.*')
-            ->shouldReceive('setInfo')->with(array('name' => 'colorbox', 'version' => '1.0.0'))
+            ->shouldReceive('setInfo')->with(['name' => 'colorbox', 'version' => '1.0.0'])
             ->shouldReceive('setVersion')->with('1.0.0')
             ->shouldReceive('setRequires')->with(null)
         ;
@@ -694,13 +694,13 @@ EOT;
             ->shouldReceive('findPackage')->with('1.1')->andReturn('1.1.0')
             ->shouldReceive('setUrl')->with('https://github.com/jackmoore/colorbox', true)
             ->shouldReceive('getBower')->with('1.1.0', true, 'git://github.com/jackmoore/colorbox.git')->andReturn('a json...')
-            ->shouldReceive('getTags')->andReturn(array('1.1.0', '1.0.0-rc1', '1.0.0', '1.0.0-beta'))
+            ->shouldReceive('getTags')->andReturn(['1.1.0', '1.0.0-rc1', '1.0.0', '1.0.0-beta'])
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
 
         $this->assertEquals('https://github.com/jackmoore/colorbox', $bowerphp->getPackageInfo($package));
-        $this->assertEquals(array('1.1.0', '1.0.0', '1.0.0-rc1', '1.0.0-beta'), $bowerphp->getPackageInfo($package, 'versions'));
+        $this->assertEquals(['1.1.0', '1.0.0', '1.0.0-rc1', '1.0.0-beta'], $bowerphp->getPackageInfo($package, 'versions'));
 
         //FIXME extract to another method
         $this->assertEquals('a json...', $bowerphp->getPackageBowerFile($package));
@@ -726,7 +726,7 @@ EOT;
             ->shouldReceive('findPackage')->with('1.1')->andReturn('1.1.0')
             ->shouldReceive('setUrl')->with('https://github.com/jackmoore/colorbox', true)
             ->shouldReceive('getBower')->with('1.1.0', true, 'git://github.com/jackmoore/colorbox.git')->andReturn('a json...')
-            ->shouldReceive('getTags')->andReturn(array('1.1.0', '1.0.0'))
+            ->shouldReceive('getTags')->andReturn(['1.1.0', '1.0.0'])
         ;
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
 
@@ -741,9 +741,9 @@ EOT;
     public function testCreateAClearBowerFile()
     {
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
-        $expected = array('name' => '', 'authors' => array('Beelab <info@bee-lab.net>', 'pippo'), 'private' => true, 'dependencies' => new \StdClass());
+        $expected = ['name' => '', 'authors' => ['Beelab <info@bee-lab.net>', 'pippo'], 'private' => true, 'dependencies' => new \StdClass()];
         $method = $this->getMethod('Bowerphp\Bowerphp', 'createAClearBowerFile');
-        $this->assertEquals($expected, $method->invokeArgs($bowerphp, array(array('name' => '', 'author' => 'pippo'))));
+        $this->assertEquals($expected, $method->invokeArgs($bowerphp, [['name' => '', 'author' => 'pippo']]));
     }
 
     public function testSearchPackages()
@@ -794,7 +794,7 @@ EOT;
 
     public function testGetInstalledPackages()
     {
-        $packages = array('a', 'b', 'c');
+        $packages = ['a', 'b', 'c'];
         $finder = Mockery::mock('Symfony\Component\Finder\Finder');
         $installer = Mockery::mock('Bowerphp\Installer\InstallerInterface');
 
@@ -853,8 +853,8 @@ EOT;
             ->shouldReceive('writelnInstalledPackage')
         ;
         $this->config
-            ->shouldReceive('getOverridesSection')->andReturn(array())
-            ->shouldReceive('getOverrideFor')->andReturn(array())
+            ->shouldReceive('getOverridesSection')->andReturn([])
+            ->shouldReceive('getOverrideFor')->andReturn([])
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
         ;
 
@@ -915,11 +915,11 @@ EOT;
         ;
 
         $this->config
-            ->shouldReceive('getOverridesSection')->andReturn(array())
-            ->shouldReceive('getOverrideFor')->andReturn(array())
+            ->shouldReceive('getOverridesSection')->andReturn([])
+            ->shouldReceive('getOverrideFor')->andReturn([])
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
-            ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery', 'version' => '1.0.0'))
-            ->shouldReceive('getBowerFileContent')->andReturn(array())
+            ->shouldReceive('getPackageBowerFileContent')->andReturn(['name' => 'jquery', 'version' => '1.0.0'])
+            ->shouldReceive('getBowerFileContent')->andReturn([])
         ;
 
         $installer
@@ -1024,7 +1024,7 @@ EOT;
             ->shouldReceive('setVersion')
             ->shouldReceive('setRequiredVersion')
             ->shouldReceive('setRequires')
-            ->shouldReceive('getRequires')->andReturn(array('jquery' => '*'))
+            ->shouldReceive('getRequires')->andReturn(['jquery' => '*'])
             ->shouldReceive('getVersion')->andReturn('1.10.0' . '2.0.1')
         ;
 
@@ -1054,10 +1054,10 @@ EOT;
             ->shouldReceive('writelnUpdatingPackage')
         ;
         $this->config
-            ->shouldReceive('getOverridesSection')->andReturn(array())
-            ->shouldReceive('getOverrideFor')->andReturn(array())
+            ->shouldReceive('getOverridesSection')->andReturn([])
+            ->shouldReceive('getOverrideFor')->andReturn([])
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
-            ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery-ui', 'version' => '1.10.0'), array('name' => 'jquery', 'version' => '2.0.1'))
+            ->shouldReceive('getPackageBowerFileContent')->andReturn(['name' => 'jquery-ui', 'version' => '1.10.0'], ['name' => 'jquery', 'version' => '2.0.1'])
         ;
 
         $installer
@@ -1107,7 +1107,7 @@ EOT;
             ->shouldReceive('setVersion')
             ->shouldReceive('setRequiredVersion')
             ->shouldReceive('setRequires')
-            ->shouldReceive('getRequires')->andReturn(array('jquery' => '*'))
+            ->shouldReceive('getRequires')->andReturn(['jquery' => '*'])
             ->shouldReceive('getVersion')->andReturn('1.10.0')
         ;
 
@@ -1136,10 +1136,10 @@ EOT;
             ->shouldReceive('writelnUpdatingPackage')
         ;
         $this->config
-            ->shouldReceive('getOverridesSection')->andReturn(array())
-            ->shouldReceive('getOverrideFor')->andReturn(array())
+            ->shouldReceive('getOverridesSection')->andReturn([])
+            ->shouldReceive('getOverrideFor')->andReturn([])
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
-            ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => 'jquery-ui', 'version' => '1.10.0'), array('name' => 'jquery', 'version' => '2.0.1'))
+            ->shouldReceive('getPackageBowerFileContent')->andReturn(['name' => 'jquery-ui', 'version' => '1.10.0'], ['name' => 'jquery', 'version' => '2.0.1'])
         ;
 
         $installer
@@ -1262,7 +1262,7 @@ EOT;
         ;
 
         $this->config
-            ->shouldReceive('getBowerFileContent')->andReturn(array(), array('dependencies' => array('jquery' => '*')))
+            ->shouldReceive('getBowerFileContent')->andReturn([], ['dependencies' => ['jquery' => '*']])
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
@@ -1306,10 +1306,10 @@ EOT;
     {
         $package = Mockery::mock('Bowerphp\Package\PackageInterface');
 
-        $jsons = array(
+        $jsons = [
             '{"name":"dummyPackageDependentFromJqueryUI","dependencies":{"jquery-ui":"*"}}',
             '{"name":"jquery-ui","dependencies":{"jquery":"*"}}',
-        );
+        ];
 
         $package
             ->shouldReceive('getName')->andReturn('jquery')
@@ -1320,7 +1320,7 @@ EOT;
         ;
 
         $this->config
-            ->shouldReceive('getBowerFileContent')->andReturn(array('dependencies' => array('dummyPackageDependentFromJqueryUI' => '*')))
+            ->shouldReceive('getBowerFileContent')->andReturn(['dependencies' => ['dummyPackageDependentFromJqueryUI' => '*']])
         ;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
@@ -1339,13 +1339,13 @@ EOT;
      * @param bool          $update         if this is an update (instead of an install)
      * @param array         $updateVersions updated versions of packages (after update)
      */
-    protected function installPackage(MockInterface $package, MockInterface $installer, array $names, array $versions, array $requires = array('*'), $update = false, array $updateVersions = array())
+    protected function installPackage(MockInterface $package, MockInterface $installer, array $names, array $versions, array $requires = ['*'], $update = false, array $updateVersions = [])
     {
         $request = Mockery::mock('Guzzle\Http\Message\RequestInterface');
         $response = Mockery::mock('Guzzle\Http\Message\Response');
 
-        $packageJsons = array();
-        $bowerJsons = array();
+        $packageJsons = [];
+        $bowerJsons = [];
 
         foreach ($names as $k => $v) {
             $packageJsons[] = '{"name":"' . $names[$k] . '","url":"git://github.com/components/' . $names[$k] . '.git"}';
@@ -1394,8 +1394,8 @@ EOT;
             ->shouldReceive('writelnInstalledPackage')
         ;
         $this->config
-            ->shouldReceive('getOverridesSection')->andReturn(array())
-            ->shouldReceive('getOverrideFor')->andReturn(array())
+            ->shouldReceive('getOverridesSection')->andReturn([])
+            ->shouldReceive('getOverrideFor')->andReturn([])
             ->shouldReceive('isSaveToBowerJsonFile')->andReturn(false)
         ;
 
@@ -1412,7 +1412,7 @@ EOT;
 
             foreach ($names as $k => $v) {
                 $this->config
-                    ->shouldReceive('getPackageBowerFileContent')->andReturn(array('name' => $names[$k], 'version' => $versions[$k]))
+                    ->shouldReceive('getPackageBowerFileContent')->andReturn(['name' => $names[$k], 'version' => $versions[$k]])
                 ;
                 $this->filesystem
                     ->shouldReceive('write')->with('./tmp/' . $names[$k], 'fileAsString...')
