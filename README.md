@@ -5,7 +5,7 @@ An implementation of [bower](http://bower.io) in PHP.
 
 http://bowerphp.org
 
-[![travis build](https://api.travis-ci.org/Bee-Lab/bowerphp.png)](https://travis-ci.org/Bee-Lab/bowerphp) 
+[![travis build](https://api.travis-ci.org/Bee-Lab/bowerphp.png)](https://travis-ci.org/Bee-Lab/bowerphp)
 [![Code Climate](https://codeclimate.com/github/Bee-Lab/bowerphp/badges/gpa.svg)](https://codeclimate.com/github/Bee-Lab/bowerphp)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Bee-Lab/bowerphp/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Bee-Lab/bowerphp/?branch=master)
 [![insight](https://insight.sensiolabs.com/projects/d1fbaca7-0e68-4782-979b-2372a9578c2d/mini.png)](https://insight.sensiolabs.com/projects/d1fbaca7-0e68-4782-979b-2372a9578c2d) [![Join the chat at https://gitter.im/Bee-Lab/bowerphp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Bee-Lab/bowerphp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -21,12 +21,12 @@ $ composer require beelab/bowerphp
 Configuration
 -------------
 
-Currently, you can configure your bower directory in ``.bowerrc`` file, just like the original Bower.
+Currently, you can configure your bower directory in `.bowerrc` file, just like the original Bower.
 
 If you need many dependencies, you'll likely hit the Github API limit (currently 60 requests per hour).
 To increase your limit to 5000 requests per hour, you can use a token.
 See [Github help](https://help.github.com/articles/creating-an-access-token-for-command-line-use/).
-Once you created your token, just store it in the ``BOWERPHP_TOKEN`` environment variable.
+Once you created your token, just store it in the `BOWERPHP_TOKEN` environment variable.
 
 Status
 ------
@@ -48,20 +48,14 @@ Building the phar
 -----------------
 
 You can build the phar by simply running:
-```sh
-php bin/compile
-```
-Or you can use the [box command line utility](https://github.com/box-project/box2)
-If you add this config in a box.json file, you only just need to run the two commands below to have a working phar.
 
-###the commands
-
-```sh
-$ box build
-$ chmod +x bower.phar
+```bash
+$ php bin/compile
 ```
 
-### the box.json config
+Or you can use the [box command line utility](https://github.com/box-project/box2).
+If you add the following content in a `box.json` file, you only just need to run `box build` command to
+get a phar. Don't forget to give execution permission to your phar, using `chmod +x bowerphp.phar`.
 
 ```json
 {
@@ -75,7 +69,7 @@ $ chmod +x bower.phar
         }
     ],
     "main": "bin/bowerphp",
-    "output": "bower.phar",
+    "output": "bowerphp.phar",
     "stub": true
 }
 ```

@@ -9,7 +9,6 @@ cache:
     directories:
         - $HOME/.composer/cache
 
-
 env:
     - secure: "g+2Ar7a8eAsZtE/mEQT6BWgkx7Bou9qy1381OhI7tMOQBE+KA5Lm+KAC5tH9Us5tmK074dNMsWPBrsgnayxezBjQBpcshDQgoLqaPtWz8XeKTvUEpizFTjQ8v68w42I4SzzMdNIWQhPjiAfjA8e02uaoRELWOYNoc824ot/y1iw="
 
