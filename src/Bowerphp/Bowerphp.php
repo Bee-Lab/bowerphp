@@ -104,7 +104,7 @@ class Bowerphp
         // if package is already installed, match current version with latest available version
         if ($this->isPackageInstalled($package)) {
             $packageBower = $this->config->getPackageBowerFileContent($package);
-            if ($packageTag == $packageBower['version']) {
+            if(isset($packageBower['version']) && $packageTag == $packageBower['version']) {
                 // if version is fully matching, there's no need to install
                 return;
             }
@@ -176,7 +176,9 @@ class Bowerphp
 
         $bower = $this->config->getPackageBowerFileContent($package);
         $package->setInfo($bower);
-        $package->setVersion($bower['version']);
+        if(isset($bower['version'])){
+            $package->setVersion($bower['version']);
+        }
         $package->setRequires(isset($bower['dependencies']) ? $bower['dependencies'] : null);
 
         $packageTag = $this->getPackageTag($package);
@@ -233,7 +235,7 @@ class Bowerphp
      */
     public function getPackageInfo(PackageInterface $package, $info = 'url')
     {
-        $decode = $this->lookupPackage($package->getName());
+        $decode = $this->lookupPackage($package);
 
         $this->repository->setHttpClient($this->githubClient);
 
@@ -259,9 +261,9 @@ class Bowerphp
      * @param  string $name
      * @return array
      */
-    public function lookupPackage($name)
+    public function lookupPackage($package)
     {
-        return $this->findPackage($name);
+        return $this->findPackage($package);
     }
 
     /**
@@ -271,7 +273,7 @@ class Bowerphp
     public function getPackageBowerFile(PackageInterface $package)
     {
         $this->repository->setHttpClient($this->githubClient);
-        $lookupPackage = $this->lookupPackage($package->getName());
+        $lookupPackage = $this->lookupPackage($package);
         $this->repository->setUrl($lookupPackage['url'], false);
         $tag = $this->repository->findPackage($package->getRequiredVersion());
 
@@ -403,7 +405,7 @@ class Bowerphp
      */
     protected function getPackageTag(PackageInterface $package, $setInfo = false)
     {
-        $decode = $this->findPackage($package->getName());
+        $decode = $this->findPackage($package);
         // open package repository
         $repoUrl = $decode['url'];
         $this->repository->setUrl($repoUrl)->setHttpClient($this->githubClient);
@@ -427,10 +429,16 @@ class Bowerphp
      * @param  string $name
      * @return array
      */
-    protected function findPackage($name)
+    protected function findPackage($package)
     {
+        $name = $package->getName();
+        
+        if( $url = $package->getRequiredVersionUrl() ){
+            return ['name'=>$name,'url'=>$url];
+        }
+        
         try {
-            $response = $this->githubClient->getHttpClient()->get($this->config->getBasePackagesUrl() . urlencode($name));
+            $response = $this->githubClient->getHttpClient()->get($this->config->getBasePackagesUrl().urlencode($name));
         } catch (RuntimeException $e) {
             throw new RuntimeException(sprintf('Cannot fetch registry info for package %s from search registry (%s).', $name, $e->getMessage()));
         }
