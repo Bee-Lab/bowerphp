@@ -77,7 +77,13 @@ class GithubRepository implements RepositoryInterface
             // then, we call setUrl(), to get the http url
             $this->setUrl($url, true);
         }
-        $json = $this->getDepBowerJson($version);
+        try{
+            $json = $this->getDepBowerJson($version);
+        }
+        catch(\Exception $e){
+            $json = '{}';
+        }
+        
         if ($includeHomepage) {
             $array = json_decode($json, true);
             if (!empty($url)) {
@@ -157,7 +163,6 @@ class GithubRepository implements RepositoryInterface
     public function getRelease($type = 'zip')
     {
         list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
-
         return $this->githubClient->api('repo')->contents()->archive($repoUser, $repoName, $type . 'ball', $this->tag['name']);
     }
 
@@ -201,7 +206,7 @@ class GithubRepository implements RepositoryInterface
             // try anyway. E.g. exists() return false for Modernizr, but then it downloads :-|
             $json = $contents->download($repoUser, $repoName, 'package.json', $version);
         }
-
+        
         if (substr($json, 0, 3) == "\xef\xbb\xbf") {
             $json = substr($json, 3);
         }
