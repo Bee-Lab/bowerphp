@@ -28,6 +28,7 @@ class Config implements ConfigInterface
     protected $saveToBowerJsonFile = false;
     protected $bowerFileNames = ['bower.json', 'package.json'];
     protected $stdBowerFileName = 'bower.json';
+    protected $scripts = ['preinstall'=>[],'postinstall'=>[],'preuninstall'=>[]];
 
     /**
      * @param Filesystem $filesystem
@@ -38,7 +39,6 @@ class Config implements ConfigInterface
         $this->cacheDir = $this->getHomeDir() . '/.cache/bowerphp';
         $this->installDir = getcwd() . '/bower_components';
         $rc = getcwd() . '/.bowerrc';
-
         if ($this->filesystem->exists($rc)) {
             $json = json_decode($this->filesystem->read($rc), true);
             if (is_null($json)) {
@@ -50,9 +50,21 @@ class Config implements ConfigInterface
             if (isset($json['storage']) && isset($json['storage']['packages'])) {
                 $this->cacheDir = $json['storage']['packages'];
             }
+            if (isset($json['scripts'])){
+				$this->scripts = (array)$json['scripts']+$this->scripts;
+			}
+			
         }
     }
-
+	
+	/**
+     * {@inheritdoc}
+     */
+    public function getScripts()
+    {
+        return $this->scripts;
+    }
+	
     /**
      * {@inheritdoc}
      */
