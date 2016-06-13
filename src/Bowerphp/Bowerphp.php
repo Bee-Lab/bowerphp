@@ -150,7 +150,12 @@ class Bowerphp
                     list($name, $requiredVersion) = explode('#', $requiredVersion);
                 }
                 $package = new Package($name, $requiredVersion);
-                $this->installPackage($package, $installer, true);
+                try{
+					$this->installPackage($package, $installer, true);
+				}
+				catch(\RuntimeException $e){
+					throw new \RuntimeException($name.' '.$requiredVersion.' '.$e->getMessage());
+				}
             }
         }
     }
