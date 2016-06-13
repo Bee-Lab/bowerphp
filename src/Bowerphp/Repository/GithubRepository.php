@@ -108,6 +108,7 @@ class GithubRepository implements RepositoryInterface
 
         // edge case: package has no tags
         if (count($tags) === 0) {
+			$this->tag = ['name'=>'master'];
             return 'master';
         }
 
