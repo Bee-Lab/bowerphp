@@ -59,6 +59,16 @@ class Config implements ConfigInterface
 			}
 			
         }
+        
+        $composer = getcwd() . '/composer.json';
+        if (!isset($GLOBALS['BOWERPHP_TOKEN'])&&$this->filesystem->exists($composer)) {
+            $json = json_decode($this->filesystem->read($composer), true);
+            if (isset($json['config']['github-oauth']['github.com'])){
+				$token = $json['config']['github-oauth']['github.com'];
+				putenv('BOWERPHP_TOKEN='.$token);
+				$GLOBALS['BOWERPHP_TOKEN'] = $token;
+			}
+        }
     }
 	
 	/**
