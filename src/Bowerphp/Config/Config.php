@@ -53,6 +53,10 @@ class Config implements ConfigInterface
             if (isset($json['scripts'])){
 				$this->scripts = (array)$json['scripts']+$this->scripts;
 			}
+            if (isset($json['token'])&&!isset($GLOBALS['BOWERPHP_TOKEN'])){
+				putenv('BOWERPHP_TOKEN='.$json['token']);
+				$GLOBALS['BOWERPHP_TOKEN'] = $json['token'];
+			}
 			
         }
     }

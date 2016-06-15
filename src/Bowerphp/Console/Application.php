@@ -58,6 +58,7 @@ class Application extends BaseApplication
         
         if ($input->hasParameterOption('--token')&&($token = $input->getParameterOption(['--token', '-t']))) {
             putenv("BOWERPHP_TOKEN=$token");
+            $GLOBALS['BOWERPHP_TOKEN'] = $token;
         }
 
         if ($newWorkDir = $this->getNewWorkingDir($input)) {
