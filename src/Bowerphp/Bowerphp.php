@@ -24,6 +24,9 @@ use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Finder\Finder;
 
+use vierbergenlars\SemVer\version;
+use vierbergenlars\SemVer\expression;
+
 /**
  * Main class
  */
@@ -130,7 +133,7 @@ class Bowerphp
                 if (!$this->isPackageInstalled($depPackage)) {
                     $this->installPackage($depPackage, $installer, true);
                 } else {
-                    $this->updatePackage($depPackage, $installer);
+                    $this->updatePackage($depPackage, $installer, false);
                 }
             }
         }
@@ -166,11 +169,24 @@ class Bowerphp
      * @param PackageInterface   $package
      * @param InstallerInterface $installer
      */
-    public function updatePackage(PackageInterface $package, InstallerInterface $installer)
+    public function updatePackage(PackageInterface $package, InstallerInterface $installer, $force=true)
     {
         if (!$this->isPackageInstalled($package)) {
             throw new RuntimeException(sprintf('Package %s is not installed.', $package->getName()));
         }
+		
+		if(!$force){
+			$packageTag = $this->getPackageTag($package);
+            $decode = $this->config->getBowerFileContent();
+            if(isset($decode['dependencies'][$package->getName()])){
+				$requiredVersion = $decode['dependencies'][$package->getName()];
+				$semver = new version($packageTag);
+				if(!$semver->satisfies(new expression($requiredVersion))){
+					$package->setRequiredVersion($requiredVersion);
+				}
+			}
+		}
+		
         if (is_null($package->getRequiredVersion())) {
             $decode = $this->config->getBowerFileContent();
             if (empty($decode['dependencies']) || empty($decode['dependencies'][$package->getName()])) {
@@ -187,7 +203,8 @@ class Bowerphp
         $package->setRequires(isset($bower['dependencies']) ? $bower['dependencies'] : null);
 
         $packageTag = $this->getPackageTag($package);
-        $package->setRepository($this->repository);
+        $package->setRepository($this->repository);        
+        
         if ($packageTag == $package->getVersion()) {
             // if version is fully matching, there's no need to update
             return;
