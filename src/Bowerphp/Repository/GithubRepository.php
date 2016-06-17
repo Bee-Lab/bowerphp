@@ -105,7 +105,6 @@ class GithubRepository implements RepositoryInterface
         list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
         $paginator = new ResultPager($this->githubClient);
         $tags = $paginator->fetchAll($this->githubClient->api('repo'), 'tags', [$repoUser, $repoName]);
-
         // edge case: package has no tags
         if (count($tags) === 0) {
 			$this->tag = ['name'=>'master'];
@@ -115,9 +114,13 @@ class GithubRepository implements RepositoryInterface
         // edge case: user asked for latest package
         if ($rawCriteria == 'latest' || $rawCriteria == '*' || empty($rawCriteria)) {
             $sortedTags = $this->sortTags($tags);
-            $this->tag = end($sortedTags);
-
-            return $this->tag['name'];
+            if(!empty($sortedTags)){
+				$this->tag = end($sortedTags);
+			}
+			else{
+				$this->tag = ['name'=>'master'];
+			}
+			return $this->tag['name'];
         }
 
         // edge case for versions vith slash (like ckeditor). See also issue #120
