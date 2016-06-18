@@ -24,6 +24,9 @@ use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Finder\Finder;
 
+use vierbergenlars\SemVer\version;
+use vierbergenlars\SemVer\expression;
+
 /**
  * Main class
  */
@@ -96,15 +99,14 @@ class Bowerphp
             $packageTag = $this->getPackageTag($package, true);
             $package->setRepository($this->repository);
         }
-
         $package->setVersion($packageTag);
-
         $this->updateBowerFile($package, $isDependency);
 
+        
         // if package is already installed, match current version with latest available version
         if ($this->isPackageInstalled($package)) {
             $packageBower = $this->config->getPackageBowerFileContent($package);
-            if ($packageTag == $packageBower['version']) {
+            if(isset($packageBower['version']) && $packageTag == $packageBower['version']) {
                 // if version is fully matching, there's no need to install
                 return;
             }
@@ -130,7 +132,7 @@ class Bowerphp
                 if (!$this->isPackageInstalled($depPackage)) {
                     $this->installPackage($depPackage, $installer, true);
                 } else {
-                    $this->updatePackage($depPackage, $installer);
+                    $this->updatePackage($depPackage, $installer, false);
                 }
             }
         }
@@ -150,7 +152,12 @@ class Bowerphp
                     list($name, $requiredVersion) = explode('#', $requiredVersion);
                 }
                 $package = new Package($name, $requiredVersion);
-                $this->installPackage($package, $installer, true);
+                try{
+					$this->installPackage($package, $installer, true);
+				}
+				catch(\RuntimeException $e){
+					throw new \RuntimeException($name.' '.$requiredVersion.' '.$e->getMessage());
+				}
             }
         }
     }
@@ -161,11 +168,30 @@ class Bowerphp
      * @param PackageInterface   $package
      * @param InstallerInterface $installer
      */
-    public function updatePackage(PackageInterface $package, InstallerInterface $installer)
+    public function updatePackage(PackageInterface $package, InstallerInterface $installer, $force=true)
     {
         if (!$this->isPackageInstalled($package)) {
             throw new RuntimeException(sprintf('Package %s is not installed.', $package->getName()));
         }
+		
+		if(!$force){
+			$packageTag = $this->getPackageTag($package);
+            $decode = $this->config->getBowerFileContent();
+            if(isset($decode['dependencies'][$package->getName()])){
+				$requiredVersion = $decode['dependencies'][$package->getName()];
+				$semver = new version($packageTag);
+				if($requiredVersion=='latest'||$requiredVersion=='master'){
+					$requiredVersionExpression = '*';
+				}
+				else{
+					$requiredVersionExpression = $requiredVersion;
+				}
+				if(!$semver->satisfies(new expression($requiredVersionExpression))){
+					$package->setRequiredVersion($requiredVersion);
+				}
+			}
+		}
+		
         if (is_null($package->getRequiredVersion())) {
             $decode = $this->config->getBowerFileContent();
             if (empty($decode['dependencies']) || empty($decode['dependencies'][$package->getName()])) {
@@ -176,11 +202,14 @@ class Bowerphp
 
         $bower = $this->config->getPackageBowerFileContent($package);
         $package->setInfo($bower);
-        $package->setVersion($bower['version']);
+        if(isset($bower['version'])){
+            $package->setVersion($bower['version']);
+        }
         $package->setRequires(isset($bower['dependencies']) ? $bower['dependencies'] : null);
 
         $packageTag = $this->getPackageTag($package);
-        $package->setRepository($this->repository);
+        $package->setRepository($this->repository);        
+        
         if ($packageTag == $package->getVersion()) {
             // if version is fully matching, there's no need to update
             return;
@@ -233,7 +262,7 @@ class Bowerphp
      */
     public function getPackageInfo(PackageInterface $package, $info = 'url')
     {
-        $decode = $this->lookupPackage($package->getName());
+        $decode = $this->lookupPackage($package);
 
         $this->repository->setHttpClient($this->githubClient);
 
@@ -259,9 +288,9 @@ class Bowerphp
      * @param  string $name
      * @return array
      */
-    public function lookupPackage($name)
+    public function lookupPackage($package)
     {
-        return $this->findPackage($name);
+        return $this->findPackage($package);
     }
 
     /**
@@ -271,7 +300,7 @@ class Bowerphp
     public function getPackageBowerFile(PackageInterface $package)
     {
         $this->repository->setHttpClient($this->githubClient);
-        $lookupPackage = $this->lookupPackage($package->getName());
+        $lookupPackage = $this->lookupPackage($package);
         $this->repository->setUrl($lookupPackage['url'], false);
         $tag = $this->repository->findPackage($package->getRequiredVersion());
 
@@ -403,7 +432,7 @@ class Bowerphp
      */
     protected function getPackageTag(PackageInterface $package, $setInfo = false)
     {
-        $decode = $this->findPackage($package->getName());
+        $decode = $this->findPackage($package);
         // open package repository
         $repoUrl = $decode['url'];
         $this->repository->setUrl($repoUrl)->setHttpClient($this->githubClient);
@@ -427,10 +456,16 @@ class Bowerphp
      * @param  string $name
      * @return array
      */
-    protected function findPackage($name)
+    protected function findPackage($package)
     {
+        $name = $package->getName();
+        
+        if( $url = $package->getRequiredVersionUrl() ){
+            return ['name'=>$name,'url'=>$url];
+        }
+        
         try {
-            $response = $this->githubClient->getHttpClient()->get($this->config->getBasePackagesUrl() . urlencode($name));
+            $response = $this->githubClient->getHttpClient()->get($this->config->getBasePackagesUrl().urlencode($name));
         } catch (RuntimeException $e) {
             throw new RuntimeException(sprintf('Cannot fetch registry info for package %s from search registry (%s).', $name, $e->getMessage()));
         }

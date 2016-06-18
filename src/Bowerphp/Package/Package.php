@@ -11,7 +11,9 @@ class Package implements PackageInterface
 {
     protected $name;
     protected $repository;
+    protected $requiredVersionValue;
     protected $requiredVersion;
+    protected $requiredVersionUrl;
     protected $version;
     protected $requires = [];
     protected $info = [];
@@ -29,12 +31,18 @@ class Package implements PackageInterface
     {
         $this->name = $name;
         $this->requiredVersion = $requiredVersion === 'master' ? '*' : $requiredVersion;
+        
         $this->version = $version;
         if (!empty($requires)) {
             $this->requires = $requires;
         }
         if (!empty($info)) {
             $this->info = $info;
+        }
+        
+        if(false!==($p=strpos($requiredVersion,'#'))){
+            $this->requiredVersionUrl = substr($requiredVersion,0,$p);
+            $this->requiredVersion = substr($requiredVersion,$p+1);
         }
     }
 
@@ -65,6 +73,12 @@ class Package implements PackageInterface
     /**
      * {@inheritdoc}
      */
+    public function getRequiredVersionValue(){
+        return $this->requiredVersionValue;
+    }
+    public function getRequiredVersionUrl(){
+        return $this->requiredVersionUrl;
+    }
     public function getRequiredVersion()
     {
         return $this->requiredVersion;

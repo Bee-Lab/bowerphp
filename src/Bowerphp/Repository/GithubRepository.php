@@ -77,7 +77,13 @@ class GithubRepository implements RepositoryInterface
             // then, we call setUrl(), to get the http url
             $this->setUrl($url, true);
         }
-        $json = $this->getDepBowerJson($version);
+        try{
+            $json = $this->getDepBowerJson($version);
+        }
+        catch(\Exception $e){
+            $json = '{}';
+        }
+        
         if ($includeHomepage) {
             $array = json_decode($json, true);
             if (!empty($url)) {
@@ -85,7 +91,7 @@ class GithubRepository implements RepositoryInterface
                 $this->setUrl($oldUrl, true);
             }
             $array['homepage'] = $this->url;
-            $json = json_encode($array, JSON_PRETTY_PRINT);
+            $json = json_encode($array, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
         }
 
         return $json;
@@ -98,19 +104,24 @@ class GithubRepository implements RepositoryInterface
     {
         list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
         $paginator = new ResultPager($this->githubClient);
-        $tags = $paginator->fetchAll($this->githubClient->api('repo'), 'tags', [$repoUser, $repoName]);
-
+        try{
+			$tags = $paginator->fetchAll($this->githubClient->api('repo'), 'tags', [$repoUser, $repoName]);
+		}
+		catch(\Exception $e){
+			$tags = [];
+		}
         // edge case: package has no tags
         if (count($tags) === 0) {
+			$this->tag = ['name'=>'master'];
             return 'master';
         }
-
+		
+		
         // edge case: user asked for latest package
         if ($rawCriteria == 'latest' || $rawCriteria == '*' || empty($rawCriteria)) {
             $sortedTags = $this->sortTags($tags);
-            $this->tag = end($sortedTags);
-
-            return $this->tag['name'];
+			$this->tag = end($sortedTags);
+			return $this->tag['name'];
         }
 
         // edge case for versions vith slash (like ckeditor). See also issue #120
@@ -157,7 +168,6 @@ class GithubRepository implements RepositoryInterface
     public function getRelease($type = 'zip')
     {
         list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
-
         return $this->githubClient->api('repo')->contents()->archive($repoUser, $repoName, $type . 'ball', $this->tag['name']);
     }
 
@@ -201,7 +211,7 @@ class GithubRepository implements RepositoryInterface
             // try anyway. E.g. exists() return false for Modernizr, but then it downloads :-|
             $json = $contents->download($repoUser, $repoName, 'package.json', $version);
         }
-
+        
         if (substr($json, 0, 3) == "\xef\xbb\xbf") {
             $json = substr($json, 3);
         }
@@ -212,7 +222,7 @@ class GithubRepository implements RepositoryInterface
             if (isset($array['dependencies'])) {
                 unset($array['dependencies']);
             }
-            $json = json_encode($array, JSON_PRETTY_PRINT);
+            $json = json_encode($array, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
         }
 
         return $json;
@@ -306,7 +316,11 @@ class GithubRepository implements RepositoryInterface
         uasort($return, function ($a, $b) {
             return version::compare($a['parsed_version'], $b['parsed_version']);
         });
-
+		
+		if(empty($return)){
+			$return = [['name'=>'master']];
+		}
+		
         return $return;
     }
 

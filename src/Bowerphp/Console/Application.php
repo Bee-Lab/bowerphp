@@ -55,6 +55,11 @@ class Application extends BaseApplication
         if ($input->hasParameterOption('--profile')) {
             $startTime = microtime(true);
         }
+        
+        if ($input->hasParameterOption('--token')&&($token = $input->getParameterOption(['--token', '-t']))) {
+            putenv("BOWERPHP_TOKEN=$token");
+            $GLOBALS['BOWERPHP_TOKEN'] = $token;
+        }
 
         if ($newWorkDir = $this->getNewWorkingDir($input)) {
             $oldWorkingDir = getcwd();
@@ -108,6 +113,7 @@ class Application extends BaseApplication
     protected function getDefaultInputDefinition()
     {
         $definition = parent::getDefaultInputDefinition();
+        $definition->addOption(new InputOption('--token', '-t', InputOption::VALUE_OPTIONAL, 'Pass github token as parameter'));
         $definition->addOption(new InputOption('--profile', null, InputOption::VALUE_NONE, 'Display timing and memory usage information'));
         $definition->addOption(new InputOption('--working-dir', '-d', InputOption::VALUE_REQUIRED, 'If specified, use the given directory as working directory.'));
 
@@ -156,7 +162,7 @@ class Application extends BaseApplication
 
             return 0;
         }
-
+        
         $name = $this->getCommandName($input);
 
         if (true === $input->hasParameterOption(['--help', '-h'])) {

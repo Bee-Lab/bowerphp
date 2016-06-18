@@ -48,6 +48,11 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->setGithubToken($output);
+		
+		$scripts = $this->config->getScripts();
+		foreach((array)$scripts['preuninstall'] as $script){
+			passthru($script);
+		}
 
         $packageName = $input->getArgument('package');
 

@@ -28,6 +28,7 @@ class Config implements ConfigInterface
     protected $saveToBowerJsonFile = false;
     protected $bowerFileNames = ['bower.json', 'package.json'];
     protected $stdBowerFileName = 'bower.json';
+    protected $scripts = ['preinstall'=>[],'postinstall'=>[],'preuninstall'=>[]];
 
     /**
      * @param Filesystem $filesystem
@@ -38,7 +39,6 @@ class Config implements ConfigInterface
         $this->cacheDir = $this->getHomeDir() . '/.cache/bowerphp';
         $this->installDir = getcwd() . '/bower_components';
         $rc = getcwd() . '/.bowerrc';
-
         if ($this->filesystem->exists($rc)) {
             $json = json_decode($this->filesystem->read($rc), true);
             if (is_null($json)) {
@@ -50,9 +50,35 @@ class Config implements ConfigInterface
             if (isset($json['storage']) && isset($json['storage']['packages'])) {
                 $this->cacheDir = $json['storage']['packages'];
             }
+            if (isset($json['scripts'])){
+				$this->scripts = (array)$json['scripts']+$this->scripts;
+			}
+            if (isset($json['token'])&&!isset($GLOBALS['BOWERPHP_TOKEN'])){
+				putenv('BOWERPHP_TOKEN='.$json['token']);
+				$GLOBALS['BOWERPHP_TOKEN'] = $json['token'];
+			}
+			
+        }
+        
+        $composer = getcwd() . '/composer.json';
+        if (!isset($GLOBALS['BOWERPHP_TOKEN'])&&$this->filesystem->exists($composer)) {
+            $json = json_decode($this->filesystem->read($composer), true);
+            if (isset($json['config']['github-oauth']['github.com'])){
+				$token = $json['config']['github-oauth']['github.com'];
+				putenv('BOWERPHP_TOKEN='.$token);
+				$GLOBALS['BOWERPHP_TOKEN'] = $token;
+			}
         }
     }
-
+	
+	/**
+     * {@inheritdoc}
+     */
+    public function getScripts()
+    {
+        return $this->scripts;
+    }
+	
     /**
      * {@inheritdoc}
      */
@@ -107,7 +133,7 @@ class Config implements ConfigInterface
     public function initBowerJsonFile(array $params)
     {
         $file = getcwd() . '/' . $this->stdBowerFileName;
-        $json = json_encode($this->createAClearBowerFile($params), JSON_PRETTY_PRINT);
+        $json = json_encode($this->createAClearBowerFile($params), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
 
         return $this->filesystem->write($file, $json);
     }
@@ -124,7 +150,7 @@ class Config implements ConfigInterface
         $decode = $this->getBowerFileContent();
         $decode['dependencies'][$package->getName()] = $package->getRequiredVersion();
         $file = getcwd() . '/' . $this->stdBowerFileName;
-        $json = json_encode($decode, JSON_PRETTY_PRINT);
+        $json = json_encode($decode, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
 
         return $this->filesystem->write($file, $json);
     }
@@ -134,7 +160,7 @@ class Config implements ConfigInterface
      */
     public function updateBowerJsonFile2(array $old, array $new)
     {
-        $json = json_encode(array_merge($old, $new), JSON_PRETTY_PRINT);
+        $json = json_encode(array_merge($old, $new), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
         $file = getcwd() . '/' . $this->stdBowerFileName;
 
         return $this->filesystem->write($file, $json);

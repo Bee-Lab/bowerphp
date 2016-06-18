@@ -60,9 +60,15 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+		
         $this->setGithubToken($output);
         $this->config->setSaveToBowerJsonFile($input->getOption('save'));
 
+		$scripts = $this->config->getScripts();
+		foreach((array)$scripts['preinstall'] as $script){
+			passthru($script);
+		}
+		
         $packageName = $input->getArgument('package');
 
         $bowerphp = $this->getBowerphp($output);
@@ -103,7 +109,13 @@ EOT
 
             return 1;
         }
-
+		
+        $output->writeln('');
+        
+		foreach((array)$scripts['postinstall'] as $script){
+			passthru($script);
+		}
+		
         $output->writeln('');
     }
 }

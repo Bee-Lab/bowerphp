@@ -84,7 +84,7 @@ class BowerphpConsoleOutput
      */
     public function writelnJsonText($jsonPart)
     {
-        $this->output->writeln(sprintf('<fg=cyan>%s</fg=cyan>', json_encode($jsonPart, JSON_PRETTY_PRINT)));
+        $this->output->writeln(sprintf('<fg=cyan>%s</fg=cyan>', json_encode($jsonPart, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)));
     }
 
     /**
