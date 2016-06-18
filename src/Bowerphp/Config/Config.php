@@ -133,7 +133,7 @@ class Config implements ConfigInterface
     public function initBowerJsonFile(array $params)
     {
         $file = getcwd() . '/' . $this->stdBowerFileName;
-        $json = json_encode($this->createAClearBowerFile($params), JSON_PRETTY_PRINT);
+        $json = json_encode($this->createAClearBowerFile($params), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
 
         return $this->filesystem->write($file, $json);
     }
@@ -150,7 +150,7 @@ class Config implements ConfigInterface
         $decode = $this->getBowerFileContent();
         $decode['dependencies'][$package->getName()] = $package->getRequiredVersion();
         $file = getcwd() . '/' . $this->stdBowerFileName;
-        $json = json_encode($decode, JSON_PRETTY_PRINT);
+        $json = json_encode($decode, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
 
         return $this->filesystem->write($file, $json);
     }
@@ -160,7 +160,7 @@ class Config implements ConfigInterface
      */
     public function updateBowerJsonFile2(array $old, array $new)
     {
-        $json = json_encode(array_merge($old, $new), JSON_PRETTY_PRINT);
+        $json = json_encode(array_merge($old, $new), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
         $file = getcwd() . '/' . $this->stdBowerFileName;
 
         return $this->filesystem->write($file, $json);

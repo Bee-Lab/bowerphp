@@ -91,7 +91,7 @@ class GithubRepository implements RepositoryInterface
                 $this->setUrl($oldUrl, true);
             }
             $array['homepage'] = $this->url;
-            $json = json_encode($array, JSON_PRETTY_PRINT);
+            $json = json_encode($array, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
         }
 
         return $json;
@@ -221,7 +221,7 @@ class GithubRepository implements RepositoryInterface
             if (isset($array['dependencies'])) {
                 unset($array['dependencies']);
             }
-            $json = json_encode($array, JSON_PRETTY_PRINT);
+            $json = json_encode($array, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
         }
 
         return $json;

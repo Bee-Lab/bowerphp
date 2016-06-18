@@ -81,7 +81,7 @@ class Installer implements InstallerInterface
         if(!isset($dotBowerContent['name'])){
             $dotBowerContent['name'] = $package->getName();
         }
-        $dotBowerJson = str_replace('\/', '/', json_encode($dotBowerContent, JSON_PRETTY_PRINT));
+        $dotBowerJson = str_replace('\/', '/', json_encode($dotBowerContent, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE));
         $this->filesystem->write($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json', $dotBowerJson);
     }
 
