@@ -99,11 +99,10 @@ class Bowerphp
             $packageTag = $this->getPackageTag($package, true);
             $package->setRepository($this->repository);
         }
-
         $package->setVersion($packageTag);
-
         $this->updateBowerFile($package, $isDependency);
 
+        
         // if package is already installed, match current version with latest available version
         if ($this->isPackageInstalled($package)) {
             $packageBower = $this->config->getPackageBowerFileContent($package);
@@ -181,7 +180,13 @@ class Bowerphp
             if(isset($decode['dependencies'][$package->getName()])){
 				$requiredVersion = $decode['dependencies'][$package->getName()];
 				$semver = new version($packageTag);
-				if(!$semver->satisfies(new expression($requiredVersion))){
+				if($requiredVersion=='latest'||$requiredVersion=='master'){
+					$requiredVersionExpression = '*';
+				}
+				else{
+					$requiredVersionExpression = $requiredVersion;
+				}
+				if(!$semver->satisfies(new expression($requiredVersionExpression))){
 					$package->setRequiredVersion($requiredVersion);
 				}
 			}
