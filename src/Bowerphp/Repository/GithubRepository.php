@@ -104,22 +104,23 @@ class GithubRepository implements RepositoryInterface
     {
         list($repoUser, $repoName) = explode('/', $this->clearGitURL($this->url));
         $paginator = new ResultPager($this->githubClient);
-        $tags = $paginator->fetchAll($this->githubClient->api('repo'), 'tags', [$repoUser, $repoName]);
+        try{
+			$tags = $paginator->fetchAll($this->githubClient->api('repo'), 'tags', [$repoUser, $repoName]);
+		}
+		catch(\Exception $e){
+			$tags = [];
+		}
         // edge case: package has no tags
         if (count($tags) === 0) {
 			$this->tag = ['name'=>'master'];
             return 'master';
         }
-
+		
+		
         // edge case: user asked for latest package
         if ($rawCriteria == 'latest' || $rawCriteria == '*' || empty($rawCriteria)) {
             $sortedTags = $this->sortTags($tags);
-            if(!empty($sortedTags)){
-				$this->tag = end($sortedTags);
-			}
-			else{
-				$this->tag = ['name'=>'master'];
-			}
+			$this->tag = end($sortedTags);
 			return $this->tag['name'];
         }
 
@@ -315,7 +316,11 @@ class GithubRepository implements RepositoryInterface
         uasort($return, function ($a, $b) {
             return version::compare($a['parsed_version'], $b['parsed_version']);
         });
-
+		
+		if(empty($return)){
+			$return = ['name'=>'master'];
+		}
+		
         return $return;
     }
 
