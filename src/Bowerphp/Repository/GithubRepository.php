@@ -318,7 +318,7 @@ class GithubRepository implements RepositoryInterface
         });
 		
 		if(empty($return)){
-			$return = ['name'=>'master'];
+			$return = [['name'=>'master']];
 		}
 		
         return $return;
