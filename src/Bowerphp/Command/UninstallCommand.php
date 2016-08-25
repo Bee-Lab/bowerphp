@@ -33,7 +33,7 @@ class UninstallCommand extends Command
             ->setName('uninstall')
             ->setDescription('Uninstalls a single specified package')
             ->addArgument('package', InputArgument::REQUIRED, 'Choose a package.')
-            ->setHelp(<<<EOT
+            ->setHelp(<<<'EOT'
 The <info>%command.name%</info> command uninstall a package.
 
   <info>php %command.full_name% packageName</info>

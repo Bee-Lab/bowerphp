@@ -29,7 +29,7 @@ class SearchCommand extends Command
             ->setName('search')
             ->setDescription('Search for a package by name')
             ->addArgument('name', InputArgument::REQUIRED, 'Name to search for.')
-            ->setHelp(<<<EOT
+            ->setHelp(<<<'EOT'
 The <info>%command.name%</info> command searches for a package by name.
 
   <info>php %command.full_name% name</info>

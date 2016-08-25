@@ -36,7 +36,7 @@ class InstallCommand extends Command
             ->setDescription('Installs the project dependencies from the bower.json file or a single specified package')
             ->addOption('save', 'S', InputOption::VALUE_NONE, 'Add installed package to bower.json file.')
             ->addArgument('package', InputArgument::OPTIONAL, 'Choose a package.')
-            ->setHelp(<<<EOT
+            ->setHelp(<<<'EOT'
 The <info>%command.name%</info> command reads the bower.json file from
 the current directory, processes it, and downloads and installs all the
 libraries and dependencies outlined in that file.

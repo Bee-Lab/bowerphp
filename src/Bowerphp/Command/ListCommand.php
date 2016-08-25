@@ -32,7 +32,7 @@ class ListCommand extends Command
         $this
             ->setName('list')
             ->setDescription('Lists installed packages')
-            ->setHelp(<<<EOT
+            ->setHelp(<<<'EOT'
 The <info>%command.name%</info> lists installed packages.
 
   <info>%command.full_name%</info>

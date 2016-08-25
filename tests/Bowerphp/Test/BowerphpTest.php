@@ -33,7 +33,7 @@ class BowerphpTest extends TestCase
 
     public function testInit()
     {
-        $json = <<<EOT
+        $json = <<<'EOT'
 {
     "name": "Foo",
     "authors": [
@@ -204,10 +204,10 @@ EOT;
             ->shouldReceive('install')->never()
         ;
 
-        #$this->filesystem
-        #    ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
-        #    ->shouldReceive('dumpFile')->with('./tmp/jquery', "fileAsString...", 0644)
-        #;
+        //$this->filesystem
+        //    ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
+        //    ->shouldReceive('dumpFile')->with('./tmp/jquery', "fileAsString...", 0644)
+        //;
 
         $bowerphp = new Bowerphp($this->config, $this->filesystem, $this->httpClient, $this->repository, $this->output);
         $bowerphp->installPackage($package, $installer);

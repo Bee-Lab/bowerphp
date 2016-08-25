@@ -27,7 +27,7 @@ class InitCommand extends Command
         $this
             ->setName('init')
             ->setDescription('Initializes a bower.json file')
-            ->setHelp(<<<EOT
+            ->setHelp(<<<'EOT'
 The <info>%command.name%</info> command initializes a bower.json file in
 the current directory.
 

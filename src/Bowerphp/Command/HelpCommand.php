@@ -37,7 +37,7 @@ class HelpCommand extends SymfonyHelpCommand
                 new InputOption('raw', null, InputOption::VALUE_NONE, 'To output raw command help'),
             ])
             ->setDescription('Displays help for a command')
-            ->setHelp(<<<EOF
+            ->setHelp(<<<'EOF'
 The <info>%command.name%</info> command displays help for a given command:
 
   <info>php %command.full_name% list</info>
