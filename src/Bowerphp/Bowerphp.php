@@ -129,7 +129,7 @@ class Bowerphp
                 $depPackage = new Package($name, $version);
                 if (!$this->isPackageInstalled($depPackage)) {
                     $this->installPackage($depPackage, $installer, true);
-                } else {
+                } elseif($this->isNeedUpdate($depPackage)) {
                     $this->updatePackage($depPackage, $installer);
                 }
             }
@@ -204,7 +204,7 @@ class Bowerphp
                 $depPackage = new Package($name, $requiredVersion);
                 if (!$this->isPackageInstalled($depPackage)) {
                     $this->installPackage($depPackage, $installer, true);
-                } else {
+                } elseif($this->isNeedUpdate($depPackage)) {
                     $this->updatePackage($depPackage, $installer);
                 }
             }
@@ -468,4 +468,30 @@ class Bowerphp
             }
         }
     }
+    
+    /**
+     * Update only if needed is greater version
+     * 
+     * @param PackageInterface $package
+     * @return boolean
+     */
+    function isNeedUpdate($package){
+		if(!$package->getRequiredVersion()){
+			return false;
+		}
+		$packageBower = $this->config->getPackageBowerFileContent($package);
+		$requireVersion = $package->getRequiredVersion();
+        $compare = '=';
+        
+		preg_match( '!^[^\\d]+!', $requireVersion, $matches);
+		if(!empty($matches[0])){
+			$compare = $matches[0];
+			$requireVersion = substr($requireVersion, strlen($compare));
+			if($compare == '~'){
+				$compare = '>';
+				$requireVersion = substr($requireVersion, 0, strrpos($requireVersion, '.'));
+			}
+		}
+		return version_compare($requireVersion, $packageBower['version'], $compare);
+	}
 }
