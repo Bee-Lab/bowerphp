@@ -23,6 +23,8 @@ use Guzzle\Http\Exception\RequestException;
 use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Finder\Finder;
+use vierbergenlars\SemVer\version;
+use vierbergenlars\SemVer\expression;
 
 /**
  * Main class
@@ -476,22 +478,8 @@ class Bowerphp
      */
     public function isNeedUpdate($package)
     {
-        if (!$package->getRequiredVersion()) {
-            return false;
-        }
         $packageBower = $this->config->getPackageBowerFileContent($package);
-        $requireVersion = $package->getRequiredVersion();
-        $compare = '=';
-        preg_match('!^[^\\d]+!', $requireVersion, $matches);
-        if (!empty($matches[0])) {
-            $compare = $matches[0];
-            $requireVersion = substr($requireVersion, strlen($compare));
-            if ($compare == '~') {
-                $compare = '>';
-                $requireVersion = substr($requireVersion, 0, strrpos($requireVersion, '.'));
-            }
-        }
-
-        return version_compare($requireVersion, $packageBower['version'], $compare);
+        $semver = new version($packageBower['version']);
+        return $semver->satisfies(new expression($package->getRequiredVersion()));
     }
 }
