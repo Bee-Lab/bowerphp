@@ -23,6 +23,8 @@ use Guzzle\Http\Exception\RequestException;
 use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Finder\Finder;
+use vierbergenlars\SemVer\version;
+use vierbergenlars\SemVer\expression;
 
 /**
  * Main class
@@ -129,7 +131,7 @@ class Bowerphp
                 $depPackage = new Package($name, $version);
                 if (!$this->isPackageInstalled($depPackage)) {
                     $this->installPackage($depPackage, $installer, true);
-                } else {
+                } elseif ($this->isNeedUpdate($depPackage)) {
                     $this->updatePackage($depPackage, $installer);
                 }
             }
@@ -204,7 +206,7 @@ class Bowerphp
                 $depPackage = new Package($name, $requiredVersion);
                 if (!$this->isPackageInstalled($depPackage)) {
                     $this->installPackage($depPackage, $installer, true);
-                } else {
+                } elseif ($this->isNeedUpdate($depPackage)) {
                     $this->updatePackage($depPackage, $installer);
                 }
             }
@@ -344,7 +346,6 @@ class Bowerphp
         try {
             $bower = $this->config->getBowerFileContent();
         } catch (RuntimeException $e) { // no bower.json file, package is extraneous
-
             return true;
         }
         if (!isset($bower['dependencies'])) {
@@ -467,5 +468,19 @@ class Bowerphp
                 $this->output->writelnNoBowerJsonFile();
             }
         }
+    }
+
+    /**
+     * Update only if needed is greater version
+     *
+     * @param  PackageInterface $package
+     * @return bool
+     */
+    public function isNeedUpdate($package)
+    {
+        $packageBower = $this->config->getPackageBowerFileContent($package);
+        $semver = new version($packageBower['version']);
+
+        return !$semver->satisfies(new expression($package->getRequiredVersion()));
     }
 }
