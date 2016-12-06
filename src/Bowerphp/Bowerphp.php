@@ -467,14 +467,14 @@ class Bowerphp
             }
         }
     }
-    
+
     /**
      * Update only if needed is greater version
      *
      * @param  PackageInterface $package
      * @return bool
      */
-    public function isNeedUpdate($package) 
+    public function isNeedUpdate($package)
     {
         if (!$package->getRequiredVersion()) {
             return false;
@@ -491,7 +491,7 @@ class Bowerphp
                 $requireVersion = substr($requireVersion, 0, strrpos($requireVersion, '.'));
             }
         }
-        
+
         return version_compare($requireVersion, $packageBower['version'], $compare);
     }
 }
