@@ -480,6 +480,7 @@ class Bowerphp
     {
         $packageBower = $this->config->getPackageBowerFileContent($package);
         $semver = new version($packageBower['version']);
+        
         return $semver->satisfies(new expression($package->getRequiredVersion()));
     }
 }
