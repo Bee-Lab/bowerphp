@@ -131,7 +131,7 @@ class GithubRepository implements RepositoryInterface
         } catch (SemVerException $sve) {
             throw new RuntimeException(sprintf('Criteria %s is not valid.', $rawCriteria), self::INVALID_CRITERIA, $sve);
         }
-        
+
         // prerelease tag check
         $preReleaseChecker = Exports::$re[\vierbergenlars\SemVer\Internal\PRERELEASE];
         $sortedTags = $this->sortTags($tags, $preReleaseChecker->exec($rawCriteria) === null);
