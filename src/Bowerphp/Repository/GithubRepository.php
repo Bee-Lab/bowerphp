@@ -8,6 +8,7 @@ use RuntimeException;
 use vierbergenlars\SemVer\expression;
 use vierbergenlars\SemVer\SemVerException;
 use vierbergenlars\SemVer\version;
+use vierbergenlars\SemVer\Internal\Exports;
 
 /**
  * GithubRepository
@@ -130,7 +131,10 @@ class GithubRepository implements RepositoryInterface
         } catch (SemVerException $sve) {
             throw new RuntimeException(sprintf('Criteria %s is not valid.', $rawCriteria), self::INVALID_CRITERIA, $sve);
         }
-        $sortedTags = $this->sortTags($tags);
+
+        // prerelease tag check
+        $preReleaseChecker = Exports::$re[\vierbergenlars\SemVer\Internal\PRERELEASE];
+        $sortedTags = $this->sortTags($tags, $preReleaseChecker->exec($rawCriteria) === null);
 
         // Yes, the php-semver lib does offer a maxSatisfying() method similar the code below.
         // We're not using it because it will throw an exception on what it considers to be an
