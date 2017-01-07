@@ -46,6 +46,11 @@ class PackageNameVersionExtractor
         $name = isset($map[0]) ? $map[0] : $endpoint;
         $version = isset($map[1]) ? $map[1] : '*';
 
+        // Convert user/package shorthand to GitHub url
+        if (preg_match('/^([-_a-z0-9]+)\/([-_a-z0-9]+)$/i', $name)) {
+            $name = 'https://github.com/' . $name . '.git';
+        }
+
         return new self($name, $version);
     }
 }
