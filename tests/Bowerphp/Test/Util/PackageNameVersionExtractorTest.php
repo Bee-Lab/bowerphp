@@ -32,4 +32,24 @@ class PackageNameVersionExtractorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('jquery', $packageNameVersion->name);
         $this->assertEquals('1.10.2', $packageNameVersion->version);
     }
+
+    public function testReturnPackageGithubUrlFromShorthand()
+    {
+        $package = 'jquery/jquery';
+
+        $packageNameVersion = PackageNameVersionExtractor::fromString($package);
+
+        $this->assertEquals('https://github.com/jquery/jquery.git', $packageNameVersion->name);
+        $this->assertEquals('*', $packageNameVersion->version);
+    }
+
+    public function testReturnPackageGithubUrlAndVersionFromShorthand()
+    {
+        $package = 'jquery/jquery#1.10.2';
+
+        $packageNameVersion = PackageNameVersionExtractor::fromString($package);
+
+        $this->assertEquals('https://github.com/jquery/jquery.git', $packageNameVersion->name);
+        $this->assertEquals('1.10.2', $packageNameVersion->version);
+    }
 }
