@@ -43,7 +43,7 @@ class GithubRepository implements RepositoryInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getUrl()
     {

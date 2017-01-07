@@ -20,6 +20,11 @@ interface RepositoryInterface
     public function setUrl($url, $raw = true);
 
     /**
+     * @return string
+     */
+    public function getUrl();
+
+    /**
      * @param Client $githubClient
      */
     public function setHttpClient(Client $githubClient);
