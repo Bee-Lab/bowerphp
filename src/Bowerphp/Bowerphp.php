@@ -23,8 +23,8 @@ use Guzzle\Http\Exception\RequestException;
 use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Finder\Finder;
-use vierbergenlars\SemVer\version;
 use vierbergenlars\SemVer\expression;
+use vierbergenlars\SemVer\version;
 
 /**
  * Main class

@@ -5,7 +5,6 @@ namespace Bowerphp\Test\Installer;
 use Bowerphp\Installer\Installer;
 use Bowerphp\Test\TestCase;
 use Mockery;
-use RuntimeException;
 
 class InstallerTest extends TestCase
 {
@@ -100,7 +99,7 @@ class InstallerTest extends TestCase
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Unable to open zip file ./tmp/jquery.
      */
     public function testInstallZipOpenException()
@@ -119,7 +118,7 @@ class InstallerTest extends TestCase
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Unable to open zip file ./tmp/jquery.
      */
     public function testUpdateZipOpenException()
@@ -214,7 +213,7 @@ class InstallerTest extends TestCase
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Invalid content in .bower.json for package package1.
      */
     public function testGetInstalledWithoutBowerJsonFile()

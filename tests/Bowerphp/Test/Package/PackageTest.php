@@ -25,7 +25,7 @@ class PackageTest extends TestCase
     }
 
     /**
-     * @expectedException LogicException
+     * @expectedException \LogicException
      */
     public function testCannotChangeRepository()
     {

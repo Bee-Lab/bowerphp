@@ -15,7 +15,7 @@ class ErrorHandlerTest extends TestCase
     }
 
     /**
-     * @expectedException ErrorException
+     * @expectedException \ErrorException
      */
     public function testHandleXdebug()
     {
@@ -32,7 +32,7 @@ class ErrorHandlerTest extends TestCase
     }
 
     /**
-     * @expectedException ErrorException
+     * @expectedException \ErrorException
      */
     public function testHandleException()
     {

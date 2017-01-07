@@ -41,7 +41,7 @@ class CommandListCommandTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Invalid working directory specified.
      */
     public function testWrongWorkingDir()

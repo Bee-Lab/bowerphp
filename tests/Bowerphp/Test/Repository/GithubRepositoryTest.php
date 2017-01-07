@@ -109,7 +109,7 @@ class GithubRepositoryTest extends TestCase
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      */
     public function testGetBowerWithoutBowerJsonNorPackageJson()
     {
@@ -334,7 +334,7 @@ class GithubRepositoryTest extends TestCase
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      */
     public function testFindPackageVersionNotFound()
     {

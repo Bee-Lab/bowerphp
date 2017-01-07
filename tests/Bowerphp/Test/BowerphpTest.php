@@ -126,7 +126,7 @@ EOT;
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Cannot find package select2 version 3.4.5.
      */
     public function testInstallPackageFromGithubEndPointVersionNotFound()
@@ -338,7 +338,7 @@ EOT;
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      */
     public function testInstallDependenciesException()
     {
@@ -373,7 +373,7 @@ EOT;
     }
 
     /**
-     * @expectedException        InvalidArgumentException
+     * @expectedException        \InvalidArgumentException
      * @expectedExceptionMessage Package notinbowerjson not found in bower.json
      */
     public function testUpdatePackageNotFoundInBowerJson()
@@ -402,7 +402,7 @@ EOT;
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Cannot fetch registry info for package jquery from search registry (error).
      */
     public function testUpdatePackageNotFoundInRepository()
@@ -440,7 +440,7 @@ EOT;
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Registry info for package colorbox has malformed json or is missing "url".
      */
     public function testUpdatePackageJsonException()
@@ -471,7 +471,7 @@ EOT;
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Invalid bower.json found in package colorbox: {invalid.
      */
     public function testUpdatePackageWithInvalidBowerJson()
@@ -603,7 +603,7 @@ EOT;
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Malformed JSON
      */
     public function testUpdatePackageWithMalformedBowerJsonContent()
@@ -638,7 +638,7 @@ EOT;
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Cannot find package colorbox version 2.*.
      */
     public function testUpdatePackageVersionNotFound()
@@ -769,7 +769,7 @@ EOT;
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      * @expectedExceptionMessage Cannot get package list from http://bower.herokuapp.com.
      */
     public function testSearchPackagesException()
@@ -932,7 +932,7 @@ EOT;
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Registry info for package colorbox has malformed json or is missing "url".
      */
     public function testInstallPackageJsonException()
@@ -953,7 +953,7 @@ EOT;
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Invalid bower.json found in package colorbox: {invalid.
      */
     public function testInstallBowerJsonException()
@@ -980,7 +980,7 @@ EOT;
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Cannot find package colorbox version *.
      */
     public function testInstallPackageVersionNotFound()
@@ -1069,7 +1069,7 @@ EOT;
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Package jquery is not installed.
      */
     public function testUpdateUninstalledPackage()
@@ -1152,7 +1152,7 @@ EOT;
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Unsupported info option "baz"
      */
     public function testGetPackageInfoInvalidInfo()
@@ -1177,7 +1177,7 @@ EOT;
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Registry info for package colorbox has malformed json or is missing "url".
      */
     public function testGetPackageInfoJsonException()
@@ -1233,7 +1233,7 @@ EOT;
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Package jquery is not installed.
      */
     public function testUninstallUninstalledPackage()

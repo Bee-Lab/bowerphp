@@ -52,7 +52,7 @@ class InfoCommandTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Not enough arguments
      */
     public function testExecuteWithoutPackage()

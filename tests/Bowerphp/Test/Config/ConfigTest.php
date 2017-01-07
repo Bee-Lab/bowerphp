@@ -68,7 +68,7 @@ class ConfigTest extends TestCase
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Invalid .bowerrc file.
      */
     public function testMalformedJson()
@@ -98,7 +98,7 @@ class ConfigTest extends TestCase
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Malformed JSON in bower.json: {invalid.
      */
     public function testGetBowerFileContentWithExceptionOnInvalidJson()
@@ -118,7 +118,7 @@ class ConfigTest extends TestCase
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage No bower.json found. You can run "init" command to create it.
      */
     public function testGetBowerFileContentWithExceptionOnBowerJsonDoesNotExist()
@@ -232,7 +232,7 @@ class ConfigTest extends TestCase
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Could not find .bower.json file for package foobar.
      */
     public function testGetPackageBowerFileContentFileNotFound()
@@ -253,7 +253,7 @@ class ConfigTest extends TestCase
     }
 
     /**
-     * @expectedException        RuntimeException
+     * @expectedException        \RuntimeException
      * @expectedExceptionMessage Invalid content in .bower.json for package foobar.
      */
     public function testGetPackageBowerFileInvalidContent()

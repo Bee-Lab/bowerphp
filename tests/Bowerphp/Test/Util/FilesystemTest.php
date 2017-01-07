@@ -8,7 +8,7 @@ use Bowerphp\Util\Filesystem;
 class FilesystemTest extends TestCase
 {
     /**
-     * @expectedException Symfony\Component\Filesystem\Exception\FileNotFoundException
+     * @expectedException \Symfony\Component\Filesystem\Exception\FileNotFoundException
      */
     public function testRead()
     {

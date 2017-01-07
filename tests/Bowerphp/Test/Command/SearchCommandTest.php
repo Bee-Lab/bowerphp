@@ -3,7 +3,6 @@
 namespace Bowerphp\Test\Command;
 
 use Bowerphp\Factory\CommandFactory;
-use RuntimeException;
 
 /**
  * @group functional
@@ -36,7 +35,7 @@ class SearchCommandTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      * @expectedExceptionMessage Not enough arguments
      */
     public function shouldThrowExceptionWhenNoPackagePass()
