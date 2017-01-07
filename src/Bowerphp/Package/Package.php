@@ -100,9 +100,7 @@ class Package implements PackageInterface
     }
 
     /**
-     * Set the required packages
-     *
-     * @param array $requires A set of package links
+     * {@inheritdoc}
      */
     public function setRequires(array $requires = null)
     {
@@ -123,9 +121,7 @@ class Package implements PackageInterface
     }
 
     /**
-     * Set the info
-     *
-     * @param array $info
+     * {@inheritdoc}
      */
     public function setInfo(array $info)
     {

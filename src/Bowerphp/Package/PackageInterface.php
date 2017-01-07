@@ -53,11 +53,25 @@ interface PackageInterface
     public function getRequires();
 
     /**
+     * Set the required packages
+     *
+     * @param array $requires A set of package links
+     */
+    public function setRequires(array $requires = null);
+
+    /**
      * Returns all package info (e.g. info from package's bower.json)
      *
      * @return array
      */
     public function getInfo();
+
+    /**
+     * Set package info
+     *
+     * @param array $info
+     */
+    public function setInfo(array $info);
 
     /**
      * Stores a reference to the repository that owns the package
