@@ -31,11 +31,15 @@ class BowerphpConsoleOutput
      * writelnInfoPackage
      *
      * @param PackageInterface $package
+     * @param string           $action
+     * @param string           $message
      */
-    public function writelnInfoPackage(PackageInterface $package)
+    public function writelnInfoPackage(PackageInterface $package, $action = '', $message = '')
     {
-        $this->output->writeln(sprintf('bower <info>%s</info>',
-            str_pad($package->getName() . '#' . $package->getRequiredVersion(), 21, ' ', STR_PAD_RIGHT)
+        $this->output->writeln(sprintf('bower <info>%s</info> <fg=cyan>%s</fg=cyan> %s',
+            str_pad($package->getName() . '#' . $package->getRequiredVersion(), 21, ' ', STR_PAD_RIGHT),
+            str_pad($action, 10, ' ', STR_PAD_LEFT),
+            $message
         ));
     }
 

@@ -204,6 +204,10 @@ EOT;
             ->shouldReceive('install')->never()
         ;
 
+        $this->output
+            ->shouldReceive('writelnInfoPackage')
+        ;
+
         //$this->filesystem
         //    ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/.bower.json')->andReturn(false)
         //    ->shouldReceive('dumpFile')->with('./tmp/jquery', "fileAsString...", 0644)

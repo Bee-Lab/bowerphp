@@ -28,7 +28,7 @@ class BowerphpConsoleOutputTest extends \PHPUnit_Framework_TestCase
         ;
 
         $output
-            ->shouldReceive('writeln')->with('bower <info>jquery#2.1           </info>')
+            ->shouldReceive('writeln')->with('bower <info>jquery#2.1           </info> <fg=cyan>          </fg=cyan> ')
         ;
 
         $bConsoleOutput = new BowerphpConsoleOutput($output);
