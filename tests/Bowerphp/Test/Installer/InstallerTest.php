@@ -56,6 +56,7 @@ class InstallerTest extends TestCase
 }';
 
         $this->filesystem
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn(false)
             ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/foo', 'foo content')
             ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', $json)
             ->shouldReceive('touch')->with(getcwd() . '/bower_components/jquery/foo', 1396303200)
@@ -90,12 +91,59 @@ class InstallerTest extends TestCase
 }';
 
         $this->filesystem
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery/bower.json')->andReturn(false)
             ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/foo', 'foo content')
             ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery/.bower.json', $json)
             ->shouldReceive('touch')->with(getcwd() . '/bower_components/jquery/foo', 1396303200)
         ;
 
         $this->installer->update($package);
+    }
+
+    public function testInstallAndMergeInfoWithBowerJsonContents()
+    {
+        $package = Mockery::mock('Bowerphp\Package\PackageInterface');
+
+        $info = [
+            'name'         => 'jquery-ui',
+            'version'      => '1.12.1',
+            'dependencies' => [
+                'jquery' => '>=1.6',
+            ],
+        ];
+
+        $package
+            ->shouldReceive('getName')->andReturn('jquery-ui')
+            ->shouldReceive('getVersion')->andReturn('1.12.1')
+            ->shouldReceive('getInfo')->andReturn([])->once()
+            ->shouldReceive('setInfo')->with($info)->andReturnSelf()
+            ->shouldReceive('getInfo')->andReturn($info);
+
+        $json = '{
+    "name": "jquery-ui",
+    "version": "1.12.1",
+    "dependencies": {
+        "jquery": ">=1.6"
+    }
+}';
+
+        $this->zipArchive
+            ->shouldReceive('open')->with('./tmp/jquery-ui')->andReturn(true)
+            ->shouldReceive('getNumFiles')->andReturn(1)
+            ->shouldReceive('getNameIndex')->with(0)->andReturn('jquery-ui')
+            ->shouldReceive('statIndex')->andReturn(['name' => 'jquery-ui/bower.json', 'size' => 107, 'mtime' => 1483795099])
+            ->shouldReceive('getStream')->with('jquery-ui/bower.json')->andReturn($json)
+            ->shouldReceive('close');
+
+        $this->filesystem
+            ->shouldReceive('exists')->with(getcwd() . '/bower_components/jquery-ui/bower.json')->andReturn(true)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/.bower.json', $json)
+            ->shouldReceive('write')->with(getcwd() . '/bower_components/jquery-ui/bower.json', $json)
+            ->shouldReceive('touch')->with(getcwd() . '/bower_components/jquery-ui/bower.json', 1483795099)
+            ->shouldReceive('read')->with(getcwd() . '/bower_components/jquery-ui/bower.json')->andReturn($json)
+        ;
+
+        $this->installer->install($package);
     }
 
     /**

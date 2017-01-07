@@ -75,11 +75,12 @@ class Installer implements InstallerInterface
         }
         $this->zipArchive->close();
 
-        // update package info from bower.json
-        $bowerFile = $this->config->getInstallDir() . '/' . $package->getName() . '/bower.json';
-        if (file_exists($bowerFile)) {
-            $bowerContent = json_decode(file_get_contents($bowerFile), true);
-            $package->setInfo(array_merge($bowerContent, $package->getInfo()));
+        // merge package info with bower.json contents
+        $bowerJsonPath = $this->config->getInstallDir() . '/' . $package->getName() . '/bower.json';
+        if ($this->filesystem->exists($bowerJsonPath)) {
+            $bowerJson = $this->filesystem->read($bowerJsonPath);
+            $bower = json_decode($bowerJson, true);
+            $package->setInfo(array_merge($bower, $package->getInfo()));
         }
 
         // create .bower.json metadata file
