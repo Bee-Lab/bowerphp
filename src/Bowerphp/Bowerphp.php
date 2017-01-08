@@ -105,6 +105,7 @@ class Bowerphp
 
         // if package is already installed, match current version with latest available version
         if ($this->isPackageInstalled($package)) {
+            $this->output->writelnInfoPackage($package, 'validate', sprintf('%s against %s#%s', $packageTag, $package->getName(), $package->getRequiredVersion()));
             $packageBower = $this->config->getPackageBowerFileContent($package);
             if ($packageTag == $packageBower['version']) {
                 // if version is fully matching, there's no need to install
@@ -112,12 +113,9 @@ class Bowerphp
             }
         }
 
-        $this->output->writelnInfoPackage($package);
-
-        $this->output->writelnInstalledPackage($package);
-
         $this->cachePackage($package);
 
+        $this->output->writelnInstalledPackage($package);
         $installer->install($package);
 
         $overrides = $this->config->getOverrideFor($package->getName());
@@ -182,6 +180,8 @@ class Bowerphp
         $package->setRequires(isset($bower['dependencies']) ? $bower['dependencies'] : null);
 
         $packageTag = $this->getPackageTag($package);
+        $this->output->writelnInfoPackage($package, 'validate', sprintf('%s against %s#%s', $packageTag, $package->getName(), $package->getRequiredVersion()));
+
         $package->setRepository($this->repository);
         if ($packageTag == $package->getVersion()) {
             // if version is fully matching, there's no need to update
@@ -189,10 +189,9 @@ class Bowerphp
         }
         $package->setVersion($packageTag);
 
-        $this->output->writelnUpdatingPackage($package);
-
         $this->cachePackage($package);
 
+        $this->output->writelnUpdatingPackage($package);
         $installer->update($package);
 
         $overrides = $this->config->getOverrideFor($package->getName());
@@ -448,6 +447,8 @@ class Bowerphp
      */
     private function cachePackage(PackageInterface $package)
     {
+        $this->output->writelnInfoPackage($package, 'download');
+
         // get release archive from repository
         $file = $this->repository->getRelease();
 
