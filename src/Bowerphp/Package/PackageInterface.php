@@ -48,14 +48,14 @@ interface PackageInterface
      * Returns a set of links to packages which need to be installed before
      * this package can be installed
      *
-     * @return array An array of package links defining required packages
+     * @return array|null An array of package links defining required packages
      */
     public function getRequires();
 
     /**
      * Set the required packages
      *
-     * @param array $requires A set of package links
+     * @param array|null $requires A set of package links
      */
     public function setRequires(array $requires = null);
 
