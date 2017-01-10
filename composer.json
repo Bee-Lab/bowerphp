@@ -37,7 +37,7 @@
         "ext-phar": "*",
         "phpunit/phpunit": "4.*|5.*",
         "mockery/mockery": "~0.9.3",
-        "friendsofphp/php-cs-fixer": "~1.5"
+        "friendsofphp/php-cs-fixer": "^2.0"
     },
     "autoload": {
         "psr-4": {
