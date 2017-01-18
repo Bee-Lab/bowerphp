@@ -1,7 +1,6 @@
 language: php
 
 php:
-    - 5.5
     - 5.6
     - 7.0
     - 7.1
@@ -11,7 +10,8 @@ cache:
         - $HOME/.composer/cache
 
 env:
-    - secure: "g+2Ar7a8eAsZtE/mEQT6BWgkx7Bou9qy1381OhI7tMOQBE+KA5Lm+KAC5tH9Us5tmK074dNMsWPBrsgnayxezBjQBpcshDQgoLqaPtWz8XeKTvUEpizFTjQ8v68w42I4SzzMdNIWQhPjiAfjA8e02uaoRELWOYNoc824ot/y1iw="
+    global:
+        secure: PvosUtekSGv7sGE1Bn7YhD+ztX43dgqZyQqRQEf5cdvRzztxw3BPQveM/y8XSlgEetu5nFCPgzarTeumLaXJ5RH+USsyNUCHVr+LN04jqGNfK3aA7/k3ALBKbUDyhUCxcCBoVX+EIp/ItgSW2KK2jBPD64BRdJ3oSrAjwMFjeLg=
 
 before_script:
     - echo '' > ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
