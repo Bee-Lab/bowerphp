@@ -3,11 +3,12 @@
 namespace Bowerphp\Test\Command;
 
 use Bowerphp\Factory\CommandFactory;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group functional
  */
-class SearchCommandTest extends \PHPUnit_Framework_TestCase
+class SearchCommandTest extends TestCase
 {
     /**
      * @test

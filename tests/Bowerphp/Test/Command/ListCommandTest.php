@@ -3,12 +3,13 @@
 namespace Bowerphp\Test\Command;
 
 use Bowerphp\Console\Application;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
  * @group functional
  */
-class ListCommandTest extends \PHPUnit_Framework_TestCase
+class ListCommandTest extends TestCase
 {
     protected function setUp()
     {

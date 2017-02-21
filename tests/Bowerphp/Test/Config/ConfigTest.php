@@ -3,11 +3,11 @@
 namespace Bowerphp\Test\Config;
 
 use Bowerphp\Config\Config;
-use Bowerphp\Test\TestCase;
+use Bowerphp\Test\BowerphpTestCase;
 use Mockery;
 use Mockery\Exception\NoMatchingExpectationException;
 
-class ConfigTest extends TestCase
+class ConfigTest extends BowerphpTestCase
 {
     public function testConstructor()
     {

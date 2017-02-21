@@ -3,9 +3,10 @@
 namespace Bowerphp\Test;
 
 use Mockery;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
-abstract class TestCase extends \PHPUnit_Framework_TestCase
+abstract class BowerphpTestCase extends TestCase
 {
     /**
      * @param \Mockery\MockInterface
@@ -27,6 +28,10 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     protected function tearDown()
     {
+        // this is to make Mockery assertion count as PHPUnit assertion, avoiding "risky"
+        if (!is_null($container = Mockery::getContainer())) {
+            $this->addToAssertionCount($container->mockery_getExpectationCount());
+        }
         Mockery::close();
     }
 

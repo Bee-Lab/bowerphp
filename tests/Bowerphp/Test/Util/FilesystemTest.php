@@ -2,10 +2,10 @@
 
 namespace Bowerphp\Test\Util;
 
-use Bowerphp\Test\TestCase;
+use Bowerphp\Test\BowerphpTestCase;
 use Bowerphp\Util\Filesystem;
 
-class FilesystemTest extends TestCase
+class FilesystemTest extends BowerphpTestCase
 {
     /**
      * @expectedException \Symfony\Component\Filesystem\Exception\FileNotFoundException

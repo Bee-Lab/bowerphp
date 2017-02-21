@@ -3,13 +3,14 @@
 namespace Bowerphp\Test\Command;
 
 use Bowerphp\Console\Application;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\ApplicationTester;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
  * @group functional
  */
-class CommandListCommandTest extends \PHPUnit_Framework_TestCase
+class CommandListCommandTest extends TestCase
 {
     public function testExecute()
     {
@@ -28,6 +29,7 @@ class CommandListCommandTest extends \PHPUnit_Framework_TestCase
 
         $tester = new ApplicationTester($application);
         $tester->run(['-d' => '/', '--profile' => ''], ['decorated' => false]);
+        $this->assertRegExp('/Memory usage/', $tester->getDisplay());
     }
 
     public function testWorkingDir()
@@ -38,6 +40,7 @@ class CommandListCommandTest extends \PHPUnit_Framework_TestCase
 
         $tester = new ApplicationTester($application);
         $tester->run(['-d' => '/'], ['decorated' => false]);
+        $this->assertRegExp('/Usage/', $tester->getDisplay());
     }
 
     /**

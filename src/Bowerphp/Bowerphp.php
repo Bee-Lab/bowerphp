@@ -335,7 +335,10 @@ class Bowerphp
     }
 
     /**
-     * {@inheritdoc}
+     * @param PackageInterface $package
+     * @param bool             $checkInstall
+     *
+     * @return bool
      */
     public function isPackageExtraneous(PackageInterface $package, $checkInstall = false)
     {

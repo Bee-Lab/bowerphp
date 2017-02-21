@@ -2,15 +2,16 @@
 
 namespace Bowerphp\Test\Util;
 
-use Bowerphp\Test\TestCase;
+use Bowerphp\Test\BowerphpTestCase;
 use Bowerphp\Util\ErrorHandler;
 
-class ErrorHandlerTest extends TestCase
+class ErrorHandlerTest extends BowerphpTestCase
 {
     public function testHandle()
     {
         $oldErrorReporting = error_reporting(0);
-        ErrorHandler::handle(1, 'foo', 'bar', 42);
+        $null = ErrorHandler::handle(1, 'foo', 'bar', 42);
+        $this->assertNull($null);
         error_reporting($oldErrorReporting);
     }
 
@@ -44,5 +45,6 @@ class ErrorHandlerTest extends TestCase
     public function testRegister()
     {
         ErrorHandler::register();
+        $this->assertTrue(true);    // jsut avoid risky test
     }
 }

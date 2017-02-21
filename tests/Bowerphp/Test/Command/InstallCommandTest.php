@@ -6,6 +6,7 @@ use Bowerphp\Console\Application;
 use Bowerphp\Repository\GithubRepository;
 use FilesystemIterator;
 use Github\Client;
+use PHPUnit\Framework\TestCase;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,7 +15,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 /**
  * @group functional
  */
-class InstallCommandTest extends \PHPUnit_Framework_TestCase
+class InstallCommandTest extends TestCase
 {
     public function testExecute()
     {

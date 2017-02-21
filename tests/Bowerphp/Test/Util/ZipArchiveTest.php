@@ -2,10 +2,10 @@
 
 namespace Bowerphp\Test\Util;
 
-use Bowerphp\Test\TestCase;
+use Bowerphp\Test\BowerphpTestCase;
 use Bowerphp\Util\ZipArchive;
 
-class ZipArchiveTest extends TestCase
+class ZipArchiveTest extends BowerphpTestCase
 {
     public function testGetNumFiles()
     {

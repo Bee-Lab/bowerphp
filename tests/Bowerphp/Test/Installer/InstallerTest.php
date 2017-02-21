@@ -3,10 +3,10 @@
 namespace Bowerphp\Test\Installer;
 
 use Bowerphp\Installer\Installer;
-use Bowerphp\Test\TestCase;
+use Bowerphp\Test\BowerphpTestCase;
 use Mockery;
 
-class InstallerTest extends TestCase
+class InstallerTest extends BowerphpTestCase
 {
     protected $installer;
     protected $zipArchive;

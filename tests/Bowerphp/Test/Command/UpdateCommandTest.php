@@ -4,13 +4,14 @@ namespace Bowerphp\Test\Command;
 
 use Bowerphp\Factory\CommandFactory;
 use FilesystemIterator;
+use PHPUnit\Framework\TestCase;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
 /**
  * @group functional
  */
-class UpdateCommandTest extends \PHPUnit_Framework_TestCase
+class UpdateCommandTest extends TestCase
 {
     private $packageDotBowerFile;
     private $bowerFile;

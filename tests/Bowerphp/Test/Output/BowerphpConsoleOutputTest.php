@@ -13,9 +13,19 @@ namespace Bowerphp\Test\Output;
 
 use Bowerphp\Output\BowerphpConsoleOutput;
 use Mockery;
+use PHPUnit\Framework\TestCase;
 
-class BowerphpConsoleOutputTest extends \PHPUnit_Framework_TestCase
+class BowerphpConsoleOutputTest extends TestCase
 {
+    protected function tearDown()
+    {
+        // this is to make Mockery assertion count as PHPUnit assertion, avoiding "risky"
+        if (!is_null($container = Mockery::getContainer())) {
+            $this->addToAssertionCount($container->mockery_getExpectationCount());
+        }
+        Mockery::close();
+    }
+
     public function testWritelnInfoPackage()
     {
         $output = Mockery::mock('Symfony\Component\Console\Output\OutputInterface');

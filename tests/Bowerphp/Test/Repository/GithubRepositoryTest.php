@@ -4,11 +4,11 @@ namespace Bowerphp\Test\Repository;
 
 use Bowerphp\Repository\GithubRepository;
 use Bowerphp\Repository\RepositoryInterface;
-use Bowerphp\Test\TestCase;
+use Bowerphp\Test\BowerphpTestCase;
 use Mockery;
 use ReflectionClass;
 
-class GithubRepositoryTest extends TestCase
+class GithubRepositoryTest extends BowerphpTestCase
 {
     /**
      * @var RepositoryInterface

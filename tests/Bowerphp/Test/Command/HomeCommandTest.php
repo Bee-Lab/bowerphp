@@ -3,13 +3,14 @@
 namespace Bowerphp\Test\Command;
 
 use Bowerphp\Console\Application;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
  * @group functional
  */
-class HomeCommandTest extends \PHPUnit_Framework_TestCase
+class HomeCommandTest extends TestCase
 {
     /**
      * @expectedException \RuntimeException
@@ -19,6 +20,7 @@ class HomeCommandTest extends \PHPUnit_Framework_TestCase
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('home'));
         $commandTester->execute(['command' => $command->getName(), 'package' => 'nonexistante'], ['decorated' => false]);
+        $this->assertRegExp('/zzzz/', $commandTester->getDisplay());
     }
 
     public function testExecuteVerbose()
@@ -26,6 +28,7 @@ class HomeCommandTest extends \PHPUnit_Framework_TestCase
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('home'));
         $commandTester->execute(['command' => $command->getName(), 'package' => 'jquery'], ['decorated' => false, 'verbosity' => OutputInterface::VERBOSITY_DEBUG]);
+        $this->assertRegExp('/"name":"jquery"/', $commandTester->getDisplay());
     }
 
     public function testExecuteNonVerbose()
@@ -33,6 +36,7 @@ class HomeCommandTest extends \PHPUnit_Framework_TestCase
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('home'));
         $commandTester->execute(['command' => $command->getName(), 'package' => 'jquery'], ['decorated' => false, 'verbosity' => OutputInterface::VERBOSITY_NORMAL]);
+        $this->assertRegExp('/\s/', $commandTester->getDisplay());
     }
 
     /**
@@ -44,5 +48,6 @@ class HomeCommandTest extends \PHPUnit_Framework_TestCase
         $application = new Application();
         $commandTester = new CommandTester($command = $application->get('home'));
         $commandTester->execute([], ['decorated' => false]);
+        $this->assertRegExp('/zzzz/', $commandTester->getDisplay());
     }
 }

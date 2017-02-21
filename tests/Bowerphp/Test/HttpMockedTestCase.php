@@ -3,9 +3,8 @@
 namespace Bowerphp\Test;
 
 use Mockery;
-use PHPUnit_Framework_TestCase;
 
-abstract class HttpMockedTestCase extends PHPUnit_Framework_TestCase
+abstract class HttpMockedTestCase extends BowerphpTestCase
 {
     protected $httpClient;
     protected $request;
@@ -34,10 +33,5 @@ abstract class HttpMockedTestCase extends PHPUnit_Framework_TestCase
         $this->response
             ->shouldReceive('getBody')->andReturn($packageJson)
         ;
-    }
-
-    protected function tearDown()
-    {
-        Mockery::close();
     }
 }

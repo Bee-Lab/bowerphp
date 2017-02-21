@@ -11,7 +11,7 @@ use RuntimeException;
 /**
  * @group bowerphp
  */
-class BowerphpTest extends TestCase
+class BowerphpTest extends BowerphpTestCase
 {
     protected $bowerphp;
     protected $config;

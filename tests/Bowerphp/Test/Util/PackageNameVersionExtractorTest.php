@@ -2,10 +2,10 @@
 
 namespace Bowerphp\Test\Util;
 
+use Bowerphp\Test\BowerphpTestCase;
 use Bowerphp\Util\PackageNameVersionExtractor;
-use PHPUnit_Framework_TestCase;
 
-class PackageNameVersionExtractorTest extends PHPUnit_Framework_TestCase
+class PackageNameVersionExtractorTest extends BowerphpTestCase
 {
     public function testReturnPackageNameWhenNoVersionSet()
     {
