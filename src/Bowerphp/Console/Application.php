@@ -13,6 +13,7 @@ namespace Bowerphp\Console;
 
 use Bowerphp\Command;
 use Bowerphp\Util\ErrorHandler;
+use PackageVersions\Versions;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -44,7 +45,8 @@ class Application extends BaseApplication
     public function __construct()
     {
         ErrorHandler::register();
-        parent::__construct('Bowerphp', '0.5 Powered by BeeLab (bee-lab.net)');
+        $version = Versions::getVersion('beelab/bowerphp');
+        parent::__construct('Bowerphp', $version . ' Powered by BeeLab (bee-lab.net)');
     }
 
     /**
