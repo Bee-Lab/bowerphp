@@ -164,7 +164,7 @@ class Bowerphp
     public function updatePackage(PackageInterface $package, InstallerInterface $installer)
     {
         if (!$this->isPackageInstalled($package)) {
-            throw new RuntimeException(sprintf('Package %s is not installed.', $package->getName()));
+            $this->installPackage($package, $installer);
         }
         if (is_null($package->getRequiredVersion())) {
             $decode = $this->config->getBowerFileContent();
