@@ -16,7 +16,8 @@ env:
 
 before_script:
     - echo '' > ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
-    - composer update --prefer-dist --no-interaction
+    - if [ "$TRAVIS_PHP_VERSION" = "nightly" ]; then composer update --prefer-dist --no-interaction --ignore-platform-reqs; fi
+    - if [ "$TRAVIS_PHP_VERSION" != "nightly" ]; then composer update --prefer-dist --no-interaction; fi
     - git config --global user.name travis-ci
     - git config --global user.email travis@example.com
 
