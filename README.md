@@ -3,8 +3,6 @@ Bowerphp
 
 An implementation of [bower](http://bower.io) in PHP.
 
-https://bowerphp.org
-
 [![travis build](https://api.travis-ci.org/Bee-Lab/bowerphp.png)](https://travis-ci.org/Bee-Lab/bowerphp)
 [![Code Climate](https://codeclimate.com/github/Bee-Lab/bowerphp/badges/gpa.svg)](https://codeclimate.com/github/Bee-Lab/bowerphp)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Bee-Lab/bowerphp/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Bee-Lab/bowerphp/?branch=master)
