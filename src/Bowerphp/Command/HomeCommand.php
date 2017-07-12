@@ -89,7 +89,7 @@ EOT
             $open = new Process('which open');
             $open->run();
             if (!$open->isSuccessful()) {
-                throw new \RuntimeException('Cound not open default browser.');
+                throw new \RuntimeException('Could not open default browser.');
             }
 
             return trim($open->getOutput());
