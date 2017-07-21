@@ -12,6 +12,7 @@
 namespace Bowerphp\Console;
 
 use Bowerphp\Command;
+use Bowerphp\Command\Helper\QuestionHelper;
 use Bowerphp\Util\ErrorHandler;
 use PackageVersions\Versions;
 use Symfony\Component\Console\Application as BaseApplication;
@@ -27,7 +28,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Application extends BaseApplication
 {
     /**
-     * @var Bowerphp
+     * @var \Bowerphp\Bowerphp
      */
     protected $bowerphp;
 
@@ -122,13 +123,14 @@ class Application extends BaseApplication
     protected function getDefaultHelperSet()
     {
         $helperSet = parent::getDefaultHelperSet();
-        $helperSet->set(new \Bowerphp\Command\Helper\QuestionHelper());
+        $helperSet->set(new QuestionHelper());
 
         return $helperSet;
     }
 
     /**
      * @param  InputInterface    $input
+     * @return string
      * @throws \RuntimeException
      */
     private function getNewWorkingDir(InputInterface $input)

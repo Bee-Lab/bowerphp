@@ -113,9 +113,9 @@ class Compiler
     }
 
     /**
-     * @param Phar        $phar
-     * @param SplFileInfo $file
-     * @param bool        $strip
+     * @param \Phar        $phar
+     * @param \SplFileInfo $file
+     * @param bool         $strip
      */
     private function addFile(\Phar $phar, \SplFileInfo $file, $strip = true)
     {
@@ -132,7 +132,7 @@ class Compiler
     }
 
     /**
-     * @param Phar $phar
+     * @param \Phar $phar
      */
     private function addBin(\Phar $phar)
     {

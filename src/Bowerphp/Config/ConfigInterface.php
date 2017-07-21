@@ -61,7 +61,7 @@ interface ConfigInterface
     /**
      * Update project's bower.json with a new added package
      *
-     * @param  Package $package
+     * @param  PackageInterface $package
      * @return int
      */
     public function updateBowerJsonFile(PackageInterface $package);
@@ -103,8 +103,9 @@ interface ConfigInterface
     /**
      * Get content from a packages' bower.json file
      *
+     * @param  PackageInterface $package
      * @return array
-     * @throws Exception if bower.json or package.json does not exist in a dir of installed package
+     * @throws Exception        if bower.json or package.json does not exist in a dir of installed package
      */
     public function getPackageBowerFileContent(PackageInterface $package);
 

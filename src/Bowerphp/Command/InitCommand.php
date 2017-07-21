@@ -70,8 +70,8 @@ EOT
     /**
      * Get some info from local git
      *
-     * @param  string $info info type
-     * @return string
+     * @param  string      $info info type
+     * @return string|null
      */
     private function getGitInfo($info = 'user.name')
     {

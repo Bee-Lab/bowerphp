@@ -96,6 +96,7 @@ class BowerphpConsoleOutput
      *
      * @param string $name
      * @param string $homepage
+     * @param int    $pad
      */
     public function writelnSearchOrLookup($name, $homepage, $pad = 0)
     {
@@ -106,6 +107,7 @@ class BowerphpConsoleOutput
      * writelnListPackage
      *
      * @param PackageInterface $package
+     * @param Bowerphp         $bowerphp
      */
     public function writelnListPackage(PackageInterface $package, Bowerphp $bowerphp)
     {

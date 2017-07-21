@@ -67,5 +67,7 @@ EOT
         }
 
         $output->writeln('');
+
+        return 0;
     }
 }
