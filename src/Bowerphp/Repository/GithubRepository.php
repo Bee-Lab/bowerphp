@@ -75,14 +75,14 @@ class GithubRepository implements RepositoryInterface
             // we need to save current $this->url
             $oldUrl = $this->url;
             // then, we call setUrl(), to get the http url
-            $this->setUrl($url, true);
+            $this->setUrl($url);
         }
         $json = $this->getDepBowerJson($version);
         if ($includeHomepage) {
             $array = json_decode($json, true);
             if (!empty($url)) {
                 // here, we set again original $this->url, to pass it in bower.json
-                $this->setUrl($oldUrl, true);
+                $this->setUrl($oldUrl);
             }
             $array['homepage'] = $this->url;
             $json = json_encode($array, JSON_PRETTY_PRINT);
@@ -115,10 +115,10 @@ class GithubRepository implements RepositoryInterface
             return $this->tag['name'];
         }
 
-        // edge case for versions vith slash (like ckeditor). See also issue #120
+        // edge case for versions with slash (like ckeditor). See also issue #120
         if (strpos($rawCriteria, '/') > 0) {
             $tagNames = array_column($tags, 'name');
-            if (false !== $tag = array_search($rawCriteria, $tagNames)) {
+            if (false !== $tag = array_search($rawCriteria, $tagNames, true)) {
                 $this->tag = $tag;
 
                 return $rawCriteria;
@@ -221,7 +221,8 @@ class GithubRepository implements RepositoryInterface
     }
 
     /**
-     * @param  string
+     * @param string $url
+     *
      * @return string
      */
     private function clearGitURL($url)
@@ -249,7 +250,8 @@ class GithubRepository implements RepositoryInterface
      * The only flaw I've seen in the semver lib we're using,
      * and the regex's in there are too complicated to mess with.
      *
-     * @param  string $rawValue
+     * @param string $rawValue
+     *
      * @return string
      */
     private function fixupRawTag($rawValue)

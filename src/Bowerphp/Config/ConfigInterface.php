@@ -53,7 +53,8 @@ interface ConfigInterface
     /**
      * Init project's bower.json file
      *
-     * @param  array $params
+     * @param array $params
+     *
      * @return int
      */
     public function initBowerJsonFile(array $params);
@@ -61,7 +62,8 @@ interface ConfigInterface
     /**
      * Update project's bower.json with a new added package
      *
-     * @param  PackageInterface $package
+     * @param PackageInterface $package
+     *
      * @return int
      */
     public function updateBowerJsonFile(PackageInterface $package);
@@ -69,8 +71,9 @@ interface ConfigInterface
     /**
      * Update project's bower.json from a previous existing one
      *
-     * @param  array $old values of previous bower.json
-     * @param  array $new new values
+     * @param array $old values of previous bower.json
+     * @param array $new new values
+     *
      * @return int
      */
     public function updateBowerJsonFile2(array $old, array $new);
@@ -79,7 +82,8 @@ interface ConfigInterface
      * Get content from project's bower.json file
      *
      * @return array
-     * @throws Exception if bower.json does not exist
+     *
+     * @throws \Exception if bower.json does not exist
      */
     public function getBowerFileContent();
 
@@ -95,17 +99,20 @@ interface ConfigInterface
     /**
      * Get the array of overrides defined for the specified package
      *
-     * @param  string $packageName The name of the package for which dependencies are being overridden
-     * @return array  A list of dependency name => override versions to be used instead of the target package's normal dependencies.  An empty array if none are defined
+     * @param string $packageName The name of the package for which dependencies are being overridden
+     *
+     * @return array A list of dependency name => override versions to be used instead of the target package's normal dependencies.  An empty array if none are defined
      */
     public function getOverrideFor($packageName);
 
     /**
      * Get content from a packages' bower.json file
      *
-     * @param  PackageInterface $package
+     * @param PackageInterface $package
+     *
      * @return array
-     * @throws Exception        if bower.json or package.json does not exist in a dir of installed package
+     *
+     * @throws \Exception if bower.json or package.json does not exist in a dir of installed package
      */
     public function getPackageBowerFileContent(PackageInterface $package);
 

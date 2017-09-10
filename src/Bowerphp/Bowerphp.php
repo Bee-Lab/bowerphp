@@ -67,7 +67,7 @@ class Bowerphp
     {
         if ($this->config->bowerFileExists()) {
             $bowerJson = $this->config->getBowerFileContent();
-            $this->config->setSaveToBowerJsonFile(true);
+            $this->config->setSaveToBowerJsonFile();
             $this->config->updateBowerJsonFile2($bowerJson, $params);
         } else {
             $this->config->initBowerJsonFile($params);

@@ -44,7 +44,7 @@ EOT
     {
         $this->setGithubToken($output);
 
-        $author = sprintf('%s <%s>', $this->getGitInfo('user.name'), $this->getGitInfo('user.email'));
+        $author = sprintf('%s <%s>', $this->getGitInfo(), $this->getGitInfo('user.email'));
 
         $params = ['name' => get_current_user(), 'author' => $author];
 

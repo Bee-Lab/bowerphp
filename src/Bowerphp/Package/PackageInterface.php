@@ -26,7 +26,7 @@ interface PackageInterface
     /**
      * Set the version of this package
      *
-     * @param string version
+     * @param string $version
      */
     public function setVersion($version);
 
@@ -40,7 +40,7 @@ interface PackageInterface
     /**
      * Set the required version of this package
      *
-     * @param string version
+     * @param string $version
      */
     public function setRequiredVersion($version);
 

@@ -84,7 +84,7 @@ class Installer implements InstallerInterface
         }
 
         // create .bower.json metadata file
-         // XXX we still need to add some other info
+        // XXX we still need to add some other info
         $dotBowerContent = array_merge($package->getInfo(), ['version' => $package->getVersion()]);
         $dotBowerJson = str_replace('\/', '/', json_encode($dotBowerContent, JSON_PRETTY_PRINT));
         $this->filesystem->write($this->config->getInstallDir() . '/' . $package->getName() . '/.bower.json', $dotBowerJson);
@@ -194,7 +194,7 @@ class Installer implements InstallerInterface
     public function isIgnored($name, array $ignore, array $force, $dirName)
     {
         $vName = substr($name, strlen($dirName));
-        if (in_array($vName, $force)) {
+        if (in_array($vName, $force, true)) {
             return false;
         }
         // first check if there is line that overrides other lines
@@ -211,7 +211,7 @@ class Installer implements InstallerInterface
         foreach ($ignore as $pattern) {
             if (strpos($pattern, '**') !== false) {
                 $pattern = str_replace('**', '*', $pattern);
-                #$pattern = str_replace('*/*', '*', $pattern);
+                //$pattern = str_replace('*/*', '*', $pattern);
                 if (substr($pattern, 0, 1) == '/') {
                     $vName = '/' . $vName;
                 }

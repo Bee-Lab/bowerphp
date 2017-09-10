@@ -52,7 +52,7 @@ EOT;
             ->shouldReceive('initBowerJsonFile')->with($params)->andReturn(123)
             ->shouldReceive('bowerFileExists')->andReturn(false, true)
             ->shouldReceive('getBowerFileContent')->andReturn(['name' => 'Bar'])
-            ->shouldReceive('setSaveToBowerJsonFile')->with(true)
+            ->shouldReceive('setSaveToBowerJsonFile')
             ->shouldReceive('getOverridesSection')->andReturn([])
             ->shouldReceive('getOverrideFor')->andReturn([])
             ->shouldReceive('updateBowerJsonFile2')->with(['name' => 'Bar'], $params)->andReturn(456)

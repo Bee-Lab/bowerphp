@@ -168,6 +168,7 @@ class Application extends BaseApplication
                 $name = 'help';
                 $input = new ArrayInput(['command' => 'help']);
             } else {
+                // TODO $wantHelps is private in parent class
                 $this->wantHelps = true;
             }
         }
