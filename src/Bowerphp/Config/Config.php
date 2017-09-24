@@ -24,7 +24,7 @@ class Config implements ConfigInterface
     protected $cacheDir;
     protected $installDir;
     protected $filesystem;
-    protected $basePackagesUrl = 'http://bower.herokuapp.com/packages/';
+    protected $basePackagesUrl = 'http://registry.bower.io/packages/';
     protected $allPackagesUrl = 'https://bower-component-list.herokuapp.com/';
     protected $saveToBowerJsonFile = false;
     protected $bowerFileNames = array('bower.json', 'package.json');
