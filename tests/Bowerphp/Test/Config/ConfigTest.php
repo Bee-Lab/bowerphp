@@ -321,7 +321,7 @@ class ConfigTest extends BowerphpTestCase
 
         $config = new Config($this->filesystem);
 
-        $this->assertEquals('http://bower.herokuapp.com/packages/', $config->getBasePackagesUrl());
+        $this->assertEquals('http://registry.bower.io/packages/', $config->getBasePackagesUrl());
     }
 
     public function testBowerFileExists()

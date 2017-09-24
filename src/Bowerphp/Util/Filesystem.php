@@ -22,7 +22,7 @@ class Filesystem extends BaseFilesystem
     /**
      * Read a file
      *
-     * @param  string $filename
+     * @param string $filename
      *
      * @return string
      */
