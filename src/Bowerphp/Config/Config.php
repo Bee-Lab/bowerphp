@@ -24,7 +24,6 @@ class Config implements ConfigInterface
     protected $installDir;
     protected $filesystem;
     protected $basePackagesUrl = 'http://registry.bower.io/packages/';
-    protected $allPackagesUrl = 'https://bower-component-list.herokuapp.com/';
     protected $saveToBowerJsonFile = false;
     protected $bowerFileNames = ['bower.json', 'package.json'];
     protected $stdBowerFileName = 'bower.json';
@@ -59,14 +58,6 @@ class Config implements ConfigInterface
     public function getBasePackagesUrl()
     {
         return $this->basePackagesUrl;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAllPackagesUrl()
-    {
-        return $this->allPackagesUrl;
     }
 
     /**

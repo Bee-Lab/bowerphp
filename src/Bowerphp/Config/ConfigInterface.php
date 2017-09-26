@@ -26,11 +26,6 @@ interface ConfigInterface
     /**
      * @return string
      */
-    public function getAllPackagesUrl();
-
-    /**
-     * @return string
-     */
     public function getCacheDir();
 
     /**

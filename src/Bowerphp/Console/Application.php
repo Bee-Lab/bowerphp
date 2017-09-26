@@ -47,7 +47,7 @@ class Application extends BaseApplication
     {
         ErrorHandler::register();
         $version = Versions::getVersion('beelab/bowerphp');
-        parent::__construct('Bowerphp', $version . ' Powered by BeeLab (bee-lab.net)');
+        parent::__construct('Bowerphp', $version . ' Powered by BeeLab (github.com/bee-lab)');
     }
 
     /**
