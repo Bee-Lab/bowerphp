@@ -71,14 +71,15 @@ class Compiler
             ->exclude('Tests')
             ->in(__DIR__ . '/../../vendor/symfony/')
             ->in(__DIR__ . '/../../vendor/guzzle/guzzle/src/')
-            ->in(__DIR__ . '/../../vendor/ircmaxell/password-compat/lib/')
-            ->in(__DIR__ . '/../../vendor/paragonie/random_compat/lib/')
             ->in(__DIR__ . '/../../vendor/knplabs/github-api/lib/')
             ->in(__DIR__ . '/../../vendor/samsonasik/package-versions/src/PackageVersions/')
             ->in(__DIR__ . '/../../vendor/vierbergenlars/php-semver/src/vierbergenlars/LibJs/')
             ->in(__DIR__ . '/../../vendor/vierbergenlars/php-semver/src/vierbergenlars/SemVer/')
-            ->in(__DIR__ . '/../../vendor/hamcrest/hamcrest-php/hamcrest/')
         ;
+        // required only for php<7
+        if (is_dir(__DIR__ . '/../../vendor/ircmaxell/password-compat/lib/')) {
+            $finder->in(__DIR__ . '/../../vendor/ircmaxell/password-compat/lib/');
+        }
 
         foreach ($finder as $file) {
             $this->addFile($phar, $file);
