@@ -83,7 +83,7 @@ class Bowerphp
      */
     public function installPackage(PackageInterface $package, InstallerInterface $installer, $isDependency = false)
     {
-        if (strpos($package->getName(), 'github') !== false) {
+        if (false !== strpos($package->getName(), 'github')) {
             // install from a github endpoint
             $name = basename($package->getName(), '.git');
             $repoUrl = $package->getName();
@@ -146,7 +146,7 @@ class Bowerphp
         $decode = $this->config->getBowerFileContent();
         if (!empty($decode['dependencies'])) {
             foreach ($decode['dependencies'] as $name => $requiredVersion) {
-                if (strpos($requiredVersion, 'github') !== false) {
+                if (false !== strpos($requiredVersion, 'github')) {
                     list($name, $requiredVersion) = explode('#', $requiredVersion);
                 }
                 $package = new Package($name, $requiredVersion);
@@ -238,13 +238,13 @@ class Bowerphp
 
         $this->repository->setHttpClient($this->githubClient);
 
-        if ($info == 'url') {
+        if ('url' == $info) {
             $this->repository->setUrl($decode['url'], false);
 
             return $this->repository->getUrl();
         }
 
-        if ($info == 'versions') {
+        if ('versions' == $info) {
             $tags = $this->repository->getTags();
             usort($tags, function ($a, $b) {
                 return version_compare($b, $a);

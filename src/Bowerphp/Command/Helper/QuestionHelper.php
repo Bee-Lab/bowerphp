@@ -32,7 +32,7 @@ class QuestionHelper extends BaseQuestionHelper
      */
     public function getQuestion($question, $default = null, $sep = ':')
     {
-        return $default !== null ?
+        return null !== $default ?
                 new Question(sprintf('<info>%s</info> [<comment>%s</comment>]%s ', $question, $default, $sep)) :
                 new Question(sprintf('<info>%s</info>%s ', $question, $sep));
     }

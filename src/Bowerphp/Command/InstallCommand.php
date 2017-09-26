@@ -73,7 +73,7 @@ EOT
             if (is_null($packageName)) {
                 $bowerphp->installDependencies($installer);
             } else {
-                if (substr($packageName, -10) === 'bower.json') {
+                if ('bower.json' === substr($packageName, -10)) {
                     if (!is_readable($packageName)) {
                         $output->writeln(sprintf('<error>Cannot read file %s</error>', $packageName));
 
@@ -97,7 +97,7 @@ EOT
             }
         } catch (\RuntimeException $e) {
             $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
-            if ($e->getCode() == GithubRepository::VERSION_NOT_FOUND && !empty($package)) {
+            if (GithubRepository::VERSION_NOT_FOUND == $e->getCode() && !empty($package)) {
                 $output->writeln(sprintf('Available versions: %s', implode(', ', $bowerphp->getPackageInfo($package, 'versions'))));
             }
 

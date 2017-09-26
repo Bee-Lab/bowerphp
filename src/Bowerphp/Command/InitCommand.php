@@ -79,7 +79,7 @@ EOT
         $return = 0;
         $info = exec("git config --get $info", $output, $return);
 
-        if ($return === 0) {
+        if (0 === $return) {
             return $info;
         }
     }

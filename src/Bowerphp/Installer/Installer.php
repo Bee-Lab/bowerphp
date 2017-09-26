@@ -50,7 +50,7 @@ class Installer implements InstallerInterface
     public function install(PackageInterface $package)
     {
         $tmpFileName = $this->config->getCacheDir() . '/tmp/' . $package->getName();
-        if ($this->zipArchive->open($tmpFileName) !== true) {
+        if (true !== $this->zipArchive->open($tmpFileName)) {
             throw new RuntimeException(sprintf('Unable to open zip file %s.', $tmpFileName));
         }
         $dirName = trim($this->zipArchive->getNameIndex(0), '/');
@@ -59,7 +59,7 @@ class Installer implements InstallerInterface
         foreach ($files as $i => $file) {
             $stat = $this->zipArchive->statIndex($i);
             $fileName = $this->config->getInstallDir() . '/' . str_replace($dirName, $package->getName(), $file);
-            if (substr($fileName, -1) != '/') {
+            if ('/' != substr($fileName, -1)) {
                 $fileContent = $this->zipArchive->getStream($file);
                 $this->filesystem->write($fileName, $fileContent);
                 $this->filesystem->touch($fileName, $stat['mtime']);
@@ -69,7 +69,7 @@ class Installer implements InstallerInterface
         foreach ($files as $i => $file) {
             $stat = $this->zipArchive->statIndex($i);
             $fileName = $this->config->getInstallDir() . '/' . str_replace($dirName, $package->getName(), $file);
-            if (is_dir($fileName) && substr($fileName, -1) == '/') {
+            if (is_dir($fileName) && '/' == substr($fileName, -1)) {
                 $this->filesystem->touch($fileName, $stat['mtime']);
             }
         }
@@ -199,7 +199,7 @@ class Installer implements InstallerInterface
         }
         // first check if there is line that overrides other lines
         foreach ($ignore as $pattern) {
-            if (strpos($pattern, '!') !== 0) {
+            if (0 !== strpos($pattern, '!')) {
                 continue;
             }
             $pattern = ltrim($pattern, '!');
@@ -209,35 +209,35 @@ class Installer implements InstallerInterface
             }
         }
         foreach ($ignore as $pattern) {
-            if (strpos($pattern, '**') !== false) {
+            if (false !== strpos($pattern, '**')) {
                 $pattern = str_replace('**', '*', $pattern);
                 //$pattern = str_replace('*/*', '*', $pattern);
-                if (substr($pattern, 0, 1) == '/') {
+                if ('/' == substr($pattern, 0, 1)) {
                     $vName = '/' . $vName;
                 }
-                if (substr($vName, 0, 1) == '.') {
+                if ('.' == substr($vName, 0, 1)) {
                     $vName = '/' . $vName;
                 }
                 if (fnmatch($pattern, $vName, FNM_PATHNAME)) {
                     return true;
-                } elseif ($pattern === '*/*' && fnmatch('*', $vName, FNM_PATHNAME)) {
+                } elseif ('*/*' === $pattern && fnmatch('*', $vName, FNM_PATHNAME)) {
                     // this a special case, where a double asterisk must match also files in the root dir
                     return true;
                 }
-            } elseif (substr($pattern, -1) == '/') { // trailing slash
-                if (substr($pattern, 0, 1) == '/') {
+            } elseif ('/' == substr($pattern, -1)) { // trailing slash
+                if ('/' == substr($pattern, 0, 1)) {
                     $pattern = substr($pattern, 1); // remove possible starting slash
                 }
                 $escPattern = str_replace(['.', '*'], ['\.', '.*'], $pattern);
                 if (preg_match('#^' . $escPattern . '#', $vName) > 0) {
                     return true;
                 }
-            } elseif (strpos($pattern, '/') === false) { // no slash
+            } elseif (false === strpos($pattern, '/')) { // no slash
                 $escPattern = str_replace(['.', '*'], ['\.', '.*'], $pattern);
                 if (preg_match('#^' . $escPattern . '#', $vName) > 0) {
                     return true;
                 }
-            } elseif (substr($pattern, 0, 1) == '/') {    // starting slash
+            } elseif ('/' == substr($pattern, 0, 1)) {    // starting slash
                 $escPattern = str_replace(['.', '*'], ['\.', '.*'], $pattern);
                 if (preg_match('#^' . $escPattern . '#', '/' . $vName) > 0) {
                     return true;

@@ -68,7 +68,7 @@ class GithubRepository implements RepositoryInterface
      */
     public function getBower($version = 'master', $includeHomepage = false, $url = '')
     {
-        if ($version == '*') {
+        if ('*' == $version) {
             $version = 'master';
         }
         if (!empty($url)) {
@@ -101,14 +101,14 @@ class GithubRepository implements RepositoryInterface
         $tags = $paginator->fetchAll($this->githubClient->api('repo'), 'tags', [$repoUser, $repoName]);
 
         // edge case: package has no tags
-        if (count($tags) === 0) {
+        if (0 === count($tags)) {
             $this->tag['name'] = 'master';
 
             return $this->tag['name'];
         }
 
         // edge case: user asked for latest package
-        if ($rawCriteria == 'latest' || $rawCriteria == '*' || empty($rawCriteria)) {
+        if ('latest' == $rawCriteria || '*' == $rawCriteria || empty($rawCriteria)) {
             $sortedTags = $this->sortTags($tags);
             $this->tag = end($sortedTags);
 
@@ -172,7 +172,7 @@ class GithubRepository implements RepositoryInterface
         $paginator = new ResultPager($this->githubClient);
         $tags = $paginator->fetchAll($this->githubClient->api('repo'), 'tags', [$repoUser, $repoName]);
         // edge case: no tags
-        if (count($tags) === 0) {
+        if (0 === count($tags)) {
             return [];
         }
 
@@ -197,14 +197,14 @@ class GithubRepository implements RepositoryInterface
             $isPackageJson = true;
             if ($contents->exists($repoUser, $repoName, 'package.json', $version)) {
                 $json = $contents->download($repoUser, $repoName, 'package.json', $version);
-            } elseif ($version != 'master') {
+            } elseif ('master' != $version) {
                 return $this->getDepBowerJson('master');
             }
             // try anyway. E.g. exists() return false for Modernizr, but then it downloads :-|
             $json = $contents->download($repoUser, $repoName, 'package.json', $version);
         }
 
-        if (substr($json, 0, 3) == "\xef\xbb\xbf") {
+        if ("\xef\xbb\xbf" == substr($json, 0, 3)) {
             $json = substr($json, 3);
         }
 
@@ -238,7 +238,7 @@ class GithubRepository implements RepositoryInterface
             $url = str_replace($part, '', $url);
         }
 
-        if (substr($url, -4) == '.git') {
+        if ('.git' == substr($url, -4)) {
             $url = substr($url, 0, -4);
         }
 
@@ -261,13 +261,13 @@ class GithubRepository implements RepositoryInterface
         }
         // WHY NOT SCRUB OUT PLUS SIGNS, RIGHT?
         $foundIt = strpos($rawValue, '+');
-        if ($foundIt !== false) {
+        if (false !== $foundIt) {
             $rawValue = substr($rawValue, 0, $foundIt);
         }
         $rawValue = strtr($rawValue, ['.alpha' => '-alpha', '.beta' => '-beta', '.dev' => '-dev']);
         $pieces = explode('.', $rawValue);
         $count = count($pieces);
-        if ($count == 0) {
+        if (0 == $count) {
             $pieces[] = '0';
             $count = 1;
         }

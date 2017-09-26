@@ -61,7 +61,7 @@ abstract class Command extends BaseCommand
         if (OutputInterface::VERBOSITY_DEBUG <= $output->getVerbosity()) {
             $logger = function ($message) use ($output) {
                 $finfo = new \finfo(FILEINFO_MIME);
-                $msg = (substr($finfo->buffer($message), 0, 4) == 'text') ? $message : '(binary string)';
+                $msg = ('text' == substr($finfo->buffer($message), 0, 4)) ? $message : '(binary string)';
                 $output->writeln('<info>Guzzle</info> ' . $msg);
             };
             $logAdapter = new ClosureLogAdapter($logger);

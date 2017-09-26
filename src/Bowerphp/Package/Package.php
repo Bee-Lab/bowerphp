@@ -28,7 +28,7 @@ class Package implements PackageInterface
     public function __construct($name, $requiredVersion = null, $version = null, $requires = [], $info = [])
     {
         $this->name = $name;
-        $this->requiredVersion = $requiredVersion === 'master' ? '*' : $requiredVersion;
+        $this->requiredVersion = 'master' === $requiredVersion ? '*' : $requiredVersion;
         $this->version = $version;
         if (!empty($requires)) {
             $this->requires = $requires;

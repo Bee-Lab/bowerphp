@@ -33,7 +33,7 @@ class ErrorHandler
     public static function handle($level, $message, $file, $line)
     {
         // respect error_reporting being disabled
-        if (error_reporting() === 0) {
+        if (0 === error_reporting()) {
             return;
         }
 

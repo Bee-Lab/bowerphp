@@ -58,7 +58,7 @@ EOT
         $bowerphp = $this->getBowerphp($output);
 
         $bowerJsonFile = $bowerphp->getPackageBowerFile($package);
-        if ($packageNameVersion->version == '*') {
+        if ('*' == $packageNameVersion->version) {
             $versions = $bowerphp->getPackageInfo($package, 'versions');
         }
         if (!is_null($property)) {
@@ -69,7 +69,7 @@ EOT
             return;
         }
         $this->consoleOutput->writelnJson($bowerJsonFile);
-        if ($packageNameVersion->version != '*') {
+        if ('*' != $packageNameVersion->version) {
             return;
         }
         $output->writeln('');
