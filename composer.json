@@ -37,7 +37,7 @@
     "require-dev": {
         "ext-phar": "*",
         "friendsofphp/php-cs-fixer": "^2.0",
-        "mockery/mockery": "^1.0@dev",
+        "mockery/mockery": "^1.0",
         "phpunit/phpunit": "^5.7|^6.0"
     },
     "autoload": {
