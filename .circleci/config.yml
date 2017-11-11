@@ -5,12 +5,15 @@ jobs:
       - image: ubuntu:16.04
     working_directory: ~/app
     steps:
-      - run: apt-get update && apt-get install -qqy curl git unzip ssh mcrypt wget openssl xdg-utils --no-install-recommends
+      - run: apt-get update && apt-get install -qqy curl git unzip ssh mcrypt wget openssl xdg-utils software-properties-common locales --no-install-recommends
+      - run: locale-gen en_US.UTF-8 
+      - run: sh -c 'echo "LC_ALL=en_US.UTF-8" >> /etc/default/locale' sh -c 'echo "LANG=en_US.UTF-8" >> /etc/default/locale'
+      - run: LC_ALL=en_US.UTF-8 add-apt-repository -y -u ppa:ondrej/php
       - run: mkdir -p /usr/local/openssl/include/openssl/ && ln -s /usr/include/openssl/evp.h /usr/local/openssl/include/openssl/evp.h && mkdir -p /usr/local/openssl/lib/ && ln -s /usr/lib/x86_64-linux-gnu/libssl.a /usr/local/openssl/lib/libssl.a && ln -s /usr/lib/x86_64-linux-gnu/libssl.so /usr/local/openssl/lib/
       - checkout
-      - run: apt-get update && apt-get install -qqy php7.0-mcrypt php7.0-zip php7.0-xml php7.0-mbstring php7.0-curl php7.0-json php7.0-tokenizer php7.0-cli php-xdebug
+      - run: apt-get update && apt-get install -qqy php7.1-mcrypt php7.1-zip php7.1-xml php7.1-mbstring php7.1-curl php7.1-json php7.1-tokenizer php7.1-cli php-xdebug
       - run: curl -sS https://getcomposer.org/installer | php -- --install-dir=. --filename=composer
-      - run: echo "date.timezone=Europe/Rome" > /etc/php/7.0/cli/conf.d/date_timezone.ini
+      - run: echo "date.timezone=Europe/Rome" > /etc/php/7.1/cli/conf.d/date_timezone.ini
       - run: php composer install -n --no-progress --no-suggest
       - run: bin/phpunit --coverage-html=coverage
       - store_artifacts:
