@@ -12,10 +12,9 @@ jobs:
       - run: mkdir -p /usr/local/openssl/include/openssl/ && ln -s /usr/include/openssl/evp.h /usr/local/openssl/include/openssl/evp.h && mkdir -p /usr/local/openssl/lib/ && ln -s /usr/lib/x86_64-linux-gnu/libssl.a /usr/local/openssl/lib/libssl.a && ln -s /usr/lib/x86_64-linux-gnu/libssl.so /usr/local/openssl/lib/
       - checkout
       - run: apt-get update && apt-get install -qqy php7.1-mcrypt php7.1-zip php7.1-xml php7.1-mbstring php7.1-curl php7.1-json php7.1-tokenizer php7.1-cli php-xdebug
-      - run: echo "xdebug.scream=0" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - run: curl -sS https://getcomposer.org/installer | php -- --install-dir=. --filename=composer
       - run: echo "date.timezone=Europe/Rome" > /etc/php/7.1/cli/conf.d/date_timezone.ini
       - run: php composer install -n --no-progress --no-suggest
-      - run: bin/phpunit --coverage-html=coverage
+      - run: bin/phpunit -d memory_limit=-1 -d xdebug.scream=0 --coverage-html=coverage
       - store_artifacts:
           path: coverage
