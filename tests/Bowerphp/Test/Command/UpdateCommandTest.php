@@ -14,6 +14,7 @@ use RecursiveIteratorIterator;
 class UpdateCommandTest extends TestCase
 {
     private $packageDotBowerFile;
+
     private $bowerFile;
 
     protected function setUp()

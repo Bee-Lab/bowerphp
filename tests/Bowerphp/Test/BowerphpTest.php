@@ -14,7 +14,9 @@ use RuntimeException;
 class BowerphpTest extends BowerphpTestCase
 {
     protected $bowerphp;
+
     protected $config;
+
     protected $repository;
 
     protected function setUp()

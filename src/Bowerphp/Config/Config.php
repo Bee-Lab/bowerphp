@@ -21,11 +21,17 @@ use RuntimeException;
 class Config implements ConfigInterface
 {
     protected $cacheDir;
+
     protected $installDir;
+
     protected $filesystem;
+
     protected $basePackagesUrl = 'http://registry.bower.io/packages/';
+
     protected $saveToBowerJsonFile = false;
+
     protected $bowerFileNames = ['bower.json', 'package.json'];
+
     protected $stdBowerFileName = 'bower.json';
 
     /**

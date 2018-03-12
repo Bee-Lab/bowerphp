@@ -32,9 +32,13 @@ use vierbergenlars\SemVer\version;
 class Bowerphp
 {
     protected $config;
+
     protected $filesystem;
+
     protected $githubClient;
+
     protected $repository;
+
     protected $output;
 
     /**
@@ -345,6 +349,7 @@ class Bowerphp
         if ($checkInstall && !$this->isPackageInstalled($package)) {
             return false;
         }
+
         try {
             $bower = $this->config->getBowerFileContent();
         } catch (RuntimeException $e) { // no bower.json file, package is extraneous

@@ -18,11 +18,7 @@ env:
     global:
         secure: PvosUtekSGv7sGE1Bn7YhD+ztX43dgqZyQqRQEf5cdvRzztxw3BPQveM/y8XSlgEetu5nFCPgzarTeumLaXJ5RH+USsyNUCHVr+LN04jqGNfK3aA7/k3ALBKbUDyhUCxcCBoVX+EIp/ItgSW2KK2jBPD64BRdJ3oSrAjwMFjeLg=
 
-before_install:
-    - phpenv config-rm xdebug.in
-
 before_script:
-    - echo '' > ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini
     - if [ "$TRAVIS_PHP_VERSION" = "nightly" ]; then composer update --prefer-dist --no-interaction --ignore-platform-reqs; fi
     - if [ "$TRAVIS_PHP_VERSION" != "nightly" ]; then composer update --prefer-dist --no-interaction; fi
     - git config --global user.name travis-ci
