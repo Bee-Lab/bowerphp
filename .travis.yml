@@ -25,4 +25,4 @@ before_script:
     - git config --global user.email travis@example.com
 
 script:
-    - vendor/bin/phpunit
+    - bin/phpunit
