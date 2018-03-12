@@ -7,8 +7,11 @@ use Mockery;
 abstract class HttpMockedTestCase extends BowerphpTestCase
 {
     protected $httpClient;
+
     protected $request;
+
     protected $response;
+
     protected $config;
 
     protected function setUp()

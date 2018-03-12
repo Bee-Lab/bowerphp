@@ -10,10 +10,15 @@ use Bowerphp\Repository\RepositoryInterface;
 class Package implements PackageInterface
 {
     protected $name;
+
     protected $repository;
+
     protected $requiredVersion;
+
     protected $version;
+
     protected $requires = [];
+
     protected $info = [];
 
     /**

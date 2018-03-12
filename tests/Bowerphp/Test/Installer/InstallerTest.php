@@ -9,7 +9,9 @@ use Mockery;
 class InstallerTest extends BowerphpTestCase
 {
     protected $installer;
+
     protected $zipArchive;
+
     protected $config;
 
     protected function setUp()
