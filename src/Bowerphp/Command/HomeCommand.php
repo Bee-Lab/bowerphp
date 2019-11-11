@@ -83,6 +83,10 @@ EOT
      */
     private function getDefaultBrowser()
     {
+		//the explorer.exe in windows could start the default browser
+		if(defined('PHP_WINDOWS_VERSION_MAJOR'))
+			return 'explorer';
+		
         $xdgOpen = new Process('which xdg-open');
         $xdgOpen->run();
         if (!$xdgOpen->isSuccessful()) {
